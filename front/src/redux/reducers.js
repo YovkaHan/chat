@@ -3,6 +3,7 @@ import Lamp from '../components/custom/Button/redux/reducer';
 import Panel from '../components/template/Panel/redux/reducer';
 import Channel from '../components/template/Channel/redux/reducer';
 import InputArea from '../components/custom/InputArea/redux/reducer';
+import MessageInput from '../components/custom/MessageInput/redux/reducer';
 import {combineReducers} from 'redux';
 import produce from "immer";
 
@@ -48,7 +49,10 @@ export default {
             pl0: Panel('pl0')
         }),
         InputArea: combineReducers({
-            ia0: InputArea('ia0')
+            iA0: InputArea('iA0')
+        }),
+        MessageInput: combineReducers({
+            msgI0: MessageInput('msgI0')
         })
     })
 };

@@ -4,10 +4,10 @@ import * as R from 'ramda';
 
 const INIT_STATE = {
     flags: {
-        toggle: false,
-        hover: false
-    },
-    data: []
+        hover: false,
+        mayBeSent: false,
+        status: false
+    }
 };
 
 const cases = (type) => {

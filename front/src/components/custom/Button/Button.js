@@ -5,7 +5,7 @@ import {bindActionCreators} from "redux";
 import {flagHandle} from "./redux/actions";
 
 const innerClass = (sufix, mainClass, rootClass) => {
-    return `${mainClass}__${sufix} ${rootClass ? rootClass+'__'+sufix : ''}`
+    return `${mainClass}__${sufix} ${rootClass ? rootClass + '__' + sufix : ''}`
 };
 
 class Button extends React.Component {
@@ -14,9 +14,10 @@ class Button extends React.Component {
         className: '',
         rootClass: '',
         value: 'On',
+        disabled: false
     };
 
-    constructor(props){
+    constructor(props) {
         super(props);
 
         this.state = {
@@ -26,19 +27,21 @@ class Button extends React.Component {
         this.handleClick = ::this.handleClick;
     }
 
-    async handleClick(e){
-       await this.props.defaultClick(e);
-       await this.props.click(e);
+    async handleClick(e) {
+        if(!this.props.disabled){
+            await this.props.defaultClick(e);
+            await this.props.click(e);
+        }
     };
 
-    render(){
+    render() {
         const {props, state, handleClick} = this;
-        const {value, className, rootClass} = props;
+        const {value, className, rootClass, disabled} = props;
         const {width} = state;
         const mainClass = 'c-button';
 
-        return(
-            <div className={`${mainClass} ${className} ${rootClass}`} onClick={handleClick}>
+        return (
+            <div className={`${mainClass} ${disabled ? mainClass+'--disabled' : ''} ${className} ${rootClass}`} onClick={handleClick}>
                 <div className={innerClass('content', mainClass, rootClass)} style={{width}}>
                     <div className={innerClass('value', mainClass, rootClass)}>{value}</div>
                 </div>
@@ -51,6 +54,7 @@ Button.propTypes = {
     className: PropTypes.string,
     rootClass: PropTypes.string,
     value: PropTypes.string,
+    disabled: PropTypes.bool
 };
 
 const mapStateToProps = (state, props) => {

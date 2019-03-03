@@ -9,6 +9,10 @@ export function flagHandle(id, key, value) {
     return ({type: TYPES.FLAGS, payload: {key, value}, id})
 }
 
+export function dataChange(id, value) {
+    return ({type: TYPES.CHANGE, payload: {key: 'data', value}, id})
+}
+
 // export function valueChange(id, value) {
 //     return async (dispatch) => {
 //         await dispatch({type: TYPES.CHANGE, payload: {key: 'value', value}, id});

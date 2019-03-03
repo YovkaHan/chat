@@ -3,7 +3,7 @@ import {TYPES} from "./types";
 import * as R from "ramda";
 
 export default [
-    takeEvery(TYPES.FLAGS, flagHandleComplete),
+    takeEvery(TYPES.FLAGS, flagHandleComplete)
 ];
 
 function* flagHandleComplete({type, payload, id}) {

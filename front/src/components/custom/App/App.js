@@ -1,16 +1,17 @@
 import React from 'react';
-import {Button, Lamp, Panel, Channel, MyPanel, InputArea} from '../../';
+import {Button, Lamp, Panel, Channel, MyPanel, InputArea, MessageInput} from '../../';
 import {pcbGenerate} from '../../../common/pcb';
 
 const pcbTemplate = {
-    Button0: {id: 'b0'},
-    Button1: {id: 'b1'},
-    Button2: {id: 'b2'},
-    Button3: {id: 'b3'},
-    Lamp0: {id: 'l0'},
-    Lamp1: {id: 'l1'},
+    Button0: {id: 'b0', component: 'Button'},
+    Button1: {id: 'b1', component: 'Button'},
+    Button2: {id: 'b2', component: 'Button'},
+    Button3: {id: 'b3', component: 'Button'},
+    Lamp0: {id: 'l0', component: 'Lamp'},
+    Lamp1: {id: 'l1', component: 'Lamp'},
     Panel0: {
         id: 'pl0',
+        component: 'Panel',
         config: {
             channels: [
                 {id: 'ch0', component: 'Channel'},
@@ -20,6 +21,7 @@ const pcbTemplate = {
     },
     Channel0: {
         id: 'ch0',
+        component: 'Channel',
         relations: {
             Connect: {name: 'Button0'},
             Lamp: {name: 'Lamp0'},
@@ -28,8 +30,16 @@ const pcbTemplate = {
         config: {from: 'ch0', to: 'ch1'}
     },
     InputArea0: {
-        id: 'ia0',
+        id: 'iA0',
+        component: 'InputArea',
         config: {from: 'ch1', to: 'ch0'}
+    },
+    MessageInput0: {
+        id: 'msgI0',
+        children:  [
+            {alias: 'InputArea', name: 'InputArea0'},
+            {alias: 'Send', name: 'Button0'}
+        ],
     }
 };
 
@@ -46,20 +56,7 @@ export default class App extends React.Component {
         return (
             <React.Fragment>
                 <div className={`the-app`}>
-                    <div className={`my-msg-list`}>
-                        <div className={`my-msg-list__content`}>
-                            <InputArea
-                                pcb={this.pcb.make('InputArea0')}
-                                label={null}
-                                rootClass={'my-ia'}
-                            />
-                            <Button
-                                pcb={this.pcb.make('Button0')}
-                                value={'Send'}
-                                rootClass={'my-btn'}
-                            />
-                        </div>
-                    </div>
+                    <MessageInput pcb={this.pcb.make('MessageInput0')}/>
                     {/*<MyPanel pcb={this.pcb}/>*/}
                 </div>
             </React.Fragment>
