@@ -1,0 +1,63 @@
+$bg-default: gray;
+$bg-pending: yellow;
+$bg-false: red;
+$bg-true: green;
+
+.c-lamp {
+  background: transparent;
+
+  &__content {
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    border: 3px outset #8e8e8e;
+    background: $bg-default;
+  }
+
+  &--pending {
+
+    .c-lamp {
+
+      &__content {
+        background: $bg-pending;
+        animation: blink 1s infinite;
+      }
+    }
+  }
+  &--false {
+
+    .c-lamp {
+
+      &__content {
+        background: $bg-false;
+      }
+    }
+  }
+  &--true {
+
+    .c-lamp {
+
+      &__content {
+        background: $bg-true;
+      }
+    }
+  }
+  &--error {
+    .c-lamp {
+
+      &__content {
+        background: $bg-false;
+        animation: blink 1s infinite;
+      }
+    }
+  }
+
+  @keyframes blink {
+    0%,100% {
+      background: $bg-default;
+    }
+    50% {
+      background: $bg-pending;
+    }
+  }
+}
