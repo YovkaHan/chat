@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Lamp, Panel, Channel, MyPanel} from '../../';
+import {Button, Lamp, Panel, Channel, MyPanel, InputArea} from '../../';
 import {pcbGenerate} from '../../../common/pcb';
 
 const pcbTemplate = {
@@ -27,13 +27,8 @@ const pcbTemplate = {
         },
         config: {from: 'ch0', to: 'ch1'}
     },
-    Channel1: {
-        id: 'ch1',
-        relations: {
-            Connect: {name: 'Button0'},
-            Lamp: {name: 'Lamp0'},
-            Message: {name: 'Button1'}
-        },
+    InputArea0: {
+        id: 'ia0',
         config: {from: 'ch1', to: 'ch0'}
     }
 };
@@ -50,8 +45,22 @@ export default class App extends React.Component {
 
         return (
             <React.Fragment>
-                <div className={`panel-combiner`}>
-                   <MyPanel pcb={this.pcb}/>
+                <div className={`the-app`}>
+                    <div className={`my-msg-list`}>
+                        <div className={`my-msg-list__content`}>
+                            <InputArea
+                                pcb={this.pcb.make('InputArea0')}
+                                label={null}
+                                rootClass={'my-ia'}
+                            />
+                            <Button
+                                pcb={this.pcb.make('Button0')}
+                                value={'Send'}
+                                rootClass={'my-btn'}
+                            />
+                        </div>
+                    </div>
+                    {/*<MyPanel pcb={this.pcb}/>*/}
                 </div>
             </React.Fragment>
         )
