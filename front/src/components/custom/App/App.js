@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Lamp, Panel, Channel, MyPanel, InputArea, MessageInput} from '../../';
+import {Button, Lamp, Panel, Channel, MyPanel, InputArea, MessageInput, Message} from '../../';
 import {pcbGenerate} from '../../../common/pcb';
 
 const pcbTemplate = {
@@ -40,6 +40,15 @@ const pcbTemplate = {
             {alias: 'InputArea', name: 'InputArea0'},
             {alias: 'Send', name: 'Button0'}
         ],
+    },
+    List0: {
+        id: 'list0'
+    },
+    MessageList0: {
+        id: 'msgL0',
+        children:  [
+            {alias: 'Messages', name: 'List'}
+            ]
     }
 };
 
@@ -58,6 +67,7 @@ export default class App extends React.Component {
                 <div className={`the-app`}>
                     <MessageInput pcb={this.pcb.make('MessageInput0')}/>
                     {/*<MyPanel pcb={this.pcb}/>*/}
+                    <Message pcb={this.pcb}/>
                 </div>
             </React.Fragment>
         )

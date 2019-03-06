@@ -6,7 +6,7 @@ import {initialize} from "./redux/actions";
 import {InputArea, Button} from '../../';
 
 const innerClass = (sufix, mainClass, rootClass) => {
-    return `${mainClass}__${sufix} ${rootClass ? rootClass+'__'+sufix : ''}`
+    return `${mainClass}__${sufix}${rootClass ? ' '+rootClass+'__'+sufix : ''}`.trim()
 };
 
 class MessageInput extends React.Component {
@@ -36,7 +36,7 @@ class MessageInput extends React.Component {
         const mainClass = 'my-msg-input';
 
         return(
-            <div className={`${mainClass} ${className} ${rootClass}`}>
+            <div className={`${mainClass} ${className} ${rootClass}`.trim()}>
                 <div className={innerClass('content', mainClass, rootClass)}>
                     <InputArea
                         pcb={pcb.make(pcb.children['InputArea'].name)}
@@ -47,7 +47,7 @@ class MessageInput extends React.Component {
                         pcb={pcb.make(pcb.children['Send'].name)}
                         value={'Send'}
                         disabled={!mayBeSend}
-                        className={`${!mayBeSend? 'my-btn--disabled': ''}`}
+                        className={`${!mayBeSend? 'my-btn--disabled': ''}`.trim()}
                         rootClass={'my-btn'}
                     />
                 </div>
@@ -62,14 +62,19 @@ MessageInput.propTypes = {
     pcb: PropTypes.object
 };
 
+
 const mapStateToProps = (state, props) => {
     const cId = props.pcb.id;
     const _object = state.Components.MessageInput[cId];
 
-    return ({
-        flags: _object.flags,
-        value: props.value ? props.value : _object.value
-    })
+    if(_object) {
+        return ({
+            flags: _object.flags,
+            value: props.value ? props.value : _object.value
+        })
+    } else {
+        return {};
+    }
 };
 
 const mapDispatchers = (dispatch, props) => {

@@ -16,3 +16,9 @@ export function createItem() {
 export function deleteItem(id) {
     return ({type: TYPES.ITEM_DELETE, id})
 }
+
+// export function valueChange(id, value) {
+//     return async (dispatch) => {
+//         await dispatch({type: TYPES.CHANGE, payload: {key: 'value', value}, id});
+//     }
+// }

@@ -2,11 +2,11 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from "redux";
-import {flagHandle} from "./redux/actions";
+import {flagHandle, createItem} from "./redux/actions";
 import moment from 'moment';
 
 const innerClass = (sufix, mainClass, rootClass) => {
-    return `${mainClass}__${sufix} ${rootClass ? rootClass + '__' + sufix : ''}`
+    return `${mainClass}__${sufix}${rootClass ? ' ' + rootClass + '__' + sufix : ''}`.trim()
 };
 
 class Message extends React.Component {
@@ -16,7 +16,8 @@ class Message extends React.Component {
         rootClass: '',
         disabled: false,
         from: 'TestFrom',
-        msg: 'Hello. My name is Test',
+        createItem: () => {console.log('createItem function')},
+        msg: 'Hello. My name is Test and this is test-message!',
         date: 1551792177575
     };
 
@@ -25,7 +26,7 @@ class Message extends React.Component {
 
         this.handleClick = ::this.handleClick;
 
-        this.
+        props.createItem();
     }
 
     async handleClick(e) {
@@ -37,15 +38,15 @@ class Message extends React.Component {
 
     render() {
         const {props, state, handleClick} = this;
-        const {className, rootClass, from, msg, date} = props;
+        const {className, rootClass, disabled, from, msg, date} = props;
         const mainClass = 'c-message';
 
         return (
-            <div className={`${mainClass} ${disabled ? mainClass+'--disabled' : ''} ${className} ${rootClass}`} onClick={handleClick}>
-                <div className={innerClass('content', mainClass, rootClass)} style={{width}}>
+            <div className={`${mainClass}${disabled ? ` ${mainClass}--disabled` : ''} ${className} ${rootClass}`.trim()} onClick={handleClick}>
+                <div className={innerClass('content', mainClass, rootClass)}>
                     <div className={innerClass('from', mainClass, rootClass)}>{from}</div>
                     <div className={innerClass('msg', mainClass, rootClass)}>{msg}</div>
-                    <div className={innerClass('date', mainClass, rootClass)}>{moment(date)}</div>
+                    <div className={innerClass('date', mainClass, rootClass)}>{moment(date).format('DD.mm.YYYY, HH:mm:ss a')}</div>
                 </div>
             </div>
         )
@@ -53,21 +54,27 @@ class Message extends React.Component {
 }
 
 Message.propTypes = {
+    pcb: PropTypes.object,
     className: PropTypes.string,
     rootClass: PropTypes.string,
     from: PropTypes.string,
     msg: PropTypes.string,
-    date: PropTypes.number
+    date: PropTypes.number,
+    createItem: PropTypes.func
 };
 
 const mapStateToProps = (state, props) => {
     const cId = props.pcb.id;
     const _object = state.Components.Message[cId];
 
-    return ({
-        flags: _object.flags,
-        value: props.value ? props.value : _object.value
-    })
+    if(_object) {
+        return ({
+            flags: _object.flags,
+            value: props.value ? props.value : _object.value
+        })
+    } else {
+        return {};
+    }
 };
 
 const mapDispatchers = (dispatch, props) => {
@@ -75,6 +82,7 @@ const mapDispatchers = (dispatch, props) => {
 
     return bindActionCreators({
         defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
+        createItem: () => createItem(),
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
         // valueChange: (value) => valueChange(cId, value)

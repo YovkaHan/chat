@@ -5,6 +5,7 @@ import Channel from '../components/template/Channel/redux/reducer';
 import InputArea from '../components/custom/InputArea/redux/reducer';
 import Message from '../components/custom/Message/redux/reducer';
 import MessageInput from '../components/custom/MessageInput/redux/reducer';
+import MessageList from '../components/custom/MessageList/redux/reducer'
 import {combineReducers} from 'redux';
 import produce from "immer";
 
@@ -24,8 +25,8 @@ export function createReducer(cases = () => {}, defaultState = {}, id) {
         action
     ) =>
         produce(state, draft => {
-            if (action && action.type && action.id === id) {
-                cases(action.type)(draft, action.payload);
+            if (action && action.type && action.id === id || id === undefined) {
+                cases(action.type)(draft, action.payload, action.id);
             }
         });
 }
@@ -55,6 +56,9 @@ export default {
         MessageInput: combineReducers({
             msgI0: MessageInput('msgI0')
         }),
-        Message
+        Message: Message(),
+        MessageList: combineReducers({
+            msgL0: MessageList('msgL0')
+        })
     })
 };

@@ -3,38 +3,17 @@ import {createReducer} from '../../../../redux/reducers'
 import * as R from 'ramda';
 
 const INIT_STATE = {
-  length: 0
-};
-
-export const INIT_STATE_ITEM = {
     flags: {
-        toggle: false,
         hover: false,
         status: false
-    },
-    id: undefined,
-    from: undefined,
-    to: undefined,
-    message: [],
-    date: undefined
+    }
 };
 
 const cases = (type) => {
     switch (type) {
-        case TYPES.ITEM_CREATE_COMPLETE: {
-            return (draft, payload, id) => {
-                draft[id] = payload;
-                draft.length = draft.length+1;
-            };
-        }
-        case TYPES.ITEM_DELETE_COMPLETE: {
-            return (draft, payload, id) => {
-                delete draft[id];
-            };
-        }
         case TYPES.FLAGS_COMPLETE: {
             return (draft, payload) => {
-                draft[payload.id].flags = payload;
+                draft.flags = payload;
             };
         }
         case TYPES.INITIALIZE: {

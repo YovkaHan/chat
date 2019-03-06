@@ -1,0 +1,10 @@
+.c-list{
+  display: inline-flex;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+  }
+}

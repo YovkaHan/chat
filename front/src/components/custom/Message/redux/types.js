@@ -1,17 +1,21 @@
 import {actionTemplate} from '../../../../redux/reducers';
 
+export const name = 'msg';
+
 const defaultTypes = {
     INITIALIZE: "INITIALIZE",
     FLAGS: "FLAGS",
     FLAGS_COMPLETE: "FLAGS_COMPLETE",
-    CREATE_ITEM: "CREATE_ITEM",
-    DELETE_ITEM: "DELETE_ITEM"
+    ITEM_CREATE: "ITEM_CREATE",
+    ITEM_CREATE_COMPLETE: "ITEM_CREATE_COMPLETE",
+    ITEM_DELETE: "ITEM_DELETE",
+    ITEM_DELETE_COMPLETE: "ITEM_DELETE_COMPLETE"
 };
 
 const _sequence = ["name","root"];
 
 const _template = {
-  name: "MSG",
+  name: name.toUpperCase(),
   root: {...defaultTypes}
 };
 

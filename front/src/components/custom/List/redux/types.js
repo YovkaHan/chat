@@ -1,13 +1,15 @@
 import {actionTemplate} from '../../../../redux/reducers';
 
-export const name = 'msg_inpt';
+export const name = 'list';
 
 const defaultTypes = {
     INITIALIZE: "INITIALIZE",
     FLAGS: "FLAGS",
     FLAGS_COMPLETE: "FLAGS_COMPLETE",
-    CHANGE: "CHANGE",
-    CHANGE_COMPLETE: "CHANGE_COMPLETE"
+    ITEM_CREATE: "ITEM_CREATE",
+    ITEM_CREATE_COMPLETE: "ITEM_CREATE_COMPLETE",
+    ITEM_DELETE: "ITEM_DELETE",
+    ITEM_DELETE_COMPLETE: "ITEM_DELETE_COMPLETE"
 };
 
 const _sequence = ["name","root"];
