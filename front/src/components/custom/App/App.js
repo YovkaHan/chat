@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Lamp, Panel, Channel, MyPanel, InputArea, MessageInput, Message} from '../../';
+import {Button, Lamp, Panel, Channel, MyPanel, InputArea, MessageInput, Message, MessageList} from '../../';
 import {pcbGenerate} from '../../../common/pcb';
 
 const pcbTemplate = {
@@ -41,14 +41,8 @@ const pcbTemplate = {
             {alias: 'Send', name: 'Button0'}
         ],
     },
-    List0: {
-        id: 'list0'
-    },
     MessageList0: {
-        id: 'msgL0',
-        children:  [
-            {alias: 'Messages', name: 'List'}
-            ]
+        id: 'msgL0'
     }
 };
 
@@ -65,9 +59,9 @@ export default class App extends React.Component {
         return (
             <React.Fragment>
                 <div className={`the-app`}>
-                    <MessageInput pcb={this.pcb.make('MessageInput0')}/>
-                    {/*<MyPanel pcb={this.pcb}/>*/}
-                    <Message pcb={this.pcb}/>
+                    <MessageInput pcb={this.pcb} id={'MessageInput0'}/>
+                    {/*/!*<MyPanel pcb={this.pcb}/>*!/*/}
+                   {/*<MessageList pcb={this.pcb.make('MessageInput0')}/>*/}
                 </div>
             </React.Fragment>
         )
@@ -86,4 +80,6 @@ export default class App extends React.Component {
  * className - классическое свойство jsx разметки
  *      (дополнительные стили или состояния)
  *      (для привязки логики)
+ *
+ *
  * */

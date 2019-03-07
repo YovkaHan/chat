@@ -19,7 +19,7 @@ class MessageInput extends React.Component {
     constructor(props){
         super(props);
 
-        props.initialize(props.pcb);
+        props.initialize(this.props.pcbMaked);
 
       //  this.handleClick = ::this.handleClick;
     }
@@ -64,11 +64,13 @@ MessageInput.propTypes = {
 
 
 const mapStateToProps = (state, props) => {
-    const cId = props.pcb.id;
+    const pcbMade =  props.pcb.make(props.id);
+    const cId = pcbMade.id;
     const _object = state.Components.MessageInput[cId];
 
     if(_object) {
         return ({
+            pcbMade,
             flags: _object.flags,
             value: props.value ? props.value : _object.value
         })
@@ -78,7 +80,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const mapDispatchers = (dispatch, props) => {
-    const cId = props.pcb.id;
+    const cId = props.pcbMade.id;
 
     return bindActionCreators({
         // defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),

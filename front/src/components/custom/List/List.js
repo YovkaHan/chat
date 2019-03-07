@@ -15,25 +15,18 @@ class List extends React.Component {
         className: '',
         rootClass: '',
         data: [],
-        Item: null
+        Item: null,
+        itemProps: {},
+        children: []
     };
 
-    constructor(props){
-        super(props);
-
-        props.initialize(props.pcb);
-
-        //  this.handleClick = ::this.handleClick;
-    }
-
-    // async handleClick(e){
-    //     await this.props.defaultClick(e);
-    //     await this.props.click(e);
-    // };
+    // constructor(props){
+    //     super(props);
+    // }
 
     render(){
         const {props, state, handleClick} = this;
-        const {flags, className, rootClass, pcb, list, children, Item} = props;
+        const {className, rootClass, data, children, Item, itemProps} = props;
         const mainClass = 'c-list';
 
         const child = (c, index) => (
@@ -49,16 +42,19 @@ class List extends React.Component {
         return(
             <div className={`${mainClass} ${className} ${rootClass}`.trim()}>
                 <div className={innerClass('content', mainClass, rootClass)}>
-                    {data.map( i => (
-                        <Item className={innerClass('item', mainClass, rootClass)} data={i}/>
-                    ))}
+                    {data.map( i=> (
+                        <Item
+                            {...itemProps}
+                            {...i}
+                            className={innerClass('item', mainClass, rootClass)} />))
+                    }
+                    {
+                        children.map ? children.map((c, index) => {
+                            const _child = child(c, index);
+                            return _child;
+                        }) : child(children)
+                    }
                 </div>
-                {
-                    children.map ? children.map((c, index) => {
-                        const _child = child(c, index);
-                        return _child;
-                    }) : child(children)
-                }
             </div>
         )
     }
@@ -67,31 +63,8 @@ class List extends React.Component {
 List.propTypes = {
     className: PropTypes.string,
     rootClass: PropTypes.string,
-    pcb: PropTypes.object,
-    data: PropTypes.array
+    data: PropTypes.array,
+    Item: PropTypes.object
 };
 
-
-const mapStateToProps = (state, props) => {
-    const cId = props.pcb.id;
-    const _object = state.Components.List[cId];
-
-    if(_object) {
-        return ({
-            flags: _object.flags,
-            value: props.value ? props.value : _object.value
-        })
-    } else {
-        return {};
-    }
-};
-
-const mapDispatchers = (dispatch, props) => {
-    const cId = props.pcb.id;
-
-    return bindActionCreators({
-        initialize: (pcb) => initialize(cId, pcb),
-    }, dispatch);
-};
-
-export default connect(mapStateToProps, mapDispatchers)(List);
+export default List;

@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from "redux";
 import {initialize} from "./redux/actions";
-import {InputArea, Button} from '../../';
+import {InputArea, Button, List, Message} from '../../';
 
 const innerClass = (sufix, mainClass, rootClass) => {
     return `${mainClass}__${sufix}${rootClass ? ' '+rootClass+'__'+sufix : ''}`.trim()
@@ -14,7 +14,12 @@ class MessageList extends React.Component {
     static defaultProps = {
         className: '',
         rootClass: '',
-        list: []
+        list: [{
+            from: 'TestFrom',
+            createItem: () => {console.log('createItem function')},
+            msg: 'Hello. My name is Test and this is test-message!',
+            date: 1551792177575
+        }]
     };
 
     constructor(props){
@@ -35,9 +40,12 @@ class MessageList extends React.Component {
         const {flags, className, rootClass, pcb, list} = props;
         const mainClass = 'my-msg-list';
 
+        console.log(pcb);
+
         return(
             <div className={`${mainClass} ${className} ${rootClass}`.trim()}>
                 <div className={innerClass('content', mainClass, rootClass)}>
+                    <List data={list} Item={Message} itemProps={{pcb}}/>
                 </div>
             </div>
         )
