@@ -80,7 +80,8 @@ const mapStateToProps = (state, props) => {
 };
 
 const mapDispatchers = (dispatch, props) => {
-    const cId = props.pcbMade.id;
+    const pcbMade =  props.pcb.make(props.id);
+    const cId = pcbMade.id;
 
     return bindActionCreators({
         // defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),

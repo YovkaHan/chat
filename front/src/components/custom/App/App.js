@@ -1,50 +1,7 @@
 import React from 'react';
-import {Button, Lamp, Panel, Channel, MyPanel, InputArea, MessageInput, Message, MessageList} from '../../';
+import {Button, Message} from '../../';
 import {pcbGenerate} from '../../../common/pcb';
-
-const pcbTemplate = {
-    Button0: {id: 'b0', component: 'Button'},
-    Button1: {id: 'b1', component: 'Button'},
-    Button2: {id: 'b2', component: 'Button'},
-    Button3: {id: 'b3', component: 'Button'},
-    Lamp0: {id: 'l0', component: 'Lamp'},
-    Lamp1: {id: 'l1', component: 'Lamp'},
-    Panel0: {
-        id: 'pl0',
-        component: 'Panel',
-        config: {
-            channels: [
-                {id: 'ch0', component: 'Channel'},
-                {id: 'ch1', component: 'Channel'}
-            ]
-        }
-    },
-    Channel0: {
-        id: 'ch0',
-        component: 'Channel',
-        relations: {
-            Connect: {name: 'Button0'},
-            Lamp: {name: 'Lamp0'},
-            Message: {name: 'Button1'}
-        },
-        config: {from: 'ch0', to: 'ch1'}
-    },
-    InputArea0: {
-        id: 'iA0',
-        component: 'InputArea',
-        config: {from: 'ch1', to: 'ch0'}
-    },
-    MessageInput0: {
-        id: 'msgI0',
-        children:  [
-            {alias: 'InputArea', name: 'InputArea0'},
-            {alias: 'Send', name: 'Button0'}
-        ],
-    },
-    MessageList0: {
-        id: 'msgL0'
-    }
-};
+import {pcbTemplate} from '../../../common/appConfig';
 
 export default class App extends React.Component {
     constructor() {
@@ -59,9 +16,11 @@ export default class App extends React.Component {
         return (
             <React.Fragment>
                 <div className={`the-app`}>
-                    <MessageInput pcb={this.pcb} id={'MessageInput0'}/>
+                    {/*<MessageInput pcb={this.pcb} id={'MessageInput0'}/>*/}
                     {/*/!*<MyPanel pcb={this.pcb}/>*!/*/}
                    {/*<MessageList pcb={this.pcb.make('MessageInput0')}/>*/}
+                   <Button pcb={this.pcb} id={'b0'} value={'Single'}/>
+                   <Message pcb={this.pcb}/>
                 </div>
             </React.Fragment>
         )

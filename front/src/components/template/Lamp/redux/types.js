@@ -1,4 +1,4 @@
-import {actionTemplate} from '../../../../redux/reducers';
+import {actionTemplate} from '../../../../redux/common';
 
 const defaultTypes = {
     INITIALIZE: "INITIALIZE",

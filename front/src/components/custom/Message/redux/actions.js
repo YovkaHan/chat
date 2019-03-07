@@ -1,4 +1,4 @@
-import {TYPES} from "./types";
+import {TYPES} from './types';
 import * as R from 'ramda';
 
 export function initialize(id) {

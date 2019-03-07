@@ -2,10 +2,10 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from "redux";
-import {flagHandle} from "./redux/actions";
+import {flagHandle, createItem} from "./redux/actions";
 
-const innerClass = (sufix, mainClass, rootClass) => {
-    return `${mainClass}__${sufix} ${rootClass ? rootClass + '__' + sufix : ''}`
+const innerClass = (suffix, mainClass, rootClass) => {
+    return `${mainClass}__${suffix} ${rootClass ? rootClass + '__' + suffix : ''}`
 };
 
 class Button extends React.Component {
@@ -25,6 +25,8 @@ class Button extends React.Component {
         };
 
         this.handleClick = ::this.handleClick;
+
+        props.createItem(props.id);
     }
 
     async handleClick(e) {
@@ -54,24 +56,32 @@ Button.propTypes = {
     className: PropTypes.string,
     rootClass: PropTypes.string,
     value: PropTypes.string,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    pcb: PropTypes.object
 };
 
 const mapStateToProps = (state, props) => {
-    const cId = props.pcb.id;
-    const button = state.Components.Button[cId];
+    const pcbMade =  props.pcb.make(props.id);
+    const cId = pcbMade.id;
+    const _object = state.Components.Button[cId];
 
-    return ({
-        flags: button.flags,
-        value: props.value ? props.value : button.value
-    })
+    if(_object) {
+        return ({
+            flags: _object.flags,
+            value: props.value ? props.value : _object.value
+        })
+    } else {
+        return {};
+    }
 };
 
 const mapDispatchers = (dispatch, props) => {
-    const cId = props.pcb.id;
+    //const pcbMade =  props.pcb.make(props.id);
+    //const cId = pcbMade.id;
 
     return bindActionCreators({
-        defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
+        createItem: () => createItem(),
+        //defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
         // valueChange: (value) => valueChange(cId, value)

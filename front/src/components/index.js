@@ -1,4 +1,3 @@
-import App from './custom/App';
 import MyPanel from './custom/MyPanel';
 import Button from './custom/Button';
 import Chat from './custom/Chat';
@@ -15,7 +14,6 @@ import Channel from './template/Channel';
 
 
 export {
-    App,
     Button,
     Lamp,
     Panel,

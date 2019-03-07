@@ -3,7 +3,7 @@ import {TYPES, name} from "./types";
 import * as R from "ramda";
 import {INIT_STATE_ITEM} from './reducer';
 
-const idMake = (index) => name+index;
+export const idMake = (index) => name+index;
 
 export default [
     takeEvery(TYPES.FLAGS, flagHandleComplete),
@@ -15,7 +15,7 @@ function* createItemHandle({type}) {
     const state = yield select();
     const index = state.Components.Message.length;
 
-    yield put({ type: TYPES.ITEM_CREATE_COMPLETE, payload: R.clone(INIT_STATE_ITEM), id: idMake(index)});
+    return yield put({ type: TYPES.ITEM_CREATE_COMPLETE, payload: R.clone(INIT_STATE_ITEM), id: idMake(index)});
 }
 
 function* deleteItemHandle({type, id}) {
@@ -25,14 +25,14 @@ function* deleteItemHandle({type, id}) {
 function* flagHandleComplete({type, payload, id}) {
     const state = yield select();
 
-    const button = R.clone(state.Components.Button[id]);
+    const _object = R.clone(state.Components.Button[id]);
     const {key, value} = payload;
 
     if(value !== undefined){
-        button.flags[key] = value;
+        _object.flags[key] = value;
     }else{
-        button.flags[key] = !button.flags[key];
+        _object.flags[key] = !_object.flags[key];
     }
 
-    yield put({ type: TYPES.FLAGS_COMPLETE, payload: button.flags, id });
+    yield put({ type: TYPES.FLAGS_COMPLETE, payload: _object.flags, id });
 }

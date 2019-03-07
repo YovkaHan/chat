@@ -1,8 +1,13 @@
 import {TYPES} from './types';
-import {createReducer} from '../../../../redux/reducers'
+import {createReducer} from '../../../../redux/common'
 import * as R from 'ramda';
 
+
 const INIT_STATE = {
+    length: 0
+};
+
+export const INIT_STATE_ITEM = {
     flags: {
         toggle: false,
         hover: false
@@ -11,19 +16,26 @@ const INIT_STATE = {
 };
 
 const cases = (type) => {
+    console.log(TYPES);
     switch (type) {
-        case TYPES.FLAGS_COMPLETE: {
-            return (draft, payload) => {
-                draft.flags = payload;
+        case TYPES.ITEM_CREATE_COMPLETE: {
+            return (draft, payload, id) => {
+                draft[id] = payload;
+                draft.length = draft.length+1;
             };
         }
-        case TYPES.CHANGE: {
+        case TYPES.ITEM_DELETE_COMPLETE: {
+            return (draft, payload, id) => {
+                delete draft[id];
+            };
+        }
+        case TYPES.FLAGS_COMPLETE: {
             return (draft, payload) => {
-                draft[payload.key] = payload.value;
+                draft[payload.id].flags = payload;
             };
         }
         case TYPES.INITIALIZE: {
-            const _initClone = R.clone(INIT_STATE);
+            const _initClone = R.clone(INIT_STATE_ITEM);
             return draft => {
                 Object.keys(_initClone).map(d => {
                     draft[d] = _initClone[d];
@@ -38,7 +50,7 @@ const cases = (type) => {
 };
 
 const reducer = function (id) {
-   return createReducer(cases, INIT_STATE, id);
+    return createReducer(cases, INIT_STATE, id);
 };
 
 export default reducer;

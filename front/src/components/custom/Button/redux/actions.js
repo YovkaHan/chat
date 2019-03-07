@@ -1,4 +1,4 @@
-import {TYPES} from "./types";
+import {TYPES} from './types';
 import * as R from 'ramda';
 
 export function initialize(id) {
@@ -9,8 +9,10 @@ export function flagHandle(id, key, value) {
     return ({type: TYPES.FLAGS, payload: {key, value}, id})
 }
 
-// export function valueChange(id, value) {
-//     return async (dispatch) => {
-//         await dispatch({type: TYPES.CHANGE, payload: {key: 'value', value}, id});
-//     }
-// }
+export function createItem() {
+    return ({type: TYPES.ITEM_CREATE})
+}
+
+export function deleteItem(id) {
+    return ({type: TYPES.ITEM_DELETE, id})
+}

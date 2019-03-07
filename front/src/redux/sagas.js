@@ -7,7 +7,7 @@ import MessageInput from '../components/custom/MessageInput/redux/sagas';
 import Message from "../components/custom/Message/redux/sagas";
 
 export default function* rootSaga() {
-    const sagas = [...Button, ...Lamp, ...Panel, ...MessageInput, ...Message];
+    const sagas = [...Button, ...Message, ...Lamp, ...Panel, ...MessageInput];
 
     yield all(sagas)
 }

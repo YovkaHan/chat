@@ -1,4 +1,4 @@
-import {actionTemplate} from '../../../../redux/reducers';
+import {actionTemplate} from '../../../../redux/common';
 
 export const name = 'msg_inpt';
 

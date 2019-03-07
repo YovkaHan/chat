@@ -1,18 +1,22 @@
-import {actionTemplate} from '../../../../redux/reducers';
+import {actionTemplate} from '../../../../redux/common';
+
+export const name = 'button';
 
 const defaultTypes = {
     INITIALIZE: "INITIALIZE",
     FLAGS: "FLAGS",
     FLAGS_COMPLETE: "FLAGS_COMPLETE",
-    CHANGE: "CHANGE",
-    CHANGE_COMPLETE: "CHANGE_COMPLETE"
+    ITEM_CREATE: "ITEM_CREATE",
+    ITEM_CREATE_COMPLETE: "ITEM_CREATE_COMPLETE",
+    ITEM_DELETE: "ITEM_DELETE",
+    ITEM_DELETE_COMPLETE: "ITEM_DELETE_COMPLETE"
 };
 
 const _sequence = ["name","root"];
 
 const _template = {
-  name: "BUTTON",
-  root: {...defaultTypes}
+    name: name.toUpperCase(),
+    root: {...defaultTypes}
 };
 
 const foo = (() =>{

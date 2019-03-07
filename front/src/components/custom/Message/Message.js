@@ -26,8 +26,7 @@ class Message extends React.Component {
 
         this.handleClick = ::this.handleClick;
 
-        console.log(222);
-        props.createItem();
+        console.log(props.createItem());
     }
 
     async handleClick(e) {
@@ -65,7 +64,6 @@ Message.propTypes = {
 };
 
 const mapStateToProps = (state, props) => {
-    console.log(111);
     const cId = props.pcb.id;
     const _object = state.Components.Message[cId];
 

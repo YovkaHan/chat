@@ -1,17 +1,17 @@
 function pcbGenerate(template) {
     const generated = {...template};
-    generated.make = (name) => {
+    generated.make = (id) => {
         let result = undefined;
-        if (template.hasOwnProperty(name)) {
+        if (template.hasOwnProperty(id)) {
             result = {
-                ...template[name],
+                ...template[id],
                 make: generated.make,
                 children: (() => {
                     const result = {};
-                    template[name].children ? template[name].children.map(child => {
+                    template[id].children ? template[id].children.map(child => {
                         template[Object.keys(template).find(key => {
-                            if (key === child.name) {
-                                result[child.alias] = {...template[key], name: child.name};
+                            if (key === child.id) {
+                                result[child.alias] = {...template[key], id: child.id};
                                 return true;
                             }
                             return false
