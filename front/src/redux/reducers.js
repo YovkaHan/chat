@@ -1,3 +1,4 @@
+import {reducer as Core} from '../common/core';
 // import Lamp from '../components/custom/Button/redux/reducer';
 // import Panel from '../components/template/Panel/redux/reducer';
 // import Channel from '../components/template/Channel/redux/reducer';
@@ -11,7 +12,8 @@ import produce from "immer";
 
 export default {
     Components: combineReducers({
-        Message: Message(),
+        Core: Core(),
+       // Message: Message(),
         Button: Button()
         // Lamp: Lamp(),
         // Channel: Channel(),

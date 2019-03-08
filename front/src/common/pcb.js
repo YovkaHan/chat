@@ -5,6 +5,7 @@ function pcbGenerate(template) {
         if (template.hasOwnProperty(id)) {
             result = {
                 ...template[id],
+                id,
                 make: generated.make,
                 children: (() => {
                     const result = {};

@@ -10,13 +10,13 @@ export function actionTemplate (sequence, template, divider){
     return result
 }
 
-export function createReducer(cases = () => {}, defaultState = {}, id) {
+export function createReducer(cases = () => {}, defaultState = {}) {
     return (
         state = defaultState,
         action
     ) =>
         produce(state, draft => {
-            if (action && action.type && action.id === id || id === undefined) {
+            if (action && action.type) {
                 cases(action.type)(draft, action.payload, action.id);
             }
         });

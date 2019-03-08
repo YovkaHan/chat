@@ -1,12 +1,44 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from "redux";
-import {actionTemplate, createReducer} from '../redux/reducers';
+import {actionTemplate, createReducer} from '../redux/common';
 import * as R from 'ramda';
+
+/** Сгенерить core id*/
+/** Сгенерить child id*/
+/** Замапить child id*/
+
+const rootIdGenerator = (() => {
+    const root = {};
+    let length = 0;
+
+    const create =()=>{
+        let result = `core${length}`;
+        length++;
+        root[result] = null;
+        return result;
+    };
+
+    const set = (coreId, id) => {
+        if(result.hasOwnProperty(coreId)){
+            root[coreId] = id;
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    return  {
+        create,
+        set
+    };
+})();
+
 /**---------------------TYPES------------------------------*/
 const defaultTypes = {
     INITIALIZE: "INITIALIZE",
     FLAGS: "FLAGS",
+    CREATE: "CREATE",
     FLAGS_COMPLETE: "FLAGS_COMPLETE"
 };
 const _sequence = ["name","root"];
@@ -25,19 +57,24 @@ export function initialize(id) {
 export function flagHandle(id, key, value) {
     return ({type: TYPES.FLAGS, payload: {key, value}, id})
 }
+export function createItem(id, childId) {
+    return ({type: TYPES.CREATE, payload: childId, id})
+}
 /**--------------------REDUCER-------------------------------*/
 const INIT_STATE = {
-    flags: {
-        toggle: false,
-        hover: false
-    },
-    value: ''
+    length: 0
 };
 const cases = (type) => {
     switch (type) {
         case TYPES.FLAGS_COMPLETE: {
             return (draft, payload) => {
                 draft.flags = payload;
+            };
+        }
+        case TYPES.CREATE: {
+            return (draft, payload, id) => {
+                draft.length++;
+                draft[id] = {childId: payload, status: true};
             };
         }
         case TYPES.CHANGE: {
@@ -59,26 +96,75 @@ const cases = (type) => {
         }
     }
 };
-const reducer = function (id) {
-    return createReducer(cases, INIT_STATE, id);
+export const reducer = function () {
+    return createReducer(cases, INIT_STATE);
 };
-export default reducer;
-/**--------------------SAGAS------------------------------------*/
-export default [
-    takeEvery(TYPES.FLAGS, flagHandleComplete),
-];
 
-function* flagHandleComplete({type, payload, id}) {
-    const state = yield select();
+class Core extends React.Component {
 
-    const button = R.clone(state.Components.Button[id]);
-    const {key, value} = payload;
+    constructor(props){
+        super(props);
 
-    if(value !== undefined){
-        button.flags[key] = value;
-    }else{
-        button.flags[key] = !button.flags[key];
+        const {id, createChildItem} = props;
+
+        this.state = {
+            id: rootIdGenerator.create(),
+            status: false
+        };
+
+        createChildItem(this.state.id, id);
     }
 
-    yield put({ type: TYPES.FLAGS_COMPLETE, payload: button.flags, id });
+    componentDidUpdate(props, state){
+        if(!state.status && this.props.items.hasOwnProperty(state.id)){
+            this.setState({status: true})
+        }
+    }
+
+    shouldComponentUpdate() {
+        return !this.state.status;
+    }
+
+    render(){
+        const {status, id} = this.state;
+        const {children, pcb, items} = this.props;
+
+        const child = (c, index) => {
+            const pcbMade = pcb.make(items[id].childId);
+
+            return React.cloneElement(
+                c,
+                {
+                    key: index,
+                    pcbMade,
+                    pcb
+                }
+            )
+        };
+
+        return status ? (
+             <React.Fragment>
+                {
+                    child(children)
+                }
+            </React.Fragment>
+        ) : null
+    }
 }
+
+const mapStateToProps = (state, props) => {
+   return ({
+       items: state.Components.Core
+   })
+};
+
+const mapDispatchers = (dispatch, props) => {
+
+    const {createItem} = require(`../components/`)[props.component].actions;
+
+    return bindActionCreators({
+        createChildItem: (id, childId) => createItem(childId, id),
+    }, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchers)(Core);

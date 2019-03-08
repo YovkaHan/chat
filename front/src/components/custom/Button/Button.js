@@ -14,7 +14,8 @@ class Button extends React.Component {
         className: '',
         rootClass: '',
         value: 'On',
-        disabled: false
+        disabled: false,
+        click: ()=>{}
     };
 
     constructor(props) {
@@ -25,8 +26,6 @@ class Button extends React.Component {
         };
 
         this.handleClick = ::this.handleClick;
-
-        props.createItem(props.id);
     }
 
     async handleClick(e) {
@@ -61,8 +60,7 @@ Button.propTypes = {
 };
 
 const mapStateToProps = (state, props) => {
-    const pcbMade =  props.pcb.make(props.id);
-    const cId = pcbMade.id;
+    const cId = props.pcbMade.id;
     const _object = state.Components.Button[cId];
 
     if(_object) {
@@ -76,12 +74,11 @@ const mapStateToProps = (state, props) => {
 };
 
 const mapDispatchers = (dispatch, props) => {
-    //const pcbMade =  props.pcb.make(props.id);
-    //const cId = pcbMade.id;
+    const cId = props.pcbMade.id;
 
     return bindActionCreators({
         createItem: () => createItem(),
-        //defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
+        defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
         // valueChange: (value) => valueChange(cId, value)

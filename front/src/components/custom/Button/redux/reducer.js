@@ -16,7 +16,6 @@ export const INIT_STATE_ITEM = {
 };
 
 const cases = (type) => {
-    console.log(TYPES);
     switch (type) {
         case TYPES.ITEM_CREATE_COMPLETE: {
             return (draft, payload, id) => {
@@ -30,8 +29,8 @@ const cases = (type) => {
             };
         }
         case TYPES.FLAGS_COMPLETE: {
-            return (draft, payload) => {
-                draft[payload.id].flags = payload;
+            return (draft, payload, id) => {
+                draft[id].flags = payload;
             };
         }
         case TYPES.INITIALIZE: {

@@ -36,8 +36,8 @@ const reduxDevtoolsExtensionOptions = {
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__(reduxDevtoolsExtensionOptions) || compose;
 const sagaMiddleware = createSagaMiddleware();
 // const middleware = process.env.NODE_ENV === 'development' ?
-//     [thunk] :
-//     [thunk];
+//     [thunk, sagaMiddleware] :
+//     [thunk, sagaMiddleware];
 
 const store = createStore(
     combineReducers(reducers),
