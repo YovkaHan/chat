@@ -19,7 +19,7 @@ export default class App extends React.Component {
                     {/*<MessageInput pcb={this.pcb} id={'MessageInput0'}/>*/}
                     {/*/!*<MyPanel pcb={this.pcb}/>*!/*/}
                    {/*<MessageList pcb={this.pcb.make('MessageInput0')}/>*/}
-                   <Button.Component pcb={this.pcb} id={'b0'} component={'Button'}/>
+                   <Button.Component pcb={this.pcb} template={'Button0'} component={'Button'}/>
                    {/*<Message pcb={this.pcb}/>*/}
                 </div>
             </React.Fragment>

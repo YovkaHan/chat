@@ -105,7 +105,7 @@ class Core extends React.Component {
     constructor(props){
         super(props);
 
-        const {id, createChildItem} = props;
+        const {id, template, createChildItem} = props;
 
         this.state = {
             id: rootIdGenerator.create(),
@@ -126,17 +126,16 @@ class Core extends React.Component {
     }
 
     render(){
-        const {status, id} = this.state;
-        const {children, pcb, items} = this.props;
+        const {status, id, madeSet} = this.state;
+        const {children, pcb, items, component, template} = this.props;
 
         const child = (c, index) => {
-            const pcbMade = pcb.make(items[id].childId);
 
             return React.cloneElement(
                 c,
                 {
                     key: index,
-                    pcbMade,
+                    pcbMade: component ? pcb.make(items[id].childId, template) : {},
                     pcb
                 }
             )
@@ -168,3 +167,7 @@ const mapDispatchers = (dispatch, props) => {
 };
 
 export default connect(mapStateToProps, mapDispatchers)(Core);
+
+/**свойство "component" указатель на то что для конкретного компонента должен быть сгенерен pcbMade
+ * если оно не указано то пропускаем этот шаг
+ * */

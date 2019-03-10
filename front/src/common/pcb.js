@@ -1,22 +1,47 @@
 function pcbGenerate(template) {
     const generated = {...template};
-    generated.make = (id) => {
+    generated.make = (id, tName) => {
         let result = undefined;
-        if (template.hasOwnProperty(id)) {
+        if(template){
+            if (template.templateList.hasOwnProperty(tName)) {
+                result = {
+                    ...template.templateList[tName],
+                    id,
+                    makeById: generated.makeById,
+                    makeByTemplateName: generated.makeByTemplateName,
+                    children: (() => {
+                        const result = {};
+
+                        if(template.templateList[tName].children){
+                            template.templateList[tName].children.map(child => {
+                                Object.keys(template.idList).find(key => {
+                                    if (key === child.id) {
+                                        result[child.alias] = {...template.idList[key], id: child.id};
+                                        return true;
+                                    }
+                                    return false
+                                });
+                            })
+                        }
+                        return result;
+                    })()
+                }
+            }
+        } else if (template.idList.hasOwnProperty(id)) {
             result = {
-                ...template[id],
+                ...template.idList[id],
                 id,
                 make: generated.make,
                 children: (() => {
                     const result = {};
-                    template[id].children ? template[id].children.map(child => {
-                        template[Object.keys(template).find(key => {
+                    template.idList[id].children ? template.idList[id].children.map(child => {
+                        Object.keys(template.idList).find(key => {
                             if (key === child.id) {
-                                result[child.alias] = {...template[key], id: child.id};
+                                result[child.alias] = {...template.idList[key], id: child.id};
                                 return true;
                             }
                             return false
-                        })];
+                        })
                     }) : {};
                     return result;
                 })()

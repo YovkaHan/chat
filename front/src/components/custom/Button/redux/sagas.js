@@ -17,6 +17,8 @@ function* createItemHandle({type, id, coreId}) {
     const index = state.Components.Button.length;
     const _id = id ? id : idMake(index);
 
+    console.log(_id);
+
 
     if (coreId !== undefined)
         yield put({type: CTYPES.CREATE, payload:_id, id: coreId});
