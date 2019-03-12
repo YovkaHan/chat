@@ -105,7 +105,8 @@ class Core extends React.Component {
     constructor(props){
         super(props);
 
-        const {id, template, createChildItem} = props;
+        const {createChildItem, core} = props;
+        const {id, component, template, pcb} = core;
 
         this.state = {
             id: rootIdGenerator.create(),
@@ -127,7 +128,8 @@ class Core extends React.Component {
 
     render(){
         const {status, id, madeSet} = this.state;
-        const {children, pcb, items, component, template} = this.props;
+        const {children, items, core} = this.props;
+        const {component, template, pcb} = core;
 
         const child = (c, index) => {
 
@@ -159,7 +161,7 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchers = (dispatch, props) => {
 
-    const {createItem} = require(`../components/`)[props.component].actions;
+    const {createItem} = require(`../components/`)[props.core.component].actions;
 
     return bindActionCreators({
         createChildItem: (id, childId) => createItem(childId, id),

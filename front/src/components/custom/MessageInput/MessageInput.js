@@ -6,7 +6,7 @@ import {initialize} from "./redux/actions";
 import {InputArea, Button} from '../../';
 
 const innerClass = (sufix, mainClass, rootClass) => {
-    return `${mainClass}__${sufix}${rootClass ? ' '+rootClass+'__'+sufix : ''}`.trim()
+    return `${mainClass}__${sufix}${rootClass ? ' ' + rootClass + '__' + sufix : ''}`.trim()
 };
 
 class MessageInput extends React.Component {
@@ -16,12 +16,11 @@ class MessageInput extends React.Component {
         rootClass: ''
     };
 
-    constructor(props){
+    constructor(props) {
         super(props);
 
-        props.initialize(this.props.pcbMaked);
-
-      //  this.handleClick = ::this.handleClick;
+        props.initialize();
+        //  this.handleClick = ::this.handleClick;
     }
 
     // async handleClick(e){
@@ -29,25 +28,25 @@ class MessageInput extends React.Component {
     //     await this.props.click(e);
     // };
 
-    render(){
+    render() {
         const {props, state, handleClick} = this;
-        const {flags, className, rootClass, pcb} = props;
+        const {flags, className, rootClass, pcb, pcbMade} = props;
         const {mayBeSend} = flags;
         const mainClass = 'my-msg-input';
 
-        return(
+        return (
             <div className={`${mainClass} ${className} ${rootClass}`.trim()}>
                 <div className={innerClass('content', mainClass, rootClass)}>
-                    <InputArea
-                        pcb={pcb.make(pcb.children['InputArea'].name)}
+                    <InputArea.Component
+                        core={{pcb, id: pcbMade.children['InputArea'].id, component: 'InputArea'}}
                         label={null}
                         rootClass={'my-ia'}
                     />
-                    <Button
-                        pcb={pcb.make(pcb.children['Send'].name)}
+                    <Button.Component
+                        core={{pcb, id: pcbMade.children['Send'].id, component: 'Button'}}
                         value={'Send'}
                         disabled={!mayBeSend}
-                        className={`${!mayBeSend? 'my-btn--disabled': ''}`.trim()}
+                        className={`${!mayBeSend ? 'my-btn--disabled' : ''}`.trim()}
                         rootClass={'my-btn'}
                     />
                 </div>
@@ -64,13 +63,11 @@ MessageInput.propTypes = {
 
 
 const mapStateToProps = (state, props) => {
-    const pcbMade =  props.pcb.make(props.id);
-    const cId = pcbMade.id;
+    const cId = props.pcbMade.id;
     const _object = state.Components.MessageInput[cId];
 
-    if(_object) {
+    if (_object) {
         return ({
-            pcbMade,
             flags: _object.flags,
             value: props.value ? props.value : _object.value
         })
@@ -80,15 +77,14 @@ const mapStateToProps = (state, props) => {
 };
 
 const mapDispatchers = (dispatch, props) => {
-    const pcbMade =  props.pcb.make(props.id);
-    const cId = pcbMade.id;
+    const cId = props.pcbMade.id;
 
     return bindActionCreators({
+        initialize: () => initialize(cId, props.pcbMade),
         // defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
-        initialize: (pcb) => initialize(cId, pcb),
-        onChange: (value) => dataChange(cId, value)
+        //onChange: (value) => dataChange(cId, value)
     }, dispatch);
 };
 

@@ -1,11 +1,17 @@
 import {select, takeEvery, put, take, fork} from 'redux-saga/effects'
-import {TYPES} from "./types";
+import {TYPES, name} from "./types";
 import {TYPES as IA_TYPES} from '../../InputArea/redux/types';
 import * as R from "ramda";
+import {INIT_STATE_ITEM} from "../../Button/redux/reducer";
+import {TYPES as CTYPES} from "../../../../common/core";
+
+const idMake = (index) => name + index;
 
 export default [
     takeEvery(TYPES.FLAGS, flagHandleComplete),
-    takeEvery(TYPES.INITIALIZE, initiateTask)
+    takeEvery(TYPES.INITIALIZE, initiateTask),
+    takeEvery(TYPES.ITEM_CREATE, createItemHandle),
+    takeEvery(TYPES.ITEM_DELETE, deleteItemHandle),
 ];
 
 function* inputAreaListenSaga(pcb) {
@@ -31,6 +37,24 @@ function* inputAreaListenSaga(pcb) {
 
 function* initiateTask({type, pcb, id}) {
     yield fork(inputAreaListenSaga, pcb, id);
+}
+
+function* createItemHandle({type, id, coreId}) {
+    const state = yield select();
+    const index = state.Components.MessageInput.length;
+    const _id = id ? id : idMake(index);
+
+    console.log(_id);
+
+
+    if (coreId !== undefined)
+        yield put({type: CTYPES.CREATE, payload:_id, id: coreId});
+
+    yield put({type: TYPES.ITEM_CREATE_COMPLETE, payload: R.clone(INIT_STATE_ITEM), id: _id});
+}
+
+function* deleteItemHandle({type, id}) {
+    yield put({type: TYPES.ITEM_DELETE_COMPLETE, id});
 }
 
 function* flagHandleComplete({type, payload, id}) {

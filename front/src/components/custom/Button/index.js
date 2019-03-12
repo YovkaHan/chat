@@ -6,6 +6,9 @@ import actions from './redux/actions';
 import './Button.scss';
 
 export default {
-    Component : (props)=> (<Core {...props}><Button/></Core>),
+    Component : (props)=> {
+        console.log({...props});
+        return (<Core {...props}><Button {...props}/></Core>)
+    },
     actions
 }

@@ -1,7 +1,7 @@
 import {select, takeEvery, put} from 'redux-saga/effects'
+import * as R from "ramda";
 import {TYPES, name} from "./types";
 import {TYPES as CTYPES} from '../../../../common/core';
-import * as R from "ramda";
 import {INIT_STATE_ITEM} from './reducer';
 
 const idMake = (index) => name + index;

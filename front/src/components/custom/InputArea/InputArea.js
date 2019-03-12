@@ -47,11 +47,11 @@ class InputArea extends React.Component {
             className,
             rootClass,
             width,
-            pcb,
+            pcbMade,
             placeholder,
             data
         } = props;
-        const {id} = pcb;
+        const {id} = pcbMade;
         const mainClass = 'c-input-area';
 
         return (
@@ -91,7 +91,7 @@ InputArea.propTypes = {
 };
 
 const mapStateToProps = (state, props) => {
-    const cId = props.pcb.id;
+    const cId = props.pcbMade.id;
     const _object = state.Components.InputArea[cId];
 
     return ({
@@ -102,7 +102,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const mapDispatchers = (dispatch, props) => {
-    const cId = props.pcb.id;
+    const cId = props.pcbMade.id;
 
     return bindActionCreators({
         //defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),

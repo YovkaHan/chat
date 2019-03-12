@@ -37,8 +37,8 @@ export const pcbTemplate = {
         msgI0: {
             component: 'MessageInput',
             children:  [
-                {alias: 'InputArea', id: 'InputArea0'},
-                {alias: 'Send', id: 'Button0'}
+                {alias: 'InputArea', id: 'iA0'},
+                {alias: 'Send', id: 'b1'}
             ],
         },
         msgL0: {
