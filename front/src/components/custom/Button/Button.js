@@ -1,11 +1,11 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
-import {bindActionCreators} from "redux";
-import {flagHandle, createItem} from "./redux/actions";
+import {bindActionCreators} from 'redux';
+import {flagHandle, createItem, valueChange} from './redux/actions';
 
 const innerClass = (suffix, mainClass, rootClass) => {
-    return `${mainClass}__${suffix} ${rootClass ? rootClass + '__' + suffix : ''}`
+    return `${mainClass}__${suffix} ${rootClass ? rootClass + '__' + suffix : ''}`.trim()
 };
 
 class Button extends React.Component {
@@ -24,6 +24,7 @@ class Button extends React.Component {
         this.state = {
             width: 200
         };
+        this.props.valueChange(props.value);
 
         this.handleClick = ::this.handleClick;
     }
@@ -42,7 +43,10 @@ class Button extends React.Component {
         const mainClass = 'c-button';
 
         return (
-            <div className={`${mainClass} ${disabled ? mainClass+'--disabled' : ''} ${className} ${rootClass}`} onClick={handleClick}>
+            <div
+                className={`${mainClass} ${disabled ? mainClass+'--disabled' : ''} ${className} ${rootClass}`.trim()}
+                onClick={handleClick}
+            >
                 <div className={innerClass('content', mainClass, rootClass)} style={{width}}>
                     <div className={innerClass('value', mainClass, rootClass)}>{value}</div>
                 </div>
@@ -81,7 +85,7 @@ const mapDispatchers = (dispatch, props) => {
         defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
-        // valueChange: (value) => valueChange(cId, value)
+        valueChange: (value) => valueChange(cId, value)
     }, dispatch);
 };
 

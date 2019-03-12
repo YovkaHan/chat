@@ -20,7 +20,6 @@ export const INIT_STATE_ITEM = {
 };
 
 const cases = (type) => {
-    console.log(TYPES);
     switch (type) {
         case TYPES.ITEM_CREATE_COMPLETE: {
             return (draft, payload, id) => {

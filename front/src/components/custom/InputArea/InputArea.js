@@ -5,7 +5,7 @@ import {bindActionCreators} from "redux";
 import {flagHandle, dataChange} from "./redux/actions";
 
 const innerClass = (sufix, mainClass, rootClass) => {
-    return `${mainClass}__${sufix} ${rootClass ? rootClass + '__' + sufix : ''}`
+    return `${mainClass}__${sufix} ${rootClass ? rootClass + '__' + sufix : ''}`.trim()
 };
 
 class InputArea extends React.Component {

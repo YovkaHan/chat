@@ -2,8 +2,9 @@ import {select, takeEvery, put} from 'redux-saga/effects'
 import {TYPES, name} from "./types";
 import * as R from "ramda";
 import {INIT_STATE_ITEM} from './reducer';
+import {TYPES as CTYPES} from "../../../../common/core";
 
-export const idMake = (index) => name+index;
+export const idMake = (index) => name + index;
 
 export default [
     takeEvery(TYPES.FLAGS, flagHandleComplete),
@@ -11,11 +12,15 @@ export default [
     takeEvery(TYPES.ITEM_DELETE, deleteItemHandle),
 ];
 
-function* createItemHandle({type}) {
+function* createItemHandle({type, id, coreId}) {
     const state = yield select();
     const index = state.Components.Message.length;
+    const _id = id ? id : idMake(index);
 
-    return yield put({ type: TYPES.ITEM_CREATE_COMPLETE, payload: R.clone(INIT_STATE_ITEM), id: idMake(index)});
+    if (coreId !== undefined)
+        yield put({type: CTYPES.CREATE, payload:_id, id: coreId});
+
+    yield put({type: TYPES.ITEM_CREATE_COMPLETE, payload: R.clone(INIT_STATE_ITEM), id: _id});
 }
 
 function* deleteItemHandle({type, id}) {
@@ -25,7 +30,7 @@ function* deleteItemHandle({type, id}) {
 function* flagHandleComplete({type, payload, id}) {
     const state = yield select();
 
-    const _object = R.clone(state.Components.Button[id]);
+    const _object = R.clone(state.Components.Message[id]);
     const {key, value} = payload;
 
     if(value !== undefined){

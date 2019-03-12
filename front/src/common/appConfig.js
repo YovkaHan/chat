@@ -47,11 +47,10 @@ export const pcbTemplate = {
     },
     templateList: {
         Button0: {
-            component: 'Button',
-            children: [
-                {alias: 'ButtonA', id: 'b0'},
-                {alias: 'ButtonB', id: 'b1'}
-            ]
+            component: 'Button'
+        },
+        Message0: {
+            component: 'Message'
         }
     }
 };

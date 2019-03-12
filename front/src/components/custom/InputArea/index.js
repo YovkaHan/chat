@@ -6,6 +6,6 @@ import actions from './redux/actions';
 import './InputArea.scss';
 
 export default {
-    Component : (props)=> (<Core {...props}><InputArea {...props}/></Core>),
+    Component : (props)=> <Core {...props}><InputArea/></Core>,
     actions
 }

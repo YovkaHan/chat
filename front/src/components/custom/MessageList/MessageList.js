@@ -40,12 +40,14 @@ class MessageList extends React.Component {
         const {flags, className, rootClass, pcb, list} = props;
         const mainClass = 'my-msg-list';
 
-        console.log(pcb);
-
         return(
             <div className={`${mainClass} ${className} ${rootClass}`.trim()}>
                 <div className={innerClass('content', mainClass, rootClass)}>
-                    <List data={list} Item={Message} itemProps={{pcb}}/>
+                    <List
+                        data={list}
+                        Item={Message.Component}
+                        itemProps={{core:{pcb, template: 'Message0', component: 'Message'}}}
+                    />
                 </div>
             </div>
         )
@@ -61,13 +63,12 @@ MessageList.propTypes = {
 
 
 const mapStateToProps = (state, props) => {
-    const cId = props.pcb.id;
+    const cId = props.pcbMade.id;
     const _object = state.Components.MessageList[cId];
 
     if(_object) {
         return ({
-            flags: _object.flags,
-            value: props.value ? props.value : _object.value
+            flags: _object.flags
         })
     } else {
         return {};
@@ -75,7 +76,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const mapDispatchers = (dispatch, props) => {
-    const cId = props.pcb.id;
+    const cId = props.pcbMade.id;
 
     return bindActionCreators({
         initialize: (pcb) => initialize(cId, pcb),

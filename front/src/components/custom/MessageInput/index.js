@@ -6,6 +6,6 @@ import actions from './redux/actions';
 import './MessageInput.scss';
 
 export default {
-    Component : (props)=> (<Core {...props}><MessageInput {...props}/></Core>),
+    Component : (props)=> <Core {...props}><MessageInput/></Core>,
     actions
 }

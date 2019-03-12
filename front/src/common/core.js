@@ -122,9 +122,9 @@ class Core extends React.Component {
         }
     }
 
-    shouldComponentUpdate() {
-        return !this.state.status;
-    }
+    // shouldComponentUpdate() {
+    //     return !this.state.status;
+    // }
 
     render(){
         const {status, id, madeSet} = this.state;
@@ -138,7 +138,15 @@ class Core extends React.Component {
                 {
                     key: index,
                     pcbMade: component ? pcb.make(items[id].childId, template) : {},
-                    pcb
+                    pcb,
+                    ...(()=>{
+                        const result = {};
+                        Object.keys(this.props).map(key=>{
+                            if(key !== 'core')
+                                result[key] = this.props[key];
+                        });
+                        return result;
+                    })()
                 }
             )
         };

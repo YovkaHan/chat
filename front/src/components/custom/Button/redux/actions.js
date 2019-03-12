@@ -9,6 +9,10 @@ export function flagHandle(id, key, value) {
     return ({type: TYPES.FLAGS, payload: {key, value}, id})
 }
 
+export function valueChange(id, value) {
+    return ({type: TYPES.CHANGE, payload: {key: 'value', value}, id})
+}
+
 export function createItem(id, coreId) {
     return ({type: TYPES.ITEM_CREATE, coreId, id})
 }

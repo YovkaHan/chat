@@ -7,8 +7,7 @@ import './Button.scss';
 
 export default {
     Component : (props)=> {
-        console.log({...props});
-        return (<Core {...props}><Button {...props}/></Core>)
+        return (<Core {...props}><Button/></Core>)
     },
     actions
 }

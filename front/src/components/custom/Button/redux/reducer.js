@@ -12,7 +12,7 @@ export const INIT_STATE_ITEM = {
         toggle: false,
         hover: false
     },
-    value: ''
+    value: undefined
 };
 
 const cases = (type) => {
@@ -31,6 +31,11 @@ const cases = (type) => {
         case TYPES.FLAGS_COMPLETE: {
             return (draft, payload, id) => {
                 draft[id].flags = payload;
+            };
+        }
+        case TYPES.CHANGE: {
+            return (draft, payload, id) => {
+                draft[id][payload.key] = payload.value;
             };
         }
         case TYPES.INITIALIZE: {

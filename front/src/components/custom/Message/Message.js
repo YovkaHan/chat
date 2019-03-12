@@ -25,8 +25,6 @@ class Message extends React.Component {
         super(props);
 
         this.handleClick = ::this.handleClick;
-
-        console.log(props.createItem());
     }
 
     async handleClick(e) {
@@ -42,7 +40,10 @@ class Message extends React.Component {
         const mainClass = 'c-message';
 
         return (
-            <div className={`${mainClass}${disabled ? ` ${mainClass}--disabled` : ''} ${className} ${rootClass}`.trim()} onClick={handleClick}>
+            <div
+                className={`${mainClass}${disabled ? ` ${mainClass}--disabled` : ''} ${className} ${rootClass}`.trim()}
+                onClick={handleClick}
+            >
                 <div className={innerClass('content', mainClass, rootClass)}>
                     <div className={innerClass('from', mainClass, rootClass)}>{from}</div>
                     <div className={innerClass('msg', mainClass, rootClass)}>{msg}</div>
@@ -64,7 +65,7 @@ Message.propTypes = {
 };
 
 const mapStateToProps = (state, props) => {
-    const cId = props.pcb.id;
+    const cId = props.pcbMade.id;
     const _object = state.Components.Message[cId];
 
     if(_object) {
@@ -78,7 +79,7 @@ const mapStateToProps = (state, props) => {
 };
 
 const mapDispatchers = (dispatch, props) => {
-    const cId = props.pcb.id;
+    const cId = props.pcbMade.id;
 
     return bindActionCreators({
         defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
