@@ -43,6 +43,13 @@ export const pcbTemplate = {
         },
         msgL0: {
             component: 'MessageList'
+        },
+        chat0: {
+            component: 'Chat',
+            children:  [
+                {alias: 'Messages', id: 'msgL0'},
+                {alias: 'Input', id: 'msgI0'},
+            ],
         }
     },
     templateList: {
