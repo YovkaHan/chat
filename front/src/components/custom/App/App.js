@@ -17,6 +17,7 @@ export default class App extends React.Component {
             <React.Fragment>
                 <div className={`the-app`}>
                     <Chat.Component rootClass={`a-chat`} core={{pcb: this.pcb, id: 'chat0', component: 'Chat'}}/>
+                    <Chat.Component rootClass={`a-chat`} core={{pcb: this.pcb, id: 'chat1', component: 'Chat'}}/>
                 </div>
             </React.Fragment>
         )

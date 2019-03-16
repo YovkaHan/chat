@@ -20,14 +20,41 @@ class List extends React.Component {
         children: []
     };
 
-    // constructor(props){
-    //     super(props);
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            dataLength: props.data.length,
+            status: 1
+        };
+
+        this.listElement = React.createRef();
+    }
+
+    // componentDidUpdate() {
+    //     if (this.state.dataLength !== this.props.data.length) {
+    //         this.setState({
+    //             dataLength: this.props.data.length,
+    //             status: 0
+    //         })
+    //     }
+    //     if (!this.state.status && this.listElement.current) {
+    //         console.log(this.listElement.current.scrollTop, this.listElement.current.scrollHeight);
+    //         this.listElement.current.scrollTop = this.listElement.current.scrollHeight;
+    //         console.log(this.listElement.current.scrollTop, this.listElement.current.scrollHeight);
+    //         this.setState({
+    //             status: 1
+    //         })
+    //     }
     // }
 
     render() {
         const {props, state, handleClick} = this;
         const {className, rootClass, data, children, Item, itemProps} = props;
         const mainClass = 'c-list';
+
+        if (this.listElement.current)
+            this.listElement.current.scrollTop = this.listElement.current.scrollHeight;
 
         const child = (c, index) => (
             React.cloneElement(
@@ -41,7 +68,7 @@ class List extends React.Component {
 
         return (
             <div className={`${mainClass} ${className} ${rootClass}`.trim()}>
-                <div className={innerClass('content', mainClass, rootClass)}>
+                <div className={innerClass('content', mainClass, rootClass)} ref={this.listElement}>
                     {data.map(i => (
                         <Item
                             {...itemProps}

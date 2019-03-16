@@ -12,6 +12,7 @@ export default [
     takeEvery(TYPES.INITIALIZE, initiateTask),
     takeEvery(TYPES.ITEM_CREATE, createItemHandle),
     takeEvery(TYPES.ITEM_DELETE, deleteItemHandle),
+    takeEvery(TYPES.SEND_MSG, sendingMsg)
 ];
 
 function* inputAreaListenSaga(pcb) {
@@ -70,4 +71,15 @@ function* flagHandleComplete({type, payload, id}) {
     }
 
     yield put({ type: TYPES.FLAGS_COMPLETE, payload: _object.flags, id });
+}
+
+function* sendingMsg({type, pcb, id}) {
+    const {MsgConstructor} = pcb.relations;
+    const {InputArea} = pcb.children;
+    const _MCTypes = require(`../../${MsgConstructor.component}`).default.types;
+
+    const state = yield select();
+    const msg = state.Components[InputArea.component][InputArea.id].data;
+
+    yield put({ type: _MCTypes.MSG_MAKE, payload: msg, pcb, id: MsgConstructor.id });
 }

@@ -44,7 +44,7 @@ class Button extends React.Component {
 
         return (
             <div
-                className={`${mainClass} ${disabled ? mainClass+'--disabled' : ''} ${className} ${rootClass}`.trim()}
+                className={`${mainClass} ${disabled ? mainClass+'--disabled' : ''} ${className} ${rootClass} ${disabled ? rootClass+'--disabled' : ''}`.trim()}
                 onClick={handleClick}
             >
                 <div className={innerClass('content', mainClass, rootClass)} style={{width}}>

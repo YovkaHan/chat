@@ -47,7 +47,7 @@ class Message extends React.Component {
                 <div className={innerClass('content', mainClass, rootClass)}>
                     <div className={innerClass('from', mainClass, rootClass)}>{from}</div>
                     <div className={innerClass('msg', mainClass, rootClass)}>{msg}</div>
-                    <div className={innerClass('date', mainClass, rootClass)}>{moment(date).format('DD.mm.YYYY, HH:mm:ss a')}</div>
+                    <div className={innerClass('date', mainClass, rootClass)}>{moment(date).format('DD.MM.YYYY, HH:mm:ss a')}</div>
                 </div>
             </div>
         )

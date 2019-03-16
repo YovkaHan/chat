@@ -104,6 +104,15 @@
     .send {
       margin: 10px 0 0 0;
 
+      &--disabled {
+        .send {
+
+          &__content {
+            background: rgba(171, 175, 255, 0.97) !important;
+          }
+        }
+      }
+
       &__content {
         width: auto !important;
         min-width: 70px !important;
@@ -116,15 +125,6 @@
       }
       &__value {
         color: white;
-      }
-
-      &--disabled {
-        .my-btn {
-
-          &__content {
-            background: rgba(171, 175, 255, 0.97) !important;
-          }
-        }
       }
 
       &:hover {

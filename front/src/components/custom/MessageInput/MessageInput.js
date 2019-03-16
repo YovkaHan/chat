@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from "redux";
-import {initialize} from "./redux/actions";
+import {initialize, sendMsg} from "./redux/actions";
 
 const innerClass = (sufix, mainClass, rootClass) => {
     return `${mainClass}__${sufix}${rootClass ? ' ' + rootClass + '__' + sufix : ''}`.trim()
@@ -34,7 +34,7 @@ class MessageInput extends React.Component {
 
     render() {
         const {props, state, handleClick} = this;
-        const {flags, className, rootClass, pcb, pcbMade} = props;
+        const {flags, className, rootClass, pcb, pcbMade, sendMsg} = props;
         const {mayBeSend} = flags;
         const mainClass = 'my-msg-input';
 
@@ -55,6 +55,7 @@ class MessageInput extends React.Component {
                         disabled={!mayBeSend}
                         className={`${!mayBeSend ? 'my-btn--disabled' : ''}`.trim()}
                         rootClass={'send'}
+                        click={sendMsg}
                     />
                 </div>
             </div>
@@ -70,8 +71,10 @@ MessageInput.propTypes = {
 
 
 const mapStateToProps = (state, props) => {
+    // const {InputArea} = props.pcbMade.children;
     const cId = props.pcbMade.id;
     const _object = state.Components.MessageInput[cId];
+    // const _msg = state.Components[InputArea.component][InputArea.id].data;
 
     if (_object) {
         return ({
@@ -88,6 +91,7 @@ const mapDispatchers = (dispatch, props) => {
 
     return bindActionCreators({
         initialize: () => initialize(cId, props.pcbMade),
+        sendMsg: () => sendMsg(cId, props.pcbMade)
         // defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),

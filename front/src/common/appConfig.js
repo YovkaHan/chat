@@ -34,12 +34,35 @@ export const pcbTemplate = {
             component: 'InputArea',
             config: {from: 'ch1', to: 'ch0'}
         },
+        iA1: {
+            component: 'InputArea',
+            config: {from: 'ch1', to: 'ch0'}
+        },
         msgI0: {
             component: 'MessageInput',
             children:  [
                 {alias: 'InputArea', id: 'iA0'},
                 {alias: 'Send', id: 'b1'}
             ],
+            relations: {
+                MsgConstructor: {
+                    id: 'chat0',
+                    component: 'Chat'
+                },
+            },
+        },
+        msgI1: {
+            component: 'MessageInput',
+            children:  [
+                {alias: 'InputArea', id: 'iA1'},
+                {alias: 'Send', id: 'b0'}
+            ],
+            relations: {
+                MsgConstructor: {
+                    id: 'chat1',
+                    component: 'Chat'
+                },
+            },
         },
         msgL0: {
             component: 'MessageList',
@@ -50,12 +73,36 @@ export const pcbTemplate = {
                 },
             },
         },
+        msgL1: {
+            component: 'MessageList',
+            relations: {
+                List: {
+                    id: 'chat1',
+                    component: 'Chat'
+                },
+            },
+        },
         chat0: {
             component: 'Chat',
             children:  [
                 {alias: 'Messages', id: 'msgL0'},
                 {alias: 'Input', id: 'msgI0'},
             ],
+            config: {
+                from: 'A',
+                to: 'B'
+            }
+        },
+        chat1: {
+            component: 'Chat',
+            children:  [
+                {alias: 'Messages', id: 'msgL1'},
+                {alias: 'Input', id: 'msgI1'},
+            ],
+            config: {
+                from: 'A',
+                to: 'B'
+            }
         }
     },
     templateList: {

@@ -17,6 +17,10 @@ export function deleteItem(id) {
     return ({type: TYPES.ITEM_DELETE, id})
 }
 
+export function sendMsg(id, pcb) {
+    return ({type: TYPES.SEND_MSG, pcb, id})
+}
+
 export default {
     initialize,
     flagHandle,

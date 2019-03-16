@@ -17,30 +17,35 @@ export const INIT_STATE_ITEM = {
         {
             id: 'm1551792177575m0',
             from: 'TestFrom',
+            to: 'TestTo',
             msg: 'Hello. My name is Test and this is test-message!',
             date: 1551792177575
         },
         {
             id: 'm1551792177575m1',
-            from: 'TestFrom1',
+            from: 'TestFrom',
+            to: 'TestTo',
             msg: 'Hello. My name is Test and this is test-message!',
             date: 1551792177575
         },
         {
             id: 'm1551792177575m2',
-            from: 'TestFrom2',
+            from: 'TestFrom',
+            to: 'TestTo',
             msg: 'Hello. My name is Test and this is test-message!',
             date: 1551792177575
         },
         {
             id: 'm1551792177575m3',
-            from: 'TestFrom3',
+            from: 'TestFrom',
+            to: 'TestTo',
             msg: 'Hello. My name is Test and this is test-message!',
             date: 1551792177575
         },
         {
             id: 'm1551792177575m4',
-            from: 'TestFrom4',
+            from: 'TestFrom',
+            to: 'TestTo',
             msg: 'Hello. My name is Test and this is test-message!',
             date: 1551792177575
         }
@@ -77,6 +82,11 @@ const cases = (type) => {
                 Object.keys(_initClone).map(d => {
                     draft[d] = _initClone[d];
                 });
+            };
+        }
+        case TYPES.MSG_MAKE_COMPLETE: {
+            return (draft, payload, id) => {
+                draft[id].buffer.push(payload)
             };
         }
         default : {

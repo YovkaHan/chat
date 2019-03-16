@@ -69,11 +69,12 @@ const mapStateToProps = (state, props) => {
 
     const _object = state.Components.MessageList[cId];
     const _list = state.Components[List.component][List.id].list;
+    const _buffer = state.Components[List.component][List.id].buffer;
 
     if(_object) {
         return ({
             flags: _object.flags,
-            list: _list
+            list: [..._list, ..._buffer]
         })
     } else {
         return {};
