@@ -1,4 +1,4 @@
-import produce from "immer/dist/immer";
+import produce from 'immer';
 
 export function actionTemplate (sequence, template, divider){
     const result = {};

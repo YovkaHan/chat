@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from "redux";
 import {initialize} from "./redux/actions";
-import {InputArea, Button} from '../../';
 
 const innerClass = (sufix, mainClass, rootClass) => {
     return `${mainClass}__${sufix}${rootClass ? ' ' + rootClass + '__' + sufix : ''}`.trim()
@@ -20,13 +19,18 @@ class MessageInput extends React.Component {
         super(props);
 
         props.initialize();
+
+        this.madeChildren = {
+            InputArea: null,
+            Send: null
+        };
+        Object.keys(props.pcbMade.children).map(c=>{
+            const name = props.pcbMade.children[c].component;
+
+            this.madeChildren[c] = require('../../')[name].Component;
+        });
         //  this.handleClick = ::this.handleClick;
     }
-
-    // async handleClick(e){
-    //     await this.props.defaultClick(e);
-    //     await this.props.click(e);
-    // };
 
     render() {
         const {props, state, handleClick} = this;
@@ -34,16 +38,19 @@ class MessageInput extends React.Component {
         const {mayBeSend} = flags;
         const mainClass = 'my-msg-input';
 
+        const InputArea = this.madeChildren.InputArea;
+        const Send = this.madeChildren.Send;
+
         return (
             <div className={`${mainClass} ${className} ${rootClass}`.trim()}>
                 <div className={innerClass('content', mainClass, rootClass)}>
-                    <InputArea.Component
-                        core={{pcb, id: pcbMade.children['InputArea'].id, component: 'InputArea'}}
+                    <InputArea
+                        core={{pcb, id: pcbMade.children['InputArea'].id, component: pcbMade.children['InputArea'].component}}
                         label={null}
                         rootClass={'my-ia'}
                     />
-                    <Button.Component
-                        core={{pcb, id: pcbMade.children['Send'].id, component: 'Button'}}
+                    <Send
+                        core={{pcb, id: pcbMade.children['Send'].id, component: pcbMade.children['Send'].component}}
                         value={'Send'}
                         disabled={!mayBeSend}
                         className={`${!mayBeSend ? 'my-btn--disabled' : ''}`.trim()}

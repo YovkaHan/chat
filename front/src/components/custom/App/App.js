@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, MessageInput, Message, MessageList} from '../../';
+import {Button, MessageInput, Message, MessageList, Chat} from '../../';
 import {pcbGenerate} from '../../../common/pcb';
 import {pcbTemplate} from '../../../common/appConfig';
 
@@ -18,8 +18,7 @@ export default class App extends React.Component {
                 <div className={`the-app`}>
                     <MessageList.Component core={{pcb: this.pcb, id: 'msgL0', component: 'MessageList'}}/>
                     <MessageInput.Component core={{pcb: this.pcb, id: 'msgI0', component: 'MessageInput'}}/>
-                    {/*/!*<MyPanel pcb={this.pcb}/>*!/*/}
-                    <Button.Component core={{pcb: this.pcb, template: 'Button0', component: 'Button'}}/>
+                    {/*<Chat.Component core={{pcb: this.pcb, id: 'chat0', component: 'Chat'}}/>*/}
                     {/*<Message.Component core={{pcb: this.pcb, template: 'Message0', component: 'Message'}}/>*/}
                 </div>
             </React.Fragment>
