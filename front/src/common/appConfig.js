@@ -42,7 +42,13 @@ export const pcbTemplate = {
             ],
         },
         msgL0: {
-            component: 'MessageList'
+            component: 'MessageList',
+            relations: {
+                List: {
+                    id: 'chat0',
+                    component: 'Chat'
+                },
+            },
         },
         chat0: {
             component: 'Chat',

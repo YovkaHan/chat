@@ -13,8 +13,6 @@ class Chat extends React.Component {
     static defaultProps = {
         className: '',
         rootClass: '',
-        value: 'On',
-        disabled: false,
         click: ()=>{}
     };
 
@@ -22,9 +20,18 @@ class Chat extends React.Component {
         super(props);
 
         this.state = {
-            width: 200
+            dummy: ''
         };
-        this.props.valueChange(props.value);
+
+        this.madeChildren = {
+            Messages: null,
+            Input: null
+        };
+        Object.keys(props.pcbMade.children).map(c=>{
+            const name = props.pcbMade.children[c].component;
+
+            this.madeChildren[c] = require('../../')[name].Component;
+        });
 
         this.handleClick = ::this.handleClick;
     }
@@ -38,27 +45,21 @@ class Chat extends React.Component {
 
     render() {
         const {props, state, handleClick} = this;
-        const {className, rootClass, disabled} = props;
+        const {className, rootClass, pcb, pcbMade} = props;
+        const {Messages, Input} = this.madeChildren;
         const {dummy} = state;
         const mainClass = 'c-chat';
 
         return (
-            <div
-                className={`${mainClass} ${disabled ? mainClass+'--disabled' : ''} ${className} ${rootClass}`.trim()}
-                onClick={handleClick}
-            >
+            <div className={`${mainClass} ${className} ${rootClass}`.trim()} onClick={handleClick}>
                 <div className={innerClass('content', mainClass, rootClass)}>
-                    <InputArea.Component
-                        core={{pcb, id: pcbMade.children['InputArea'].id, component: 'InputArea'}}
-                        label={null}
-                        rootClass={'my-ia'}
+                    <Messages
+                        core={{pcb, id: pcbMade.children['Messages'].id, component: pcbMade.children['Messages'].component}}
+                        rootClass={`msgs`}
                     />
-                    <Button.Component
-                        core={{pcb, id: pcbMade.children['Send'].id, component: 'Button'}}
-                        value={'Send'}
-                        disabled={!mayBeSend}
-                        className={`${!mayBeSend ? 'my-btn--disabled' : ''}`.trim()}
-                        rootClass={'my-btn'}
+                    <Input
+                        core={{pcb, id: pcbMade.children['Input'].id, component: pcbMade.children['Input'].component}}
+                        rootClass={`inpt-msg`}
                     />
                 </div>
             </div>
@@ -69,14 +70,12 @@ class Chat extends React.Component {
 Chat.propTypes = {
     className: PropTypes.string,
     rootClass: PropTypes.string,
-    value: PropTypes.string,
-    disabled: PropTypes.bool,
     pcb: PropTypes.object
 };
 
 const mapStateToProps = (state, props) => {
     const cId = props.pcbMade.id;
-    const _object = state.Components.Button[cId];
+    const _object = state.Components.Chat[cId];
 
     if(_object) {
         return ({

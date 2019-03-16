@@ -13,7 +13,38 @@ export const INIT_STATE_ITEM = {
         hover: false,
         status: false
     },
-    list: [],
+    list: [
+        {
+            id: 'm1551792177575m0',
+            from: 'TestFrom',
+            msg: 'Hello. My name is Test and this is test-message!',
+            date: 1551792177575
+        },
+        {
+            id: 'm1551792177575m1',
+            from: 'TestFrom1',
+            msg: 'Hello. My name is Test and this is test-message!',
+            date: 1551792177575
+        },
+        {
+            id: 'm1551792177575m2',
+            from: 'TestFrom2',
+            msg: 'Hello. My name is Test and this is test-message!',
+            date: 1551792177575
+        },
+        {
+            id: 'm1551792177575m3',
+            from: 'TestFrom3',
+            msg: 'Hello. My name is Test and this is test-message!',
+            date: 1551792177575
+        },
+        {
+            id: 'm1551792177575m4',
+            from: 'TestFrom4',
+            msg: 'Hello. My name is Test and this is test-message!',
+            date: 1551792177575
+        }
+    ],
     buffer: []
 };
 
@@ -22,7 +53,7 @@ const cases = (type) => {
         case TYPES.ITEM_CREATE_COMPLETE: {
             return (draft, payload, id) => {
                 draft[id] = payload;
-                draft.length = draft.length+1;
+                draft.length = draft.length + 1;
             };
         }
         case TYPES.ITEM_DELETE_COMPLETE: {

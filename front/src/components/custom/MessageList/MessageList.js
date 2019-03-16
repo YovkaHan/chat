@@ -15,6 +15,7 @@ class MessageList extends React.Component {
         className: '',
         rootClass: '',
         list: [{
+            id: 'm1551792177575m0',
             from: 'TestFrom',
             createItem: () => {console.log('createItem function')},
             msg: 'Hello. My name is Test and this is test-message!',
@@ -64,11 +65,15 @@ MessageList.propTypes = {
 
 const mapStateToProps = (state, props) => {
     const cId = props.pcbMade.id;
+    const {List} = props.pcbMade.relations;
+
     const _object = state.Components.MessageList[cId];
+    const _list = state.Components[List.component][List.id].list;
 
     if(_object) {
         return ({
-            flags: _object.flags
+            flags: _object.flags,
+            list: _list
         })
     } else {
         return {};

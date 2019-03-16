@@ -47,14 +47,14 @@ class MessageInput extends React.Component {
                     <InputArea
                         core={{pcb, id: pcbMade.children['InputArea'].id, component: pcbMade.children['InputArea'].component}}
                         label={null}
-                        rootClass={'my-ia'}
+                        rootClass={'input-area'}
                     />
                     <Send
                         core={{pcb, id: pcbMade.children['Send'].id, component: pcbMade.children['Send'].component}}
                         value={'Send'}
                         disabled={!mayBeSend}
                         className={`${!mayBeSend ? 'my-btn--disabled' : ''}`.trim()}
-                        rootClass={'my-btn'}
+                        rootClass={'send'}
                     />
                 </div>
             </div>

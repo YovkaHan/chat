@@ -1,0 +1,140 @@
+
+.a-chat {
+  display: inline-flex;
+
+  &__content {
+    width: 600px;
+    height: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .msgs {
+    width: 100%;
+    height: 60%;
+
+    &__content {
+      width: 100%;
+      height: 100%;
+      padding-bottom: 20px;
+    }
+
+    .c-list {
+      width: 100%;
+      height: 100%;
+
+      &__content {
+        width: 100%;
+        height: 100%;
+        background: #84908f;
+        padding: 10px;
+        min-width: 600px;
+        overflow-y: scroll;
+      }
+
+      &__item {
+        margin: 10px;
+        flex-shrink: 0;
+      }
+    }
+
+    .c-message {
+      position: relative;
+
+      &__content {
+        border: none;
+        border-radius: 15px;
+        padding: 7px;
+        background: #beffd9;
+        font-size: 13px;
+        z-index: 2;
+      }
+
+      &:before {
+        content: "";
+        position: absolute;
+        width: calc(100% + 6px);
+        height: calc(100% + 6px);
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+        background: #befed966;
+        border-radius: 16px;
+        z-index: 1;
+      }
+
+      &__from {
+        font-weight: 700;
+        margin-bottom: 7px;
+      }
+      &__date {
+        color: black;
+        font-size: 11px;
+        font-weight: 500;
+      }
+    }
+  }
+  .inpt-msg {
+    width: 100%;
+    height: 40%;
+
+    &__content {
+      width: 100%;
+      height: 100%;
+    }
+
+    .input-area {
+      width: 100%;
+      &__content {
+        width: 100%;
+        border: none !important;
+        padding: 0 !important;
+      }
+      &__input {
+        width: 100% !important;
+        min-height: 100px;
+        padding: 8px;
+        font-size: 20px;
+
+        border: 2px solid #3367f9;
+        border-radius: 5px;
+      }
+    }
+    .send {
+      margin: 10px 0 0 0;
+
+      &__content {
+        width: auto !important;
+        min-width: 70px !important;
+        padding: 8px !important;
+        border: none !important;
+        background: rgb(98, 108, 239) !important;
+        border-radius: 10px;
+        box-shadow: none !important;
+        min-height: auto !important;
+      }
+      &__value {
+        color: white;
+      }
+
+      &--disabled {
+        .my-btn {
+
+          &__content {
+            background: rgba(171, 175, 255, 0.97) !important;
+          }
+        }
+      }
+
+      &:hover {
+        .send {
+
+          &__value {
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}

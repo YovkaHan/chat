@@ -16,10 +16,7 @@ export default class App extends React.Component {
         return (
             <React.Fragment>
                 <div className={`the-app`}>
-                    <MessageList.Component core={{pcb: this.pcb, id: 'msgL0', component: 'MessageList'}}/>
-                    <MessageInput.Component core={{pcb: this.pcb, id: 'msgI0', component: 'MessageInput'}}/>
-                    {/*<Chat.Component core={{pcb: this.pcb, id: 'chat0', component: 'Chat'}}/>*/}
-                    {/*<Message.Component core={{pcb: this.pcb, template: 'Message0', component: 'Message'}}/>*/}
+                    <Chat.Component rootClass={`a-chat`} core={{pcb: this.pcb, id: 'chat0', component: 'Chat'}}/>
                 </div>
             </React.Fragment>
         )

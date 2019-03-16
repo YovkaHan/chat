@@ -6,7 +6,7 @@ import {initialize} from "./redux/actions";
 import {InputArea, Button} from '../../';
 
 const innerClass = (sufix, mainClass, rootClass) => {
-    return `${mainClass}__${sufix}${rootClass ? ' '+rootClass+'__'+sufix : ''}`.trim()
+    return `${mainClass}__${sufix}${rootClass ? ' ' + rootClass + '__' + sufix : ''}`.trim()
 };
 
 class List extends React.Component {
@@ -24,7 +24,7 @@ class List extends React.Component {
     //     super(props);
     // }
 
-    render(){
+    render() {
         const {props, state, handleClick} = this;
         const {className, rootClass, data, children, Item, itemProps} = props;
         const mainClass = 'c-list';
@@ -39,14 +39,15 @@ class List extends React.Component {
             )
         );
 
-        return(
+        return (
             <div className={`${mainClass} ${className} ${rootClass}`.trim()}>
                 <div className={innerClass('content', mainClass, rootClass)}>
-                    {data.map( i=> (
+                    {data.map(i => (
                         <Item
                             {...itemProps}
                             {...i}
-                            className={innerClass('item', mainClass, rootClass)} />))
+                            key={i.id}
+                            className={innerClass('item', mainClass, rootClass)}/>))
                     }
                     {
                         children.map ? children.map((c, index) => {
@@ -64,7 +65,10 @@ List.propTypes = {
     className: PropTypes.string,
     rootClass: PropTypes.string,
     data: PropTypes.array,
-    Item: PropTypes.object
+    Item: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.func
+    ])
 };
 
 export default List;
