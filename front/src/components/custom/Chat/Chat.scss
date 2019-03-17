@@ -36,11 +36,13 @@
       &__item {
         margin: 10px;
         flex-shrink: 0;
+        max-width: 45%;
       }
     }
 
     .c-message {
       position: relative;
+      text-align: right;
 
       &__content {
         border: none;
@@ -49,6 +51,10 @@
         background: #beffd9;
         font-size: 13px;
         z-index: 2;
+      }
+
+      &__msg {
+        align-self: flex-end;
       }
 
       &:before {

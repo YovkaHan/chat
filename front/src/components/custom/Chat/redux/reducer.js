@@ -14,41 +14,46 @@ export const INIT_STATE_ITEM = {
         status: false
     },
     list: [
-        {
-            id: 'm1551792177575m0',
-            from: 'TestFrom',
-            to: 'TestTo',
-            msg: 'Hello. My name is Test and this is test-message!',
-            date: 1551792177575
-        },
-        {
-            id: 'm1551792177575m1',
-            from: 'TestFrom',
-            to: 'TestTo',
-            msg: 'Hello. My name is Test and this is test-message!',
-            date: 1551792177575
-        },
-        {
-            id: 'm1551792177575m2',
-            from: 'TestFrom',
-            to: 'TestTo',
-            msg: 'Hello. My name is Test and this is test-message!',
-            date: 1551792177575
-        },
-        {
-            id: 'm1551792177575m3',
-            from: 'TestFrom',
-            to: 'TestTo',
-            msg: 'Hello. My name is Test and this is test-message!',
-            date: 1551792177575
-        },
-        {
-            id: 'm1551792177575m4',
-            from: 'TestFrom',
-            to: 'TestTo',
-            msg: 'Hello. My name is Test and this is test-message!',
-            date: 1551792177575
-        }
+        // {
+        //     cId: '1',
+        //     id: 'm1551792177575m0',
+        //     from: 'TestFrom',
+        //     to: 'TestTo',
+        //     msg: 'Hello. My name is Test and this is test-message!',
+        //     date: 1551792177575
+        // },
+        // {
+        //     cId: '1',
+        //     id: 'm1551792177575m1',
+        //     from: 'TestFrom',
+        //     to: 'TestTo',
+        //     msg: 'Hello. My name is Test and this is test-message!',
+        //     date: 1551792177575
+        // },
+        // {
+        //     cId: '1',
+        //     id: 'm1551792177575m2',
+        //     from: 'TestFrom',
+        //     to: 'TestTo',
+        //     msg: 'Hello. My name is Test and this is test-message!',
+        //     date: 1551792177575
+        // },
+        // {
+        //     cId: '1',
+        //     id: 'm1551792177575m3',
+        //     from: 'TestFrom',
+        //     to: 'TestTo',
+        //     msg: 'Hello. My name is Test and this is test-message!',
+        //     date: 1551792177575
+        // },
+        // {
+        //     cId: '1',
+        //     id: 'm1551792177575m4',
+        //     from: 'TestFrom',
+        //     to: 'TestTo',
+        //     msg: 'Hello. My name is Test and this is test-message!',
+        //     date: 1551792177575
+        // }
     ],
     buffer: []
 };
