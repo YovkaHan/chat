@@ -11,7 +11,9 @@ export const INIT_STATE_ITEM = {
     flags: {
         toggle: false,
         hover: false,
-        status: false
+        status: false,
+        server: 'off',
+        connection: 'off'
     },
     list: [
         // {
@@ -55,7 +57,8 @@ export const INIT_STATE_ITEM = {
         //     date: 1551792177575
         // }
     ],
-    buffer: []
+    buffer: [],
+    participantId: undefined
 };
 
 const cases = (type) => {
@@ -92,6 +95,31 @@ const cases = (type) => {
         case TYPES.MSG_MAKE_COMPLETE: {
             return (draft, payload, id) => {
                 draft[id].buffer.push(payload)
+            };
+        }
+        case TYPES.PARTICIPANT_ID_SET: {
+            return (draft, payload, id) => {
+                draft[id].participantId = payload
+            };
+        }
+        case TYPES.SERVER_OFF: {
+            return (draft, payload, id) => {
+                draft[id].flags.server = 'off'
+            };
+        }
+        case TYPES.SERVER_ON: {
+            return (draft, payload, id) => {
+                draft[id].flags.server = 'on'
+            };
+        }
+        case TYPES.CONNECTION_ON: {
+            return (draft, payload, id) => {
+                draft[id].flags.connection = 'on'
+            };
+        }
+        case TYPES.CONNECTION_OFF: {
+            return (draft, payload, id) => {
+                draft[id].flags.connection = 'off'
             };
         }
         default : {

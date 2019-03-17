@@ -21,6 +21,14 @@ export function deleteItem(id) {
     return ({type: TYPES.ITEM_DELETE, id})
 }
 
+export function startChannel(id) {
+    return ({type: TYPES.CHANNEL_START, id})
+}
+
+export function connectChat(id) {
+    return ({type: TYPES.CHANNEL_CHAT_CONNECT, id})
+}
+
 export default {
     initialize,
     flagHandle,

@@ -22,7 +22,9 @@ const defaultTypes = {
     CHANNEL_ON: "CHANNEL_ON",
     CHANNEL_OFF: "CHANNEL_OFF",
     RESULT: "RESULT",
-
+    PARTICIPANT_ID_SET: "PARTICIPANT_ID_SET",
+    CONNECTION_ON: "CONNECTION_ON",
+    CONNECTION_OFF: "CONNECTION_OFF"
 };
 
 const _sequence = ["name","root"];

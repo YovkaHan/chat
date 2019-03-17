@@ -96,8 +96,18 @@ const createSocketChannel = (socket, id) => eventChannel((emit) => {
     const handler = (data) => {
         emit(data);
     };
-    socket.on('connect to chat/success', handler);
-    socket.on('connect to chat/error', handler);
+
+    function chatConnectionHandlerSuccess(data) {
+        console.log(data);
+        emit({req: 'connect to chat/success', data});
+    }
+
+    function chatConnectionHandlerError(error) {
+        console.log(error);
+    }
+
+    socket.on('connect to chat/success', chatConnectionHandlerSuccess);
+    socket.on('connect to chat/error', chatConnectionHandlerError);
     socket.on('message/incoming', handler);
     socket.on('message/outgoing', handler);
     socket.on('message/sent', handler);
@@ -170,15 +180,20 @@ const listenServerSaga = function* (id) {
         const socketChannel = yield call(createSocketChannel, socket, id);
         yield fork(listenDisconnectSaga, disconnect, id);
         yield fork(listenConnectSaga, reconnect, id);
-
-        yield put({type: TYPES.SERVER_ON, id});
-
         yield fork(onConnectToChatSaga, socket, id);
         yield fork(onSendMessageSaga, socket, id);
 
+        yield put({type: TYPES.SERVER_ON, id});
+
         while (true) {
             const payload = yield take(socketChannel);
-            yield put({type: TYPES.RESULT, payload, id});
+
+            if(payload.req === 'connect to chat/success'){
+                yield put({type: TYPES.PARTICIPANT_ID_SET, payload: payload.data, id});
+                yield put({type: TYPES.CONNECTION_ON, id});
+            }
+
+            // yield put({type: TYPES.RESULT, payload, id});
         }
     } catch (error) {
         console.log(error);
@@ -192,13 +207,12 @@ const listenServerSaga = function* (id) {
 };
 
 const initServerListeningSaga = function* (action) {
+    console.log(action);
     while (true) {
-        if (action.id === id) {
-            yield race({
-                task: call(listenServerSaga, action.id),
-                cancel: take(TYPES.CHANNEL_STOP),
-            });
-        }
+        yield race({
+            task: call(listenServerSaga, action.id),
+            cancel: take(TYPES.CHANNEL_STOP),
+        });
     }
 };
 

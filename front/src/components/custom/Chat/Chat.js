@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
-import {flagHandle, createItem, valueChange} from './redux/actions';
+import {flagHandle, createItem, valueChange, startChannel, connectChat} from './redux/actions';
 
 const innerClass = (suffix, mainClass, rootClass) => {
     return `${mainClass}__${suffix} ${rootClass ? rootClass + '__' + suffix : ''}`.trim()
@@ -33,7 +33,15 @@ class Chat extends React.Component {
             this.madeChildren[c] = require('../../')[name].Component;
         });
 
+        props.startChannel();
+
         this.handleClick = ::this.handleClick;
+    }
+
+    componentDidUpdate(){
+        if(this.props.flags.connection === 'off' && this.props.flags.server === 'on'){
+            this.props.connectChat();
+        }
     }
 
     async handleClick(e) {
@@ -94,6 +102,8 @@ const mapDispatchers = (dispatch, props) => {
     return bindActionCreators({
         createItem: () => createItem(),
         defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
+        startChannel: () => startChannel(cId),
+        connectChat: () => connectChat(cId)
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
     }, dispatch);

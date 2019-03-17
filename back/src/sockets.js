@@ -67,6 +67,7 @@ module.exports = function (port) {
         });
 
         socket.on('connect to chat/start', function (participant) {
+            console.log('add participant');
 
             if(participant){
                 const addedParticipant = participants.data.find(p => p.id === participant);
