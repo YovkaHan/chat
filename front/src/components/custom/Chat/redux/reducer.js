@@ -12,8 +12,12 @@ export const INIT_STATE_ITEM = {
         toggle: false,
         hover: false,
         status: false,
-        server: 'off',
-        connection: 'off'
+        server: 'off', /**состояние сервера*/
+        channel: 'off', /**состояние канал связи с сервером (поднят ли)*/
+        connection: 'off'  /**состояние коннекта с сервисом*/
+    },
+    conversation: {
+      id: undefined
     },
     list: [
         // {
@@ -121,6 +125,24 @@ const cases = (type) => {
             return (draft, payload, id) => {
                 draft[id].flags.connection = 'off'
             };
+        }
+        case TYPES.CONVERSATION_SET_ID: {
+            return (draft, payload, id) => {
+                draft[id].conversation.id = payload
+            };
+        }
+        case TYPES.CHANNEL_ON: {
+            return (draft, payload, id) => {
+                draft[id].flags.channel = 'on'
+            };
+        }
+        case TYPES.CHANNEL_OFF: {
+            return (draft, payload, id) => {
+                draft[id].flags.channel = 'off'
+            };
+        }
+        case TYPES.CONVERSATION_INIT: {
+
         }
         default : {
             return () => {

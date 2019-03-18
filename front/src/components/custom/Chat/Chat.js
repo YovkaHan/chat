@@ -39,7 +39,7 @@ class Chat extends React.Component {
     }
 
     componentDidUpdate(){
-        if(this.props.flags.connection === 'off' && this.props.flags.server === 'on'){
+        if(this.props.flags.connection === 'off' && this.props.flags.channel === 'on'){
             this.props.connectChat();
         }
     }

@@ -20,7 +20,7 @@ module.exports = function (port) {
         remove: function (participant) {
             const _participantIndex = this.data.findIndex(p => p.id === participant.id);
             if (_participantIndex >= 0) {
-                this.data.splice(_participantIndex,1);
+                this.data.splice(_participantIndex, 1);
                 this.maxCount++;
             }
         }
@@ -41,9 +41,9 @@ module.exports = function (port) {
             return undefined;
         },
         remove: function (cId) {
-            const conversationIndex = this.data.findIndex(c=> c.cId === cId);
+            const conversationIndex = this.data.findIndex(c => c.cId === cId);
 
-            if(conversationIndex){
+            if (conversationIndex) {
                 this.data.splice(1, conversationIndex);
                 return cId;
             } else {
@@ -69,12 +69,12 @@ module.exports = function (port) {
         socket.on('connect to chat/start', function (participant) {
             console.log('add participant');
 
-            if(participant){
+            if (participant) {
                 const addedParticipant = participants.data.find(p => p.id === participant);
 
-                if(addedParticipant){
+                if (addedParticipant) {
                     addedParticipant.socket = socket;
-                }else {
+                } else {
                     socket.emit('connect to chat/error', {error: 'Some mistake happened'});
                 }
             } else {
@@ -106,21 +106,23 @@ module.exports = function (port) {
 
         socket.on('conversation/start', function (participantBId, cId) {
 
-            if(!participantBId) {
+            if (!participantBId) {
 
             }
-            if(cId){
-                const conversation = conversations.find(c => c.cId === cId);
+            /** conversation check*/
+            if (cId) {
+                const conversation = conversations.data.find(c => c.cId === cId);
 
-                if(conversation){
-
+                if (conversation) {
+                    socket.emit('conversation/success', conversation.id);
                 } else {
-
+                    socket.emit('conversation/error');
                 }
             } else {
-                const participantA = participants.find(p => p.socket.id === socket.id);
+                const participantAId = participants.data.find(p => p.socket.id === socket.id).id;
 
-                conversations.add(participantA, participantB)
+                const conversationId = conversations.add(participantAId, participantBId);
+                socket.emit('conversation/success', conversationId);
             }
         })
     });
