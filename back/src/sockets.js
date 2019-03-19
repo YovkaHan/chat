@@ -1,56 +1,7 @@
-module.exports = function (port) {
-    const io = require('socket.io')(port);
+module.exports = function (server) {
+    const {participants, conversations} = require('../server');
+    const io = require('socket.io').listen(server);
     const uniqid = require('uniqid');
-
-
-    /**data: [{id, socket}]*/
-    const participants = {
-        data: [],
-        maxCount: 2,
-        add: function (socket) {
-            if (this.maxCount > 0) {
-                const cId = uniqid();
-                this.data.push({id: cId, socket});
-                this.maxCount--;
-                return cId;
-            }
-
-            return undefined;
-        },
-        remove: function (participant) {
-            const _participantIndex = this.data.findIndex(p => p.id === participant.id);
-            if (_participantIndex >= 0) {
-                this.data.splice(_participantIndex, 1);
-                this.maxCount++;
-            }
-        }
-    };
-
-    /**data: [{id, socket}]*/
-    const conversations = {
-        data: [],
-        maxCount: 1,
-        add: function (participantA, participantB) {
-            if (this.maxCount > 0) {
-                const cId = uniqid();
-                this.data.push({idA: participantA.id, idB: participantB.id, cId});
-                this.maxCount--;
-                return cId;
-            }
-
-            return undefined;
-        },
-        remove: function (cId) {
-            const conversationIndex = this.data.findIndex(c => c.cId === cId);
-
-            if (conversationIndex) {
-                this.data.splice(1, conversationIndex);
-                return cId;
-            } else {
-                return undefined;
-            }
-        }
-    };
 
     io.on('connection', (socket) => {
 
@@ -69,8 +20,8 @@ module.exports = function (port) {
         socket.on('connect to chat/start', function (participant) {
             console.log('add participant');
 
-            if (participant) {
-                const addedParticipant = participants.data.find(p => p.id === participant);
+            if (participant.id) {
+                const addedParticipant = participants.data.find(p => p.id === participant.id);
 
                 if (addedParticipant) {
                     addedParticipant.socket = socket;
@@ -78,7 +29,7 @@ module.exports = function (port) {
                     socket.emit('connect to chat/error', {error: 'Some mistake happened'});
                 }
             } else {
-                const result = participants.add(socket);
+                const result = participants.add(socket, participant.name);
 
                 if (result) {
                     socket.emit('connect to chat/success', result);

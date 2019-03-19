@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, MessageInput, Message, MessageList, Chat} from '../../';
+import {Button, MessageInput, Message, MessageList, Chat, Contacts} from '../../';
 import {pcbGenerate} from '../../../common/pcb';
 import {pcbTemplate} from '../../../common/appConfig';
 
@@ -16,6 +16,7 @@ export default class App extends React.Component {
         return (
             <React.Fragment>
                 <div className={`the-app`}>
+                    <Contacts.Component rootClass={`a-contacts`} core={{pcb: this.pcb, id: 'contacts0', component: 'Contacts'}}/>
                     <Chat.Component rootClass={`a-chat`} core={{pcb: this.pcb, id: 'chat0', component: 'Chat'}}/>
                     {/*<Chat.Component rootClass={`a-chat`} core={{pcb: this.pcb, id: 'chat1', component: 'Chat'}}/>*/}
                 </div>

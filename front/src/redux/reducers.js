@@ -5,6 +5,7 @@ import Button from '../components/custom/Button/redux/reducer';
 import MessageInput from '../components/custom/MessageInput/redux/reducer';
 import MessageList from '../components/custom/MessageList/redux/reducer';
 import Chat from '../components/custom/Chat/redux/reducer';
+import Contacts from '../components/custom/Contacts/redux/reducer';
 import {combineReducers} from 'redux';
 
 export default {
@@ -15,6 +16,7 @@ export default {
         InputArea: InputArea(),
         MessageInput: MessageInput(),
         MessageList: MessageList(),
-        Chat: Chat()
+        Chat: Chat(),
+        Contacts: Contacts()
     })
 };

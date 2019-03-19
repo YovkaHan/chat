@@ -7,6 +7,7 @@ import List from './custom/List';
 import Message from './custom/Message';
 import MessageInput from './custom/MessageInput';
 import MessageList from './custom/MessageList';
+import Contacts from './custom/Contacts';
 
 import Lamp from './template/Lamp';
 import Panel from './template/Panel';
@@ -25,5 +26,6 @@ export {
     List,
     Message,
     MessageInput,
-    MessageList
+    MessageList,
+    Contacts
 }

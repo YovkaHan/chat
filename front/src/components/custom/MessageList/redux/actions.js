@@ -5,6 +5,10 @@ export function initialize(id) {
     return {type: TYPES.INITIALIZE, id};
 }
 
+export function itemInit(id) {
+    return {type: TYPES.ITEM_INITIALIZE, id};
+}
+
 export function flagHandle(id, key, value) {
     return ({type: TYPES.FLAGS, payload: {key, value}, id})
 }
@@ -25,6 +29,7 @@ export function deleteItem(id) {
 
 export default {
     initialize,
+    itemInit,
     flagHandle,
     createItem,
     deleteItem

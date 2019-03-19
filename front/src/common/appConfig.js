@@ -103,6 +103,9 @@ export const pcbTemplate = {
                 from: 'A',
                 to: 'B'
             }
+        },
+        contacts0: {
+            component: 'Contacts'
         }
     },
     templateList: {

@@ -33,7 +33,7 @@ class Chat extends React.Component {
             this.madeChildren[c] = require('../../')[name].Component;
         });
 
-        props.startChannel();
+        //props.startChannel();
 
         this.handleClick = ::this.handleClick;
     }

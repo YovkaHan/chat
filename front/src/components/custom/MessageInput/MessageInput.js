@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from "redux";
-import {initialize, sendMsg} from "./redux/actions";
+import {initItem, sendMsg} from "./redux/actions";
 
 const innerClass = (sufix, mainClass, rootClass) => {
     return `${mainClass}__${sufix}${rootClass ? ' ' + rootClass + '__' + sufix : ''}`.trim()
@@ -90,7 +90,7 @@ const mapDispatchers = (dispatch, props) => {
     const cId = props.pcbMade.id;
 
     return bindActionCreators({
-        initialize: () => initialize(cId, props.pcbMade),
+        initialize: () => initItem(cId, props.pcbMade),
         sendMsg: () => sendMsg(cId, props.pcbMade)
         // defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         // mouseOver: () => flagHandle(cId, 'hover', true),

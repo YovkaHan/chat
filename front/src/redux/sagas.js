@@ -7,6 +7,7 @@ import MessageInput from '../components/custom/MessageInput/redux/sagas';
 import MessageList from '../components/custom/MessageList/redux/sagas';
 import InputArea from '../components/custom/InputArea/redux/sagas';
 import Message from '../components/custom/Message/redux/sagas';
+import Contacts from '../components/custom/Contacts/redux/sagas';
 import Chat from '../components/custom/Chat/redux/sagas';
 
 export default function* rootSaga() {
@@ -18,7 +19,8 @@ export default function* rootSaga() {
         ...MessageInput,
         ...InputArea,
         ...MessageList,
-        ...Chat
+        ...Chat,
+        ...Contacts
     ];
 
     yield all(sagas)
