@@ -39,7 +39,10 @@ class Chat extends React.Component {
     }
 
     componentDidUpdate(){
-        if(this.props.flags.connection === 'off' && this.props.flags.server === 'on'){
+        if(this.props.flags.connection === 'off'
+            && this.props.flags.server === 'on'
+            && this.props.flags.chat === 'ready'
+        ){
             this.props.connectChat();
         }
     }
@@ -110,3 +113,8 @@ const mapDispatchers = (dispatch, props) => {
 };
 
 export default connect(mapStateToProps, mapDispatchers)(Chat);
+
+
+/**
+ *
+ * */

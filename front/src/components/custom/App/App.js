@@ -16,8 +16,16 @@ export default class App extends React.Component {
         return (
             <React.Fragment>
                 <div className={`the-app`}>
-                    <Chat.Component rootClass={`a-chat`} core={{pcb: this.pcb, id: 'chat0', component: 'Chat'}}/>
-                    {/*<Chat.Component rootClass={`a-chat`} core={{pcb: this.pcb, id: 'chat1', component: 'Chat'}}/>*/}
+                    <Chat.Component
+                        className={`clientA`}
+                        rootClass={`a-chat`}
+                        core={{pcb: this.pcb, id: 'chat0', component: 'Chat'}}
+                    />
+                    <Chat.Component
+                        className={`clientB`}
+                        rootClass={`a-chat`}
+                        core={{pcb: this.pcb, id: 'chat1', component: 'Chat'}}
+                    />
                 </div>
             </React.Fragment>
         )
@@ -37,6 +45,19 @@ export default class App extends React.Component {
  *      (для привязки логики)
  * */
 
-/**1. Отправка сообщения на сервер
- * 2. Получения сервером и отправка ответа о получении
+/**Концепция
+ *
+ * Приложение делится на Бековую и Фронтовую части.
+ *
+ * Бековая часть состоит из Сервера и БД
+ * Сервер : часть транспортного протокола, сокеты, взаимодействие с бд, взаимодействие с приложением
+ * БД : клиенты, комнаты
+ *
+ * По хорошему приложение Чата должно делится на Комнаты, но в данном случае будет 1 комната.
+ *
+ * Приложение
+ * - Вход(регистрация клиента) / Выход
+ * - Список комнат
+ * --Список участников комнаты (общее, онлайн)
+ *
  * */

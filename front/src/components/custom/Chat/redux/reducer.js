@@ -12,6 +12,7 @@ export const INIT_STATE_ITEM = {
         toggle: false,
         hover: false,
         status: false,
+        chat: 'default',
         server: 'off',
         connection: 'off'
     },
@@ -120,6 +121,11 @@ const cases = (type) => {
         case TYPES.CONNECTION_OFF: {
             return (draft, payload, id) => {
                 draft[id].flags.connection = 'off'
+            };
+        }
+        case TYPES.CHAT_READY: {
+            return (draft, payload, id) => {
+                draft[id].flags.chat = 'ready'
             };
         }
         default : {

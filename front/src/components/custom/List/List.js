@@ -1,9 +1,5 @@
 import React from 'react';
-import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
-import {bindActionCreators} from "redux";
-import {initialize} from "./redux/actions";
-import {InputArea, Button} from '../../';
 
 const innerClass = (sufix, mainClass, rootClass) => {
     return `${mainClass}__${sufix}${rootClass ? ' ' + rootClass + '__' + sufix : ''}`.trim()

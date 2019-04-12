@@ -66,7 +66,7 @@ module.exports = function (port) {
             console.log('user disconnected !!!!');
         });
 
-        socket.on('connect to chat/start', function (participant) {
+        socket.on('chat.connect.start', function (participant) {
             console.log('add participant');
 
             if(participant){
@@ -75,36 +75,36 @@ module.exports = function (port) {
                 if(addedParticipant){
                     addedParticipant.socket = socket;
                 }else {
-                    socket.emit('connect to chat/error', {error: 'Some mistake happened'});
+                    socket.emit('chat.connect.error', {error: 'Some mistake happened'});
                 }
             } else {
                 const result = participants.add(socket);
 
                 if (result) {
-                    socket.emit('connect to chat/success', result);
+                    socket.emit('chat.connect.success', result);
                 } else {
-                    socket.emit('connect to chat/error', {error: 'No place for you!)'});
+                    socket.emit('chat.connect.error', {error: 'No place for you!)'});
                 }
             }
         });
 
-        socket.on('message/incoming', function (message) {
+        socket.on('message.sending', function (message) {
 
             const _from = participants.data.find(p => p.id === message.from);
             if (_from) {
 
                 const _to = participants.data.find(p => p.id === message.to);
                 if (_to) {
-                    _to.socket.emit('incoming message', {message: message});
+                    _to.socket.emit('message.incoming', {message: message});
                 } else {
-                    socket.emit('incoming message/error', {error: 'TO not in participants'});
+                    socket.emit('message.sending.error', {error: 'TO not in participants'});
                 }
             } else {
-                socket.emit('incoming message/error', {error: 'FROM not in participants'});
+                socket.emit('message.sending.error', {error: 'FROM not in participants'});
             }
         });
 
-        socket.on('conversation/start', function (participantBId, cId) {
+        socket.on('conversation.start', function (participantBId, cId) {
 
             if(!participantBId) {
 

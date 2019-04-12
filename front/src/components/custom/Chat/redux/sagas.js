@@ -99,26 +99,26 @@ const createSocketChannel = (socket, id) => eventChannel((emit) => {
 
     function chatConnectionHandlerSuccess(data) {
         console.log(data);
-        emit({req: 'connect to chat/success', data});
+        emit({req: 'chat.connect.success', data});
     }
 
     function chatConnectionHandlerError(error) {
         console.log(error);
     }
 
-    socket.on('connect to chat/success', chatConnectionHandlerSuccess);
-    socket.on('connect to chat/error', chatConnectionHandlerError);
-    socket.on('message/incoming', handler);
-    socket.on('message/outgoing', handler);
-    socket.on('message/sent', handler);
-    socket.on('message/seen', handler);
+    socket.on('chat.connect.success', chatConnectionHandlerSuccess);
+    socket.on('chat.connect.error', chatConnectionHandlerError);
+    socket.on('message.incoming', handler);
+    socket.on('message.outgoing', handler);
+    socket.on('message.sent', handler);
+    // socket.on('message.seen', handler);
     return () => {
-        socket.off('connect to chat/success', handler);
-        socket.off('connect to chat/error', handler);
-        socket.off('message/incoming', handler);
-        socket.off('message/outgoing', handler);
-        socket.off('message/sent', handler);
-        socket.off('message/seen', handler);
+        socket.off('chat.connect.success', handler);
+        socket.off('chat.connect.error', handler);
+        socket.off('message.incoming', handler);
+        socket.off('message.sending', handler);
+        socket.off('message.sent', handler);
+        // socket.off('message.seen', handler);
     };
 });
 
@@ -142,7 +142,7 @@ const onConnectToChatSaga = function* (socket, _id) {
         const {id} = yield take(TYPES.CHANNEL_CHAT_CONNECT);
 
         if(id === _id){
-            socket.emit(`connect to chat/start`);
+            socket.emit(`chat.connect.start`);
         }
     }
 };
@@ -153,7 +153,22 @@ const onSendMessageSaga = function* (socket, _id) {
 
         if(id === _id){
             socket.emit(
-                'message/outgoing',
+                'message.sending',
+                {
+                    ...payload
+                }
+            );
+        }
+    }
+};
+
+const onConversationSaga = function* (socket, _id) {
+    while (true) {
+        const {id, payload} = yield take(TYPES.CHANNEL_CONVERSATION_START);
+
+        if(id === _id){
+            socket.emit(
+                'conversation.start',
                 {
                     ...payload
                 }
@@ -168,6 +183,7 @@ const listenServerSaga = function* (id) {
     const {connect, disconnect, reconnect} = _socketObject;
 
     try {
+        yield put({type: TYPES.SERVER_ON, id});
         yield put({type: TYPES.CHANNEL_ON, id});
         const {socket, timeout} = yield race({
             socket: call(connect),
@@ -182,13 +198,14 @@ const listenServerSaga = function* (id) {
         yield fork(listenConnectSaga, reconnect, id);
         yield fork(onConnectToChatSaga, socket, id);
         yield fork(onSendMessageSaga, socket, id);
+        yield fork(onConversationSaga, socket, id);
 
-        yield put({type: TYPES.SERVER_ON, id});
+        yield put({type: TYPES.CHAT_READY, id});
 
         while (true) {
             const payload = yield take(socketChannel);
 
-            if(payload.req === 'connect to chat/success'){
+            if(payload.req === 'chat.connect.success'){
                 yield put({type: TYPES.PARTICIPANT_ID_SET, payload: payload.data, id});
                 yield put({type: TYPES.CONNECTION_ON, id});
             }
