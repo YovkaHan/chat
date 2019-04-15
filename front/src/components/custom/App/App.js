@@ -20,11 +20,15 @@ export default class App extends React.Component {
                         className={`clientA`}
                         rootClass={`a-chat`}
                         core={{pcb: this.pcb, id: 'chat0', component: 'Chat'}}
+                        from={'C'}
+                        to={'D'}
                     />
                     <Chat.Component
                         className={`clientB`}
                         rootClass={`a-chat`}
                         core={{pcb: this.pcb, id: 'chat1', component: 'Chat'}}
+                        from={'D'}
+                        to={'C'}
                     />
                 </div>
             </React.Fragment>

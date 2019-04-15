@@ -91,7 +91,7 @@ const mapDispatchers = (dispatch, props) => {
 
     return bindActionCreators({
         initialize: () => initialize(cId, props.pcbMade),
-        sendMsg: () => sendMsg(cId, props.pcbMade)
+        sendMsg: () => sendMsg(cId, props.pcbMade, props.from ? props.from : undefined, props.to ? props.to : undefined)
         // defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),

@@ -6,10 +6,10 @@ import {TYPES} from "./types";
 import * as R from "ramda";
 
 
-// sorting function to show the latest tasks first
+// sorting function to show the latest tasks.json first
 const sortTasks = (task1, task2) => task2.taskID - task1.taskID;
 
-// selector to get only first 5 latest tasks
+// selector to get only first 5 latest tasks.json
 const taskSelector = state => state.taskReducer.taskList;
 const topTask = allTasks => allTasks.sort(sortTasks).slice(0, 5);
 export const topTaskSelector = createSelector(taskSelector, topTask);

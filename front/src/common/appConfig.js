@@ -100,9 +100,26 @@ export const pcbTemplate = {
                 {alias: 'Input', id: 'msgI1'},
             ],
             config: {
-                from: 'A',
-                to: 'B'
+                from: 'B',
+                to: 'A'
             }
+        },
+        convApp0: {
+            component: 'ConversationApp',
+            children:  [
+                {alias: 'Profile', id: 'clientInfo0'},
+                {alias: 'Conversations', id: 'convList0'},
+                {alias: 'Conversation', id: 'conv0'}
+            ]
+        },
+        clientInfo0: {
+            component: 'ClientInfo'
+        },
+        convList0: {
+            component: 'ConversationList'
+        },
+        conv0: {
+            component: 'Conversation'
         }
     },
     templateList: {

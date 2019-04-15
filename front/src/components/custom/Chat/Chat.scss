@@ -4,7 +4,7 @@
 
   &__content {
     width: 600px;
-    height: 800px;
+    height: 600px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -12,7 +12,7 @@
 
   .msgs {
     width: 100%;
-    height: 60%;
+    height: 75%;
 
     &__content {
       width: 100%;
@@ -83,7 +83,7 @@
   }
   .inpt-msg {
     width: 100%;
-    height: 40%;
+    height: 25%;
 
     &__content {
       width: 100%;

@@ -73,13 +73,23 @@ function* flagHandleComplete({type, payload, id}) {
     yield put({ type: TYPES.FLAGS_COMPLETE, payload: _object.flags, id });
 }
 
-function* sendingMsg({type, pcb, id}) {
+function* sendingMsg({type, pcb, id, from, to}) {
     const {MsgConstructor} = pcb.relations;
     const {InputArea} = pcb.children;
     const _MCTypes = require(`../../${MsgConstructor.component}`).default.types;
 
     const state = yield select();
     const msg = state.Components[InputArea.component][InputArea.id].data;
+    let _from = from;
+    let _to = to;
 
-    yield put({ type: _MCTypes.MSG_MAKE, payload: msg, pcb, id: MsgConstructor.id });
+    /**Затычка*/
+    if(_from === undefined && _to === undefined){
+        const make = pcb.make(pcb.relations.MsgConstructor.id);
+
+        _from = make.config.from;
+        _to = make.config.to;
+    }
+
+    yield put({ type: _MCTypes.MSG_MAKE, payload: msg, pcb, id: MsgConstructor.id, from: _from, to: _to });
 }

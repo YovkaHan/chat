@@ -1,5 +1,5 @@
-module.exports = function (port) {
-    const io = require('socket.io')(port);
+module.exports = function (server) {
+    const io = require('socket.io')(server);
     const uniqid = require('uniqid');
 
 

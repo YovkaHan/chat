@@ -70,6 +70,8 @@ class Chat extends React.Component {
                     />
                     <Input
                         core={{pcb, id: pcbMade.children['Input'].id, component: pcbMade.children['Input'].component}}
+                        from={props.from ? props.from : props.pcbMade.config.from}
+                        to={props.from ? props.from : props.pcbMade.config.to}
                         rootClass={`inpt-msg`}
                     />
                 </div>
@@ -113,8 +115,3 @@ const mapDispatchers = (dispatch, props) => {
 };
 
 export default connect(mapStateToProps, mapDispatchers)(Chat);
-
-
-/**
- *
- * */
