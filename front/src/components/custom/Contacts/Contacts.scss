@@ -1,0 +1,46 @@
+.a-contacts {
+  position: relative;
+  top: -50px;
+  left: -50px;
+
+  &__content {
+
+  }
+
+  .c-list {
+
+    &__content {
+      padding: 1px 5px;
+      max-height: 200px;
+      height: auto;
+      overflow-y: scroll;
+      border-top: 1px solid black;
+      border-bottom: 1px solid black;
+    }
+    &__item {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: 160px;
+      padding: 10px;
+      border: 1px solid black;
+      border-bottom: none;
+
+      &:last-child {
+        border-bottom: 1px solid black;
+      }
+    }
+  }
+
+  .contact {
+    background: white;
+    color: black;
+    cursor: pointer;
+
+    &--chosen {
+      background: blue;
+      color: white;
+    }
+  }
+}

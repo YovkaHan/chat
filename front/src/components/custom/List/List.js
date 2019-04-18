@@ -57,7 +57,7 @@ class List extends React.Component {
                 c,
                 {
                     key: index,
-                    className: `${innerClass('content', mainClass, rootClass)} ${c.props.className}`
+                    className: `${innerClass('item', mainClass, rootClass)} ${c.props.className ? c.props.className : ''}`.trim()
                 }
             )
         );
