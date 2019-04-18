@@ -107,9 +107,7 @@ export const pcbTemplate = {
         convApp0: {
             component: 'ConversationApp',
             children:  [
-                {alias: 'Profile', id: 'clientInfo0'},
-                {alias: 'Conversations', id: 'convList0'},
-                {alias: 'Conversation', id: 'conv0'}
+                {alias: 'Profile', id: 'profile0'}
             ]
         },
         clientInfo0: {
@@ -120,6 +118,15 @@ export const pcbTemplate = {
         },
         conv0: {
             component: 'Conversation'
+        },
+        contactL0: {
+            component: 'ContactList'
+        },
+        profile0: {
+            component: 'Profile',
+            children:  [
+                {alias: 'User', id: 'clientInfo0'}
+            ],
         }
     },
     templateList: {

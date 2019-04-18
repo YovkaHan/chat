@@ -9,8 +9,8 @@ export function flagHandle(id, key, value) {
     return ({type: TYPES.FLAGS, payload: {key, value}, id})
 }
 
-export function valueChange(id, value) {
-    return ({type: TYPES.CHANGE, payload: {key: 'value', value}, id})
+export function byKeyChange(id, key, value) {
+    return ({type: TYPES.CHANGE, payload: {key, value}, id})
 }
 
 export function createItem(id, coreId) {
@@ -21,22 +21,10 @@ export function deleteItem(id) {
     return ({type: TYPES.ITEM_DELETE, id})
 }
 
-export function startChannel(id) {
-    return ({type: TYPES.CHANNEL_START, id})
-}
-
-export function connectApp(id) {
-    return ({type: TYPES.CHANNEL_APP_CONNECT, id})
-}
-
-export function appAuthorize(id) {
-    return ({type: TYPES.APP_AUTHORIZATION_BEGIN, id})
-}
-
 export default {
     initialize,
     flagHandle,
     createItem,
-    deleteItem,
-    appAuthorize
+    byKeyChange,
+    deleteItem
 }

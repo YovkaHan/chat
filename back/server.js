@@ -21,13 +21,17 @@ const rsaWrapper = require('./src/rsa-wrapper');
 
 // require('./src/keysGenerate');
 
-const {addToken, findTokenIndex, removeToken} = require('./src/tokens')({uniqid});
+const {
+    addObject,
+    findObjectIndex,
+    removeObject,
+    getObject,
+    setKeyOnObject
+} = require('./src/tokens')({uniqid});
 
 const {participantsGet, participantAdd} = require('./src/firebase')();
 
 const router = express.Router();
-
-const heroesRoles = require('./db/heroesRoles');
 
 app.use(cors({credentials: true, origin: true}));
 app.use('/', express.static(__dirname + '/public'));
@@ -77,8 +81,6 @@ app.post('/participant/create', function (req, res) {
     const {id, name} = req.body;
     const result = {};
 
-    console.log(id);
-
     if (id === undefined && name === undefined) {
         return res.sendStatus(400);
     }
@@ -89,7 +91,7 @@ app.post('/participant/create', function (req, res) {
             result.error = 'Уже есть такой в базе. Кышъ'
         } else {
             /** -(Сформировать токен если все ОК)*/
-            result.token = addToken();
+            result.token = addObject();
 
             result.name = name;
             result.id = id;
@@ -110,7 +112,7 @@ app.post('/participant/login', function (req, res) {
     /** -Проверить идишник в базе данных (есть ли такой же)*/
     participantsGet().then(participants => {
         if (participants.find(p => p.id === id)) {
-            result.token = addToken();
+            result.token = addObject(0, id);
             result.id = id;
         } else {
             result.error = 'В базе нет такого пользователя. Кышъ';
@@ -121,12 +123,12 @@ app.post('/participant/login', function (req, res) {
 
 app.post('/participant/logout', function (req, res) {
     if (!req.body) return res.sendStatus(400);
-    /** -Взять с тела запроса token */
-    const token = req.body.token;
+    /** -Взять с тела запроса token, userId*/
+    const {token, userId} = req.body;
     const result = {};
 
     /** -Проверить token и удалить если будет*/
-    removeToken(token);
+    removeObject(token, userId);
 
     result.status = 200;
 
@@ -141,9 +143,54 @@ app.post('/conversation/info', function (req, res) {
     if (!req.body) return res.sendStatus(400);
 });
 
+app.post('/token/check', function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+
+    const {token, userId} = req.body;
+    const result = {};
+
+    if(token !== undefined && userId !== undefined) {
+        if(findObjectIndex(token, userId) !== -1){
+
+        } else {
+            result.error = 'Token expired or not exist. Please relogin.'
+        }
+
+        res.json(result);
+    } else {
+        return res.sendStatus(400);
+    }
+});
+
+app.post('/token/key', function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+
+    const {token, userId, key} = req.body;
+    const result = {};
+
+    if(token !== undefined  && userId !== undefined  && key !== undefined ) {
+
+        const object = setKeyOnObject(token, userId, key);
+
+        if(object.key === key) {
+            result.key = rsaWrapper.getPublicKey('server');
+        } else {
+            result.error = 'Something happen!'
+        }
+        
+        res.json(result);
+    } else {
+        return res.sendStatus(400);
+    }
+});
+
 server.listen({
     port, addr,
 }, () => {
     console.log('server started')
 });
-ioStart(server);
+ioStart({
+    server,
+    getObject,
+    rsaWrapper
+});

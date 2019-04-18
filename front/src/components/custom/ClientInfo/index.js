@@ -1,16 +1,14 @@
 import React from 'react';
-import ConversationApp from './ConversationApp';
+import ClientInfo from './ClientInfo';
 import Core from '../../../common/core';
 import actions from './redux/actions';
 import {TYPES} from './redux/types';
 
-import './ConversationApp.scss';
-
-export const componentName = 'ConversationApp';
+import './ClientInfo.scss';
 
 export default {
     Component : (props)=> {
-        return (<Core {...props}><ConversationApp/></Core>)
+        return (<Core {...props}><ClientInfo/></Core>)
     },
     actions,
     types: TYPES

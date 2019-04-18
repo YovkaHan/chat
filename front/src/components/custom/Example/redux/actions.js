@@ -21,22 +21,9 @@ export function deleteItem(id) {
     return ({type: TYPES.ITEM_DELETE, id})
 }
 
-export function startChannel(id) {
-    return ({type: TYPES.CHANNEL_START, id})
-}
-
-export function connectApp(id) {
-    return ({type: TYPES.CHANNEL_APP_CONNECT, id})
-}
-
-export function appAuthorize(id) {
-    return ({type: TYPES.APP_AUTHORIZATION_BEGIN, id})
-}
-
 export default {
     initialize,
     flagHandle,
     createItem,
-    deleteItem,
-    appAuthorize
+    deleteItem
 }

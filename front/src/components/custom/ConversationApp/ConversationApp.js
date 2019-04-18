@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
-//import {flagHandle, createItem, valueChange, startChannel, connectApp} from './redux/actions';
+import {flagHandle, createItem, valueChange, startChannel, connectApp, appAuthorize} from './redux/actions';
 
 const innerClass = (suffix, mainClass, rootClass) => {
     return `${mainClass}__${suffix} ${rootClass ? rootClass + '__' + suffix : ''}`.trim()
@@ -20,13 +20,11 @@ class ConversationApp extends React.Component {
         super(props);
 
         this.state = {
-            dummy: ''
+            visibleView: 'conversations'
         };
 
         this.madeChildren = {
-            Profile: null,
-            Conversations: null,
-            Conversation: null
+            Profile: null
         };
         Object.keys(props.pcbMade.children).map(c=>{
             const name = props.pcbMade.children[c].component;
@@ -34,19 +32,19 @@ class ConversationApp extends React.Component {
             this.madeChildren[c] = require('../../')[name].Component;
         });
 
-        props.startChannel();
+        props.appAuthorize();
 
         this.handleClick = ::this.handleClick;
     }
 
-    // componentDidUpdate(){
-    //     if(this.props.flags.connection === 'off'
-    //         && this.props.flags.server === 'on'
-    //         && this.props.flags.chat === 'ready'
-    //     ){
-    //         this.props.connectApp();
-    //     }
-    // }
+    componentDidUpdate(){
+        if(this.props.flags.connection === 'off'
+            && this.props.flags.server === 'on'
+            && this.props.flags.chat === 'ready'
+        ){
+            this.props.connectApp();
+        }
+    }
 
     async handleClick(e) {
         if(!this.props.disabled){
@@ -58,15 +56,32 @@ class ConversationApp extends React.Component {
     render() {
         const {props, state, handleClick} = this;
         const {className, rootClass, pcb, pcbMade} = props;
-        const {Messages, Input} = this.madeChildren;
-        const {dummy} = state;
+        const {Profile} = this.madeChildren;
+        const {visibleView} = state;
         const mainClass = 'c-conv-app';
 
         return (
             <div className={`${mainClass} ${className} ${rootClass}`.trim()} onClick={handleClick}>
                 <div className={innerClass('content', mainClass, rootClass)}>
                     <div className={`${innerClass('item', mainClass, rootClass)} left`}>
+                        <div className={`top`}>
+                            <Profile
+                                core={{pcb, id: pcbMade.children['Profile'].id, component: pcbMade.children['Profile'].component}}
+                                rootClass={`profile`}
+                            />
+                        </div>
+                        <div className={`down`}>
+                            <div className={`menu menu--full visible-view`}>
+                                <div className={`menu__item`} onClick={()=>{this.setState({visibleView: 'conversations'})}}>Conversations</div>
+                                <div className={`menu__item`} onClick={()=>{this.setState({visibleView: 'contacts'})}}>Contacts</div>
+                            </div>
+                            <div className={`conversations`}  style={visibleView === 'conversations' ? {} : {display: 'none'}}>
 
+                            </div>
+                            <div className={`contacts`} style={visibleView === 'contacts' ? {} : {display: 'none'}}>
+
+                            </div>
+                        </div>
                     </div>
                     <div className={`${innerClass('item', mainClass, rootClass)} right`}>
 
@@ -84,32 +99,33 @@ ConversationApp.propTypes = {
     connectApp: PropTypes.func
 };
 
-// const mapStateToProps = (state, props) => {
-//     const cId = props.pcbMade.id;
-//     const _object = state.Components.Chat[cId];
-//
-//     if(_object) {
-//         return ({
-//             flags: _object.flags,
-//             list: _object.list,
-//             buffer: _object.buffer
-//         })
-//     } else {
-//         return {};
-//     }
-// };
-//
-// const mapDispatchers = (dispatch, props) => {
-//     const cId = props.pcbMade.id;
-//
-//     return bindActionCreators({
-//         createItem: () => createItem(),
-//         defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
-//         startChannel: () => startChannel(cId),
-//         connectApp: () => connectApp(cId)
-//         // mouseOver: () => flagHandle(cId, 'hover', true),
-//         // mouseOut: () => flagHandle(cId, 'hover', false),
-//     }, dispatch);
-// };
+const mapStateToProps = (state, props) => {
+    const cId = props.pcbMade.id;
+    const _object = state.Components.ConversationApp[cId];
 
-export default connect()(ConversationApp);
+    if(_object) {
+        return ({
+            flags: _object.flags,
+            list: _object.list,
+            buffer: _object.buffer
+        })
+    } else {
+        return {};
+    }
+};
+
+const mapDispatchers = (dispatch, props) => {
+    const cId = props.pcbMade.id;
+
+    return bindActionCreators({
+        createItem: () => createItem(),
+        defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
+        startChannel: () => startChannel(cId),
+        connectApp: () => connectApp(cId),
+        appAuthorize: ()=>appAuthorize(cId)
+        // mouseOver: () => flagHandle(cId, 'hover', true),
+        // mouseOut: () => flagHandle(cId, 'hover', false),
+    }, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchers)(ConversationApp);

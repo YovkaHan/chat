@@ -16,10 +16,48 @@ export const INIT_STATE_ITEM = {
         server: 'off',
         connection: 'off'
     },
-    authToken: '',
-    userId: '',
-    userName: '',
-    list: [],
+    list: [
+        // {
+        //     cId: '1',
+        //     id: 'm1551792177575m0',
+        //     from: 'TestFrom',
+        //     to: 'TestTo',
+        //     msg: 'Hello. My name is Test and this is test-message!',
+        //     date: 1551792177575
+        // },
+        // {
+        //     cId: '1',
+        //     id: 'm1551792177575m1',
+        //     from: 'TestFrom',
+        //     to: 'TestTo',
+        //     msg: 'Hello. My name is Test and this is test-message!',
+        //     date: 1551792177575
+        // },
+        // {
+        //     cId: '1',
+        //     id: 'm1551792177575m2',
+        //     from: 'TestFrom',
+        //     to: 'TestTo',
+        //     msg: 'Hello. My name is Test and this is test-message!',
+        //     date: 1551792177575
+        // },
+        // {
+        //     cId: '1',
+        //     id: 'm1551792177575m3',
+        //     from: 'TestFrom',
+        //     to: 'TestTo',
+        //     msg: 'Hello. My name is Test and this is test-message!',
+        //     date: 1551792177575
+        // },
+        // {
+        //     cId: '1',
+        //     id: 'm1551792177575m4',
+        //     from: 'TestFrom',
+        //     to: 'TestTo',
+        //     msg: 'Hello. My name is Test and this is test-message!',
+        //     date: 1551792177575
+        // }
+    ],
     buffer: [],
     participantId: undefined
 };
@@ -88,12 +126,6 @@ const cases = (type) => {
         case TYPES.CHAT_READY: {
             return (draft, payload, id) => {
                 draft[id].flags.chat = 'ready'
-            };
-        }
-        case TYPES.APP_AUTHORIZATION_END: {
-            return (draft, payload, id) => {
-                draft[id].authToken = payload.authToken;
-                draft[id].userId = payload.userId;
             };
         }
         default : {

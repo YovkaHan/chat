@@ -8,5 +8,6 @@
   "4.2": "Написать фронт login/logout",
   "4.3": "Написать фронт ClientInfo",
   "4.4": "Написать фронт ConversationList",
-  "4.5": "Написать фронт ConversationApp"
+  "4.5": "Написать фронт ConversationApp",
+  "4.6": "Написать фронт ContactList"
 }

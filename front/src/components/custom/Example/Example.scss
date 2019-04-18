@@ -1,0 +1,42 @@
+.c-example {
+  display: inline-flex;
+
+  &__content {
+    border: 1px solid black;
+    box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+
+    background: blue;
+    padding: 5px 15px;
+    min-height: 40px;
+
+    min-width: 150px;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+  }
+
+  &__value {
+    font-family: sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: white;
+  }
+
+  & * {
+    transition: 0.5s all ease;
+  }
+
+  &:hover {
+
+    .c-button {
+
+     &__value {
+       color: gray;
+     }
+    }
+  }
+}

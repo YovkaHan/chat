@@ -33,6 +33,13 @@ rsaWrapper.generate = (direction) => {
     return true;
 };
 
+rsaWrapper.getPublicKey = (direction) => {
+    return fs.readFileSync(path.resolve(__dirname, 'keys', direction + '.public.pem'));
+};
+rsaWrapper.getPrivateKey = (direction) => {
+    return fs.readFileSync(path.resolve(__dirname, 'keys', direction + '.private.pem'));
+};
+
 rsaWrapper.serverExampleEncrypt = () => {
     console.log('Server public encrypting');
 

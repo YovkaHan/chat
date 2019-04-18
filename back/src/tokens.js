@@ -1,48 +1,59 @@
 module.exports = function ({uniqid}) {
-    const tokenList = [];
+    const objectList = [];
 
-    const addToken = (num) => {
+    const addObject = (num, userId) => {
         let _num = num ? num : 0;
         const token = uniqid('token');
-        if (!tokenList.find(t => t.val === token)) {
-            tokenList.push({
-                val: token, expired: setTimeout(function () {
-                    const fTokenIndex = tokenList.findIndex(t => t.val === token);
+        if (!objectList.find(t => t.val === token)) {
+            objectList.push({
+                val: token,
+                userId,
+                expired: setTimeout(function () {
+                    const fTokenIndex = objectList.findIndex(t => t.val === token);
                     if (fTokenIndex >= 0) {
-                        tokenList.splice(fTokenIndex, 1);
+                        objectList.splice(fTokenIndex, 1);
                     }
-                }, 1000 * 60 * 10)
+                }, 1000 * 60 * 60)
             });
             return token;
         } else if (num < 10) {
-            return addToken(++_num);
+            return addObject(++_num);
         } else {
             return undefined;
         }
     };
-    const findTokenIndex = (token) => {
-        if (token.hasOwnProperty('val')) {
-            return tokenList.findIndex(t => t.val === token.val);
-        } else if (typeof token === 'string') {
-            return tokenList.findIndex(t => t.val === token);
+    const findObjectIndex = (token, userId) => {
+        if(userId !== undefined){
+            return objectList.findIndex(t => t.val === token && t.userId === userId);
         }
+        return objectList.findIndex(t => t.val === token);
     };
-    const removeToken = (token) => {
-        const fTokenIndex = findTokenIndex(token);
-        console.log(fTokenIndex);
+    const getObject = (token) => {
+        const index = objectList[findObjectIndex(token)];
+
+        return index === -1 ? undefined : index;
+    };
+    const removeObject = (token, userId) => {
+        const fTokenIndex = findObjectIndex(token, userId);
 
         if (fTokenIndex >= 0) {
-            clearTimeout(tokenList[fTokenIndex].expired);
-            tokenList.splice(fTokenIndex, 1);
+            clearTimeout(objectList[fTokenIndex].expired);
+            objectList.splice(fTokenIndex, 1);
             return true;
         } else {
             return false;
         }
     };
+    const setKeyOnObject = (token, userId, key) => {
+        objectList[findObjectIndex(token, userId)].key = key;
+        return objectList[findObjectIndex(token, userId)];
+    };
 
     return {
-        addToken,
-        findTokenIndex,
-        removeToken
+        addObject,
+        findObjectIndex,
+        removeObject,
+        getObject,
+        setKeyOnObject
     }
 };

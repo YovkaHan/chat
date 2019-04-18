@@ -1,4 +1,4 @@
-module.exports = function (server) {
+module.exports = function ({server, getObject, rsaWrapper}) {
     const io = require('socket.io')(server);
     const uniqid = require('uniqid');
 
@@ -66,26 +66,34 @@ module.exports = function (server) {
             console.log('user disconnected !!!!');
         });
 
-        socket.on('chat.connect.start', function (participant) {
-            console.log('add participant');
+        socket.on('chat.connect.start', function (data) {
+            const {token, encryptedMsg} = data;
 
-            if(participant){
-                const addedParticipant = participants.data.find(p => p.id === participant);
+            const tokenObject = getObject(token);
 
-                if(addedParticipant){
-                    addedParticipant.socket = socket;
-                }else {
-                    socket.emit('chat.connect.error', {error: 'Some mistake happened'});
-                }
-            } else {
-                const result = participants.add(socket);
+            if(tokenObject !== undefined){
+                const privateServerKey = rsaWrapper.getPrivateKey('server');
 
-                if (result) {
-                    socket.emit('chat.connect.success', result);
-                } else {
-                    socket.emit('chat.connect.error', {error: 'No place for you!)'});
-                }
+                console.log(rsaWrapper.decrypt(privateServerKey, encryptedMsg));
             }
+
+            // if(participant){
+            //     const addedParticipant = participants.data.find(p => p.id === participant);
+            //
+            //     if(addedParticipant){
+            //         addedParticipant.socket = socket;
+            //     }else {
+            //         socket.emit('chat.connect.error', {error: 'Some mistake happened'});
+            //     }
+            // } else {
+            //     const result = participants.add(socket);
+            //
+            //     if (result) {
+            //         socket.emit('chat.connect.success', result);
+            //     } else {
+            //         socket.emit('chat.connect.error', {error: 'No place for you!)'});
+            //     }
+            // }
         });
 
         socket.on('message.sending', function (message) {

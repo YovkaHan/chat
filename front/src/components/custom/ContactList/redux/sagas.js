@@ -1,16 +1,15 @@
 import {take, call, put, select, fork, race, cancelled, takeEvery, delay, all} from 'redux-saga/effects';
 import * as R from "ramda";
-import axios from 'axios';
 import moment from 'moment';
+import {componentName} from '../';
 import {TYPES, name} from "./types";
 import {TYPES as CTYPES} from '../../../../common/core';
 import {INIT_STATE_ITEM} from './reducer';
-import {componentName} from '../';
-import rsaWrapper from '../../../../common/rsa-wrapper';
 import io from 'socket.io-client';
 import {eventChannel} from 'redux-saga';
 
 const time = () => moment().unix() * 1000;
+
 const idMake = (index) => name + index;
 
 function* createItemHandle({type, id, coreId}) {
@@ -31,7 +30,7 @@ function* deleteItemHandle({type, id}) {
 function* flagHandleComplete({type, payload, id}) {
     const state = yield select();
 
-    const _object = R.clone(state.Components[componentName][id]);
+    const _object = R.clone(state[componentName].Chat[id]);
     const {key, value} = payload;
 
     if (value !== undefined) {
@@ -43,18 +42,17 @@ function* flagHandleComplete({type, payload, id}) {
     yield put({type: TYPES.FLAGS_COMPLETE, payload: _object.flags, id});
 }
 
-function* msgMaker({type, payload, pcb, id, from, to, cId}) {
+function* msgMaker({type, payload, pcb, id, from, to}) {
     const _time = time();
     const _payload = {
         from: 'TestFrom',
         to: 'TestTo',
-        cId,
         id: from + _time + to,
         msg: payload.join(' '),
         date: _time
     };
 
-    yield put({type: TYPES.MESSAGE_MAKING_FINISHED, payload: _payload, id});
+    yield put({type: TYPES.MSG_MAKE_COMPLETE, payload: _payload, id});
 }
 
 /**CHANNEL*/
@@ -141,23 +139,10 @@ const listenConnectSaga = function* (reconnect, id) {
 
 const onConnectToChatSaga = function* (socket, _id) {
     while (true) {
-        const {id} = yield take(TYPES.CHANNEL_APP_CONNECT);
-        const state = yield select();
+        const {id} = yield take(TYPES.CHANNEL_CHAT_CONNECT);
 
         if(id === _id){
-            const {authToken} = state.Components[componentName][id];
-
-            const serverPublicKey = localStorage.getItem('serverPublicKey');
-
-            rsaWrapper.publicEncrypt(serverPublicKey, 'Hello message').then(msg => {
-                socket.emit(
-                    `chat.connect.start`,
-                    {
-                        token: authToken,
-                        encryptedMsg: msg
-                    }
-                );
-            });
+            socket.emit(`chat.connect.start`);
         }
     }
 };
@@ -239,6 +224,7 @@ const listenServerSaga = function* (id) {
 };
 
 const initServerListeningSaga = function* (action) {
+    console.log(action);
     while (true) {
         yield race({
             task: call(listenServerSaga, action.id),
@@ -247,128 +233,10 @@ const initServerListeningSaga = function* (action) {
     }
 };
 
-const userLogin = () => {
-    const userId = localStorage.getItem('userId');
-
-    return axios.post(`${SERVER}/participant/login`, {
-        name: 'Fred',
-        id: userId
-    }).then(function (response) {
-        console.log(response);
-        return response.data;
-    }).catch(error => {
-        console.error(error);
-        return error;
-    })
-};
-
-const tokenCheck = () => {
-    const userId = localStorage.getItem('userId');
-    const authToken =  localStorage.getItem('authToken');
-
-    return axios.post(`${SERVER}/token/check`, {
-        token: authToken,
-        userId
-    }).then(function (response) {
-        console.log(response);
-        return response.data;
-    }).catch(error => {
-        console.error(error);
-        return error;
-    })
-};
-
-const keyExchange = () => {
-    const userId = localStorage.getItem('userId');
-    const authToken =  localStorage.getItem('authToken');
-    const key = localStorage.getItem('clientPublicKey');
-
-    return axios.post(`${SERVER}/token/key`, {
-        token: authToken,
-        userId,
-        key
-    }).then(function (response) {
-        console.log(response);
-        return response.data;
-    }).catch(error => {
-        console.error(error);
-        return error;
-    })
-};
-
-const userAuthorizationProcess = function* (action) {
-
-    localStorage.setItem('userId', '1555082537_24ieiob0te81');
-
-    const localToken =  localStorage.getItem('authToken');
-
-    if(localToken){
-        const userId = localStorage.getItem('userId');
-        yield put({
-            type: TYPES.APP_AUTHORIZATION_END,
-            id: action.id,
-            payload: {authToken: localToken, userId}
-        })
-    } else {
-        const result = yield call(userLogin);
-
-        if(!result.hasOwnProperty('error')){
-            const {token, id} = result;
-
-            localStorage.setItem('authToken', token);
-
-            yield put({
-                type: TYPES.APP_AUTHORIZATION_END,
-                id: action.id,
-                payload: {authToken: token, userId: id}
-            })
-        }
-    }
-};
-
-const userAuthorizationNext = function* (action) {
-    const checkResult = yield call(tokenCheck);
-
-    if(checkResult.error) {
-        const loginResult = yield call(userLogin);
-
-        if(!loginResult.hasOwnProperty('error')){
-            const {token, id} = loginResult;
-
-            localStorage.setItem('authToken', token);
-
-            yield put({
-                type: TYPES.APP_AUTHORIZATION_END,
-                id: action.id,
-                payload: {authToken: token, userId: id}
-            })
-        }
-    } else {
-        const keyPair = rsaWrapper.generate();
-
-        localStorage.setItem('clientPublicKey', keyPair.public);
-        localStorage.setItem('clientPrivateKey', keyPair.private);
-
-        const serverPublicKey =  yield keyExchange();
-        localStorage.setItem('serverPublicKey', rsaWrapper.arrayBufferToBase64String(serverPublicKey.key.data));
-    }
-   yield put({type: TYPES.CHANNEL_START, id: action.id})
-};
-
 export default [
     takeEvery(TYPES.FLAGS, flagHandleComplete),
     takeEvery(TYPES.ITEM_CREATE, createItemHandle),
     takeEvery(TYPES.ITEM_DELETE, deleteItemHandle),
-    takeEvery(TYPES.MESSAGE_MAKING_BEGIN, msgMaker),
-    takeEvery(TYPES.CHANNEL_START, initServerListeningSaga),
-    takeEvery(TYPES.APP_AUTHORIZATION_BEGIN, userAuthorizationProcess),
-    takeEvery(TYPES.APP_AUTHORIZATION_END, userAuthorizationNext)
+    takeEvery(TYPES.MSG_MAKE, msgMaker),
+    takeEvery(TYPES.CHANNEL_START, initServerListeningSaga)
 ];
-
-/**
- * 1) Сокета нет.
- * 2) Вытащить токен авторизации с памяти
- * 3) Если есть токен авторизации - попробовать авторизироватся
- * 4) Если нет токена авторизации - получить через Login / Register
- * 5) Получили токен от сервера - аторизируемся и коннектим приложение.
- * */
