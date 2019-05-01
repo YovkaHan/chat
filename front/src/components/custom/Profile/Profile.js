@@ -38,6 +38,10 @@ class Profile extends React.Component {
         this.handleClick = ::this.handleClick;
     }
 
+    handleLogOut = () => {
+        this.props.logOut();
+    };
+
     async handleClick(e) {
         if(!this.props.disabled){
             await this.props.defaultClick(e);
@@ -46,7 +50,7 @@ class Profile extends React.Component {
     };
 
     render() {
-        const {props, state, handleClick} = this;
+        const {props, state, handleClick, handleLogOut} = this;
         const {className, rootClass,  pcb, pcbMade} = props;
         const {User} = this.madeChildren;
         const {dummy} = state;
@@ -60,8 +64,10 @@ class Profile extends React.Component {
                         rootClass={`user`}
                     />
                     <div className={`off`}>
-                        <div className={`off-btn`}>
-
+                        <div className={`off-btn`} onClick={handleLogOut}>
+                            <i className="material-icons">
+                                exit_to_app
+                            </i>
                         </div>
                     </div>
                 </div>
@@ -95,11 +101,21 @@ const mapStateToProps = (state, props) => {
 const mapDispatchers = (dispatch, props) => {
     const cId = props.pcbMade.id;
 
+    const Parent = props.pcbMade.relations.Parent;
+
+    const actions = require('../../index')[Parent.component].actions;
+    let logOut = ()=>{};
+
+    if(actions){
+        logOut = actions.logOut;
+    }
+
     return bindActionCreators({
         createItem: () => createItem(),
         defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
+        logOut: () => logOut(Parent.id),
         valueChange: (value) => valueChange(cId, value)
     }, dispatch);
 };

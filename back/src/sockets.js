@@ -71,29 +71,13 @@ module.exports = function ({server, getObject, rsaWrapper}) {
 
             const tokenObject = getObject(token);
 
+            console.log(token);
+
             if(tokenObject !== undefined){
                 const privateServerKey = rsaWrapper.getPrivateKey('server');
 
                 console.log(rsaWrapper.decrypt(privateServerKey, encryptedMsg));
             }
-
-            // if(participant){
-            //     const addedParticipant = participants.data.find(p => p.id === participant);
-            //
-            //     if(addedParticipant){
-            //         addedParticipant.socket = socket;
-            //     }else {
-            //         socket.emit('chat.connect.error', {error: 'Some mistake happened'});
-            //     }
-            // } else {
-            //     const result = participants.add(socket);
-            //
-            //     if (result) {
-            //         socket.emit('chat.connect.success', result);
-            //     } else {
-            //         socket.emit('chat.connect.error', {error: 'No place for you!)'});
-            //     }
-            // }
         });
 
         socket.on('message.sending', function (message) {

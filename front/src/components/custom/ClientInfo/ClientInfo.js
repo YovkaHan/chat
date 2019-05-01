@@ -18,6 +18,7 @@ class ClientInfo extends React.Component {
         defaultName: 'Test Name'
     };
 
+
     constructor(props) {
         super(props);
 

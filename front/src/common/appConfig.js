@@ -127,6 +127,12 @@ export const pcbTemplate = {
             children:  [
                 {alias: 'User', id: 'clientInfo0'}
             ],
+            relations: {
+                Parent: {
+                    id: 'convApp0',
+                    component: 'ConversationApp',
+                }
+            }
         }
     },
     templateList: {

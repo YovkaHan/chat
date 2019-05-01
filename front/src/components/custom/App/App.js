@@ -25,8 +25,6 @@ export default class App extends React.Component {
                     <ConversationApp.Component
                         className={`clientB`}
                         core={{pcb: this.pcb, id: 'convApp0', component: 'ConversationApp'}}
-                        from={'D'}
-                        to={'C'}
                     />
                 </div>
             </React.Fragment>

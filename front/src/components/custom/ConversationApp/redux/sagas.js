@@ -145,7 +145,7 @@ const onConnectToChatSaga = function* (socket, _id) {
         const state = yield select();
 
         if(id === _id){
-            const {authToken} = state.Components[componentName][id];
+            const authToken = localStorage.getItem('authToken');
 
             const serverPublicKey = localStorage.getItem('serverPublicKey');
 
@@ -247,19 +247,25 @@ const initServerListeningSaga = function* (action) {
     }
 };
 
-const userLogin = () => {
+const userLogin = (action) => {
     const userId = localStorage.getItem('userId');
-
-    return axios.post(`${SERVER}/participant/login`, {
-        name: 'Fred',
-        id: userId
-    }).then(function (response) {
-        console.log(response);
-        return response.data;
-    }).catch(error => {
-        console.error(error);
-        return error;
-    })
+    if(!userId){
+        return new Promise(resolve => {
+            put({type: TYPES.APP_VIEW_LOGIN, id: action.id});
+            resolve({error: {}});
+        })
+    } else {
+        return axios.post(`${SERVER}/participant/login`, {
+            name: 'Fred',
+            id: userId
+        }).then(function (response) {
+            console.log(response);
+            return response.data;
+        }).catch(error => {
+            console.error(error);
+            return error;
+        })
+    }
 };
 
 const tokenCheck = () => {
@@ -296,21 +302,60 @@ const keyExchange = () => {
     })
 };
 
+const loginProcess = function* (action) {
+    localStorage.setItem('userId', action.userId);
+    yield put({type: TYPES.APP_LOGIN_END, id: action.id})
+};
+
+const logoutProcess = function* (action) {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('clientPublicKey');
+    localStorage.removeItem('clientPrivateKey');
+    localStorage.removeItem('serverPublicKey');
+    yield put({type: TYPES.APP_VIEW_LOGIN, id: action.id});
+    yield put({type: TYPES.APP_LOGOUT_END, id: action.id});
+};
+
+const loginNext = function* (action) {
+    yield put({type: TYPES.APP_VIEW_MAIN, id: action.id});
+    yield put({type: TYPES.APP_AUTHORIZATION_BEGIN, id: action.id})
+};
+
 const userAuthorizationProcess = function* (action) {
-
-    localStorage.setItem('userId', '1555082537_24ieiob0te81');
-
     const localToken =  localStorage.getItem('authToken');
 
+    /**Если токен есть то зачем генерировать новый ключ*/
     if(localToken){
         const userId = localStorage.getItem('userId');
-        yield put({
-            type: TYPES.APP_AUTHORIZATION_END,
-            id: action.id,
-            payload: {authToken: localToken, userId}
-        })
+
+        if(!userId){
+            yield put({type: TYPES.APP_VIEW_LOGIN, id: action.id});
+        } else {
+            yield put({type: TYPES.APP_VIEW_MAIN, id: action.id});
+
+            const checkResult = yield call(tokenCheck);
+
+            if(checkResult.error) {
+                const loginResult = yield call(userLogin, action);
+
+                if(!loginResult.hasOwnProperty('error')){
+                    const {token, id} = loginResult;
+
+                    localStorage.setItem('authToken', token);
+
+                    yield put({
+                        type: TYPES.APP_AUTHORIZATION_END,
+                        id: action.id,
+                        payload: {authToken: token, userId: id}
+                    })
+                }
+            } else {
+                yield put({type: TYPES.CHANNEL_START, id: action.id});
+            }
+        }
     } else {
-        const result = yield call(userLogin);
+        const result = yield call(userLogin, action);
 
         if(!result.hasOwnProperty('error')){
             const {token, id} = result;
@@ -330,7 +375,7 @@ const userAuthorizationNext = function* (action) {
     const checkResult = yield call(tokenCheck);
 
     if(checkResult.error) {
-        const loginResult = yield call(userLogin);
+        const loginResult = yield call(userLogin, action);
 
         if(!loginResult.hasOwnProperty('error')){
             const {token, id} = loginResult;
@@ -361,6 +406,9 @@ export default [
     takeEvery(TYPES.ITEM_DELETE, deleteItemHandle),
     takeEvery(TYPES.MESSAGE_MAKING_BEGIN, msgMaker),
     takeEvery(TYPES.CHANNEL_START, initServerListeningSaga),
+    takeEvery(TYPES.APP_LOGIN_BEGIN, loginProcess),
+    takeEvery(TYPES.APP_LOGIN_END, loginNext),
+    takeEvery(TYPES.APP_LOGOUT_BEGIN, logoutProcess),
     takeEvery(TYPES.APP_AUTHORIZATION_BEGIN, userAuthorizationProcess),
     takeEvery(TYPES.APP_AUTHORIZATION_END, userAuthorizationNext)
 ];

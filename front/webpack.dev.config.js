@@ -1,4 +1,5 @@
 const _conf = require('./webpackConsts').configs;
+const path = require('path');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 module.exports = (env, argv) => {
@@ -10,6 +11,7 @@ module.exports = (env, argv) => {
 
     return {
         devtool: "inline-cheap-module-source-map",
+        context: path.resolve(__dirname),
         entry: [
             '@babel/polyfill',
             `webpack-dev-server/client?http://${_conf.server.host}:${_conf.server.port}`,
@@ -17,7 +19,7 @@ module.exports = (env, argv) => {
         ],
         output: {
             path: _conf.path.resolve(__dirname, 'dist'),
-            filename: './front/[name].[hash].js'
+            filename: '[name].[hash].js'
         },
         devServer: {
             stats: 'normal',
@@ -83,7 +85,7 @@ module.exports = (env, argv) => {
             new _conf.MiniCssExtractPlugin({
                 // Options similar to the same options in webpackOptions.output
                 // both options are optional
-                filename: "./front/[name].[hash].css",
+                filename: "[name].[hash].css",
             }),
             new _conf.HtmlWebpackPlugin({
                 inject: false,

@@ -33,10 +33,20 @@ export function appAuthorize(id) {
     return ({type: TYPES.APP_AUTHORIZATION_BEGIN, id})
 }
 
+export function logIn(id, userId) {
+    return ({type: TYPES.APP_LOGIN_BEGIN, id, userId})
+}
+
+export function logOut(id) {
+    return ({type: TYPES.APP_LOGOUT_BEGIN, id})
+}
+
 export default {
     initialize,
     flagHandle,
     createItem,
     deleteItem,
-    appAuthorize
+    appAuthorize,
+    logIn,
+    logOut
 }

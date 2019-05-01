@@ -11,8 +11,8 @@ const server = {
 };
 
 const frontEntryPoint = {
-    js: './front/index.js',
-    html: './front/index.html'
+    js: './index.js',
+    html: './index.html'
 };
 
 module.exports.configs = {

@@ -127,6 +127,8 @@ app.post('/participant/logout', function (req, res) {
     const {token, userId} = req.body;
     const result = {};
 
+    console.log('logout');
+
     /** -Проверить token и удалить если будет*/
     removeObject(token, userId);
 

@@ -16,6 +16,7 @@ export const INIT_STATE_ITEM = {
         server: 'off',
         connection: 'off'
     },
+    view: 'login',
     authToken: '',
     userId: '',
     userName: '',
@@ -94,6 +95,16 @@ const cases = (type) => {
             return (draft, payload, id) => {
                 draft[id].authToken = payload.authToken;
                 draft[id].userId = payload.userId;
+            };
+        }
+        case TYPES.APP_VIEW_LOGIN: {
+            return (draft, payload, id) => {
+                draft[id].view = 'login';
+            };
+        }
+        case TYPES.APP_VIEW_MAIN: {
+            return (draft, payload, id) => {
+                draft[id].view = 'main';
             };
         }
         default : {
