@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
-import {flagHandle, createItem, valueChange, startChannel, connectApp, appAuthorize, logIn} from './redux/actions';
+import {flagHandle, createItem, valueChange, connectApp, appAuthorize, logIn, connectionTry} from './redux/actions';
 
 const innerClass = (suffix, mainClass, rootClass) => {
     return `${mainClass}__${suffix} ${rootClass ? rootClass + '__' + suffix : ''}`.trim()
@@ -39,11 +39,10 @@ class ConversationApp extends React.Component {
     }
 
     componentDidUpdate(){
-        if(this.props.flags.connection === 'off'
-            && this.props.flags.server === 'on'
-            && this.props.flags.chat === 'ready'
-        ){
+        if(this.props.flags.stage === 'prepare' && this.props.flags.server === 'on' && this.props.flags.serverConnection === 'on'){
             this.props.connectApp();
+        } else if(this.props.flags.server === 'on' && this.props.flags.serverConnection === 'off'){
+            this.props.connectionTry();
         }
     }
 
@@ -151,10 +150,10 @@ const mapDispatchers = (dispatch, props) => {
     return bindActionCreators({
         createItem: () => createItem(),
         defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
-        startChannel: () => startChannel(cId),
         connectApp: () => connectApp(cId),
         appAuthorize: () => appAuthorize(cId),
-        logIn: (userId) => logIn(cId, userId)
+        logIn: (userId) => logIn(cId, userId),
+        connectionTry: () => connectionTry(cId)
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
     }, dispatch);

@@ -68,7 +68,9 @@ class ClientInfo extends React.Component {
         return (
             <div className={`${mainClass} ${className} ${rootClass}`.trim()} onClick={handleClick}>
                 <div className={innerClass('content', mainClass, rootClass)}>
-                    <div className={`${mainClass}__avatar`}>{avaSrc}</div>
+                    <div className={`${mainClass}__avatar avatar`}>
+                        <div className={`avatar__pic`} style={{background: `url(${{avaSrc}})`}}></div>
+                    </div>
                     <div className={`${mainClass}__name`}>{name}</div>
                 </div>
             </div>

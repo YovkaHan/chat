@@ -29,6 +29,10 @@ export function connectApp(id) {
     return ({type: TYPES.CHANNEL_APP_CONNECT, id})
 }
 
+export function connectionTry(id) {
+    return ({type: TYPES.APP_SERVER_CONNECTION_TRY, id})
+}
+
 export function appAuthorize(id) {
     return ({type: TYPES.APP_AUTHORIZATION_BEGIN, id})
 }

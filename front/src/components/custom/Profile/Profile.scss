@@ -1,7 +1,7 @@
 .c-profile {
   display: inline-flex;
   width: 100%;
-  height: 100%;
+  height: 80px;
 
   &__content {
     position: relative;
@@ -12,10 +12,45 @@
   .off {
     &-btn {
       position: absolute;
-      right: 50px;
+      right: 30px;
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
+      width: 24px;
+      height: 24px;
+    }
+  }
+  .c-client-info {
+    height: 100%;
+    width: calc(100% - 80px);
+
+    &__content {
+      width: 100%;
+      height: inherit;
+      display: flex;
+    }
+    &__avatar {
+      height: inherit;
+      width: 50%;
+    }
+    &__name {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: inherit;
+      width: 50%;
+    }
+  }
+  .avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &__pic {
+      width: 50px;
+      height: 50px;
+      border: 1px solid black;
+      background: white;
+      border-radius: 50%;
     }
   }
 }

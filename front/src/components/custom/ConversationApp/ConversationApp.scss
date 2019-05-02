@@ -14,8 +14,8 @@
       flex-direction: column;
 
       .top {
-        height: 80px;
         background: #236820;
+        max-height: 80px;
       }
       .down {
         height: calc(100% - 80px);

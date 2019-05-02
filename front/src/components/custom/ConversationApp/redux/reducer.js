@@ -7,14 +7,20 @@ const INIT_STATE = {
     length: 0
 };
 
+/**
+ * flags :
+ *      stage(init, prepare, ready, destroy)
+ * */
+
 export const INIT_STATE_ITEM = {
     flags: {
         toggle: false,
         hover: false,
         status: false,
-        chat: 'default',
+        stage: 'init',
         server: 'off',
-        connection: 'off'
+        serverConnection: 'off',
+        channel: 'off'
     },
     view: 'login',
     authToken: '',
@@ -66,29 +72,49 @@ const cases = (type) => {
                 draft[id].participantId = payload
             };
         }
-        case TYPES.SERVER_OFF: {
+        case TYPES.APP_STAGE_PREPARE: {
+            return (draft, payload, id) => {
+                draft[id].flags.stage = 'prepare'
+            };
+        }
+        case TYPES.APP_STAGE_READY: {
+            return (draft, payload, id) => {
+                draft[id].flags.stage = 'ready'
+            };
+        }
+        case TYPES.APP_STAGE_DESTROY: {
+            return (draft, payload, id) => {
+                draft[id].flags.stage = 'destroy'
+            };
+        }
+        case TYPES.APP_SERVER_OFF: {
             return (draft, payload, id) => {
                 draft[id].flags.server = 'off'
             };
         }
-        case TYPES.SERVER_ON: {
+        case TYPES.APP_SERVER_ON: {
             return (draft, payload, id) => {
                 draft[id].flags.server = 'on'
             };
         }
-        case TYPES.CONNECTION_ON: {
+        case TYPES.APP_SERVER_CONNECTION_ON: {
             return (draft, payload, id) => {
-                draft[id].flags.connection = 'on'
+                draft[id].flags.serverConnection = 'on'
             };
         }
-        case TYPES.CONNECTION_OFF: {
+        case TYPES.APP_SERVER_CONNECTION_OFF: {
             return (draft, payload, id) => {
-                draft[id].flags.connection = 'off'
+                draft[id].flags.serverConnection = 'off'
             };
         }
-        case TYPES.CHAT_READY: {
+        case TYPES.APP_CHANNEL_ON: {
             return (draft, payload, id) => {
-                draft[id].flags.chat = 'ready'
+                draft[id].flags.channel = 'on'
+            };
+        }
+        case TYPES.APP_CHANNEL_OFF: {
+            return (draft, payload, id) => {
+                draft[id].flags.channel = 'off'
             };
         }
         case TYPES.APP_AUTHORIZATION_END: {

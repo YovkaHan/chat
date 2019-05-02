@@ -5,19 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f36fa4ef-5048-49ec-acff-b0083d3d980d" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/db/about.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/db/createDB.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/db/heroesRoles.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/db/start-info.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/db/todo.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/db/todoSequence.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/db/workWithDB.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/back/server.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/back/src/sockets.js" beforeDir="false" afterPath="$PROJECT_DIR$/back/src/sockets.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/front/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front/src/common/appConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/common/appConfig.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front/src/components/custom/App/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/custom/App/App.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/front/src/components/custom/ClientInfo/ClientInfo.js" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/custom/ClientInfo/ClientInfo.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.js" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.scss" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.scss" afterDir="false" />
@@ -25,7 +15,6 @@
       <change beforePath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/reducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/reducer.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/sagas.js" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/sagas.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/types.js" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/types.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front/src/components/custom/Profile/Profile.js" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/custom/Profile/Profile.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/front/src/components/custom/Profile/Profile.scss" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/custom/Profile/Profile.scss" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -40,24 +29,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="appConfig.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/front/src/common/appConfig.js">
+      <file leaf-file-name="ClientInfo.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/front/src/components/custom/ClientInfo/ClientInfo.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="254">
-              <caret line="133" column="17" lean-forward="true" selection-start-line="133" selection-start-column="17" selection-end-line="133" selection-end-column="17" />
+            <state relative-caret-position="136">
+              <caret line="8" column="2" lean-forward="true" selection-start-line="8" selection-start-column="2" selection-end-line="8" selection-end-column="2" />
               <folding>
-                <element signature="e#141#314#0" />
-                <element signature="e#430#664#0" />
-                <element signature="e#679#929#0" />
-                <element signature="e#944#1036#0" />
-                <element signature="e#1051#1143#0" />
-                <element signature="e#1160#1505#0" />
-                <element signature="e#1522#1867#0" />
-                <element signature="e#1884#2087#0" />
-                <element signature="e#2104#2307#0" />
-                <element signature="e#2324#2590#0" />
-                <element signature="e#2607#2873#0" />
-                <element signature="e#3511#3565#0" />
+                <element signature="e#0#26#0" expanded="true" />
+                <element signature="n#!!block;n#constructor#0;n#ClientInfo#0" />
+                <element signature="n#!!block;n#handleClick#0;n#ClientInfo#0" />
               </folding>
             </state>
           </provider>
@@ -66,20 +46,8 @@
       <file leaf-file-name="ConversationApp.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-300">
-              <caret line="69" column="77" selection-start-line="69" selection-start-column="77" selection-end-line="69" selection-end-column="77" />
-              <folding>
-                <element signature="e#0#26#0" expanded="true" />
-                <element signature="e#3079#4733#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/index.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
+            <state relative-caret-position="615">
+              <caret line="75" column="95" lean-forward="true" selection-start-line="75" selection-start-column="95" selection-end-line="75" selection-end-column="95" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
               </folding>
@@ -90,8 +58,8 @@
       <file leaf-file-name="Profile.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/front/src/components/custom/Profile/Profile.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="441">
-              <caret line="106" column="24" lean-forward="true" selection-start-line="106" selection-start-column="24" selection-end-line="106" selection-end-column="24" />
+            <state relative-caret-position="411">
+              <caret line="106" column="14" selection-start-line="106" selection-start-column="8" selection-end-line="106" selection-end-column="14" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
               </folding>
@@ -99,13 +67,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/front/src/components/index.js">
+      <file leaf-file-name="reducer.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/reducer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="30" column="12" lean-forward="true" selection-start-line="30" selection-start-column="12" selection-end-line="30" selection-end-column="12" />
+            <state relative-caret-position="-507">
+              <caret line="82" column="14" lean-forward="true" selection-start-line="82" selection-start-column="14" selection-end-line="82" selection-end-column="14" />
               <folding>
-                <element signature="e#0#39#0" expanded="true" />
+                <element signature="e#0#30#0" expanded="true" />
+                <element signature="e#634#824#0" />
+                <element signature="e#833#971#0" />
+                <element signature="e#980#1121#0" />
+                <element signature="e#1130#1276#0" />
+                <element signature="e#1285#1538#0" />
+                <element signature="e#1547#1695#0" />
+                <element signature="e#1704#1856#0" />
               </folding>
             </state>
           </provider>
@@ -114,8 +89,34 @@
       <file leaf-file-name="actions.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/actions.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="39" column="28" lean-forward="true" selection-start-line="39" selection-start-column="28" selection-end-line="39" selection-end-column="28" />
+            <state relative-caret-position="292">
+              <caret line="43" column="22" selection-start-line="43" selection-start-column="16" selection-end-line="43" selection-end-column="22" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="sockets.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/back/src/sockets.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="323">
+              <caret line="80" column="11" lean-forward="true" selection-start-line="80" selection-start-column="11" selection-end-line="80" selection-end-column="11" />
+              <folding>
+                <element signature="e#194#196#0" />
+                <element signature="e#1682#1929#0" />
+                <element signature="e#1989#2349#0" />
+                <element signature="e#2428#2755#0" />
+                <element signature="e#2409#2969#0" />
+                <element signature="e#3044#3469#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="firebase.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/back/src/firebase.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="527">
+              <caret line="31" column="23" selection-start-line="31" selection-start-column="8" selection-end-line="31" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -123,8 +124,23 @@
       <file leaf-file-name="types.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/types.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="217">
-              <caret line="21" column="35" selection-start-line="21" selection-start-column="21" selection-end-line="21" selection-end-column="35" />
+            <state relative-caret-position="476">
+              <caret line="46" column="23" selection-start-line="46" selection-start-column="4" selection-end-line="46" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="server.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/back/server.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="250">
+              <caret line="124" column="29" selection-start-line="124" selection-start-column="23" selection-end-line="124" selection-end-column="29" />
+              <folding>
+                <element signature="e#1266#1442#0" />
+                <element signature="e#1613#1789#0" />
+                <element signature="e#1849#1957#0" />
+                <element signature="e#2013#2743#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -132,8 +148,8 @@
       <file leaf-file-name="sagas.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/sagas.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="152">
-              <caret line="314" column="47" selection-start-line="314" selection-start-column="47" selection-end-line="314" selection-end-column="47" />
+            <state relative-caret-position="428">
+              <caret line="376" column="51" selection-start-line="376" selection-start-column="51" selection-end-line="376" selection-end-column="51" />
               <folding>
                 <element signature="e#0#105#0" expanded="true" />
                 <element signature="n#!!block;n#createItemHandle#0" />
@@ -141,34 +157,19 @@
                 <element signature="n#!!block;n#flagHandleComplete#0" />
                 <element signature="n#!!block;n#msgMaker#0" />
                 <element signature="e#1916#2847#0" />
-                <element signature="e#2950#3857#0" />
-                <element signature="e#3948#4057#0" />
-                <element signature="e#4112#4219#0" />
-                <element signature="e#5634#7065#0" />
-                <element signature="e#8577#9842#0" />
+                <element signature="e#4037#4146#0" />
+                <element signature="e#4201#4308#0" />
+                <element signature="e#4475#4483#0" />
+                <element signature="e#5628#6234#0" />
+                <element signature="e#6288#6572#0" />
+                <element signature="e#8405#8956#0" />
+                <element signature="e#8984#9365#0" />
+                <element signature="e#9394#9843#0" />
+                <element signature="e#9886#9998#0" />
+                <element signature="e#10501#10631#0" />
+                <element signature="e#10686#12146#0" />
+                <element signature="e#12198#13106#0" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ConversationApp.scss" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.scss">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="9" column="17" lean-forward="true" selection-start-line="9" selection-start-column="17" selection-end-line="9" selection-end-column="17" />
-              <folding>
-                <element signature="e#28#89#0" />
-                <element signature="e#511#923#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Profile.scss" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/front/src/components/custom/Profile/Profile.scss">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="17" column="21" selection-start-line="17" selection-start-column="21" selection-end-line="17" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -185,36 +186,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>cons</find>
-      <find>console.</find>
-      <find>CHANNEL_APP_CONNECT</find>
-      <find>connectApp</find>
-      <find>crypto</find>
-      <find>connect</find>
-      <find>importPublicKey</find>
-      <find>console.log</find>
-      <find>keyExchange</find>
-      <find>APP_AUTHORIZATION_END</find>
-      <find>CHANNEL_START</find>
-      <find>initServerListeningSaga</find>
-      <find>removeObject</find>
-      <find>CircularDependencyPlugin</find>
-      <find>node-rsa</find>
-      <find>context</find>
-      <find>userId</find>
-      <find>tokenCheck</find>
-      <find>userAuthorizationNext</find>
-      <find>APP_LOGIN_BEGIN</find>
-      <find>APP_VIEW_LOGIN</find>
-      <find>loginNext</find>
-      <find>loginProcess</find>
-      <find>userAuthorizationProcess</find>
+      <find>CHANNEL_OFF</find>
+      <find>disconnect</find>
+      <find>listenDisconnectSaga</find>
+      <find>CHANNEL</find>
+      <find>chat</find>
+      <find>participants</find>
+      <find>CHAT_READY</find>
+      <find>participantsGet</find>
       <find>APP_AUTHORIZATION_BEGIN</find>
-      <find>APP_LOGIN_END</find>
-      <find>left</find>
-      <find>appAuthorize</find>
+      <find>userAuthorizationProcess</find>
+      <find>CHANNEL_START</find>
+      <find>connection</find>
+      <find>initServerListeningSaga</find>
+      <find>CONNECTION</find>
+      <find>APP_STAGE_READY</find>
+      <find>socketChannel</find>
+      <find>createSocketChannel</find>
+      <find>onConnectToChatSaga</find>
+      <find>APP_SERVER_CONNECTION_TRY</find>
+      <find>APP_LOGOUT_BEGIN</find>
+      <find>logoutProcess</find>
       <find>userLogin</find>
-      <find>setItem</find>
+      <find>take</find>
+      <find>APP_DISCONNECT_TRY</find>
+      <find>appAuthorize</find>
+      <find>logOut</find>
+      <find>APP_STAGE_DESTROY</find>
+      <find>CHANNEL_APP_CONNECT</find>
+      <find>CHANNEL_ON</find>
+      <find>APP_STAGE_PREPARE</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -232,7 +233,6 @@
       <list>
         <option value="$PROJECT_DIR$/front/src/components/custom/Chat/Chat.js" />
         <option value="$PROJECT_DIR$/back/src/firebase.js" />
-        <option value="$PROJECT_DIR$/tasks.json" />
         <option value="$PROJECT_DIR$/front/src/components/custom/ContactList/ContactList.js" />
         <option value="$PROJECT_DIR$/front/src/components/custom/ContactList/ContactList.scss" />
         <option value="$PROJECT_DIR$/front/src/components/custom/Chat/Chat.scss" />
@@ -264,30 +264,29 @@
         <option value="$USER_HOME$/Downloads/test/j.js" />
         <option value="$PROJECT_DIR$/front/index.html" />
         <option value="$PROJECT_DIR$/front/src/components/custom/App/App.js" />
-        <option value="$PROJECT_DIR$/back/src/sockets.js" />
-        <option value="$PROJECT_DIR$/back/server.js" />
         <option value="$PROJECT_DIR$/back/src/tokens.js" />
-        <option value="$PROJECT_DIR$/front/src/components/custom/ClientInfo/ClientInfo.js" />
         <option value="$PROJECT_DIR$/back/package.json" />
         <option value="$PROJECT_DIR$/front/webpack.dev.config.js" />
         <option value="$PROJECT_DIR$/front/webpackConsts.js" />
         <option value="$PROJECT_DIR$/front/package.json" />
-        <option value="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/reducer.js" />
-        <option value="$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.js" />
-        <option value="$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.scss" />
-        <option value="$PROJECT_DIR$/front/src/components/custom/Profile/Profile.scss" />
         <option value="$PROJECT_DIR$/front/src/common/appConfig.js" />
         <option value="$PROJECT_DIR$/front/src/components/custom/Profile/Profile.js" />
-        <option value="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/types.js" />
+        <option value="$PROJECT_DIR$/tasks.json" />
+        <option value="$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.scss" />
+        <option value="$PROJECT_DIR$/front/src/components/custom/ClientInfo/ClientInfo.js" />
+        <option value="$PROJECT_DIR$/front/src/components/custom/Profile/Profile.scss" />
+        <option value="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/reducer.js" />
         <option value="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/actions.js" />
+        <option value="$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.js" />
+        <option value="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/types.js" />
+        <option value="$PROJECT_DIR$/back/server.js" />
+        <option value="$PROJECT_DIR$/back/src/sockets.js" />
         <option value="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/sagas.js" />
       </list>
     </option>
   </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
-  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER">
-    <package-json value="$PROJECT_DIR$/package.json" />
-  </component>
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
@@ -300,7 +299,6 @@
     <packageJsonPaths>
       <path value="$PROJECT_DIR$/back/package.json" />
       <path value="$PROJECT_DIR$/front/package.json" />
-      <path value="$PROJECT_DIR$/package.json" />
     </packageJsonPaths>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
@@ -325,6 +323,17 @@
             <path>
               <item name="chat" type="b2602c69:ProjectViewProjectNode" />
               <item name="chat" type="462c0819:PsiDirectoryNode" />
+              <item name="back" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chat" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chat" type="462c0819:PsiDirectoryNode" />
+              <item name="back" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chat" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chat" type="462c0819:PsiDirectoryNode" />
               <item name="front" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -332,13 +341,6 @@
               <item name="chat" type="462c0819:PsiDirectoryNode" />
               <item name="front" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="chat" type="b2602c69:ProjectViewProjectNode" />
-              <item name="chat" type="462c0819:PsiDirectoryNode" />
-              <item name="front" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="common" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="chat" type="b2602c69:ProjectViewProjectNode" />
@@ -354,6 +356,25 @@
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="components" type="462c0819:PsiDirectoryNode" />
               <item name="custom" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chat" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chat" type="462c0819:PsiDirectoryNode" />
+              <item name="front" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="custom" type="462c0819:PsiDirectoryNode" />
+              <item name="ConversationApp" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chat" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chat" type="462c0819:PsiDirectoryNode" />
+              <item name="front" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="custom" type="462c0819:PsiDirectoryNode" />
+              <item name="ConversationApp" type="462c0819:PsiDirectoryNode" />
+              <item name="redux" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -434,12 +455,13 @@
       <workItem from="1555490178893" duration="23821000" />
       <workItem from="1555573174733" duration="16225000" />
       <workItem from="1555614812760" duration="347000" />
-      <workItem from="1556702438373" duration="17900000" />
+      <workItem from="1556702438373" duration="19095000" />
+      <workItem from="1556791696075" duration="19560000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="210769000" />
+    <option name="totallyTimeSpent" value="231524000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -454,24 +476,24 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14857745" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49777117" visible="true" weight="0.14857745" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49947312" weight="0.32897604" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5021075" side_tool="true" weight="0.32897604" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32897604" />
       <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.49789253" weight="0.32897604" />
       <window_info anchor="bottom" id="Run" order="2" />
-      <window_info id="npm" order="2" side_tool="true" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49209693" visible="true" weight="0.43028322" />
+      <window_info id="Structure" order="1" sideWeight="0.5022288" side_tool="true" weight="0.14857745" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49209693" visible="true" weight="0.26688454" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info id="npm" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32897604" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -482,13 +504,10 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="18" />
+      <option name="time" value="22" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/front/src/components/custom/Profile/redux/actions.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/front/src/redux/sagas.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
@@ -571,24 +590,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tasks.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="1" selection-start-line="12" selection-start-column="1" selection-end-line="12" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/back/src/rsa-wrapper.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="408">
           <caret line="70" column="6" lean-forward="true" selection-start-line="70" selection-start-column="6" selection-end-line="70" selection-end-column="6" />
-          <folding>
-            <element signature="e#220#519#0" />
-            <element signature="e#559#1546#0" />
-            <element signature="e#1860#2171#0" />
-            <element signature="e#2219#2396#0" />
-            <element signature="e#2445#2626#0" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -606,85 +611,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
           <caret line="30" column="17" selection-start-line="30" selection-start-column="17" selection-end-line="30" selection-end-column="17" />
-          <folding>
-            <element signature="e#106#784#0" />
-            <element signature="e#833#1029#0" />
-            <element signature="e#1064#1179#0" />
-            <element signature="e#1225#1509#0" />
-            <element signature="e#1562#1690#0" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ClientInfo/ClientInfo.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="106">
-          <caret line="10" column="41" selection-start-line="10" selection-start-column="41" selection-end-line="10" selection-end-column="41" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-            <element signature="n#ClientInfo#0" />
-            <element signature="n#!!block;n#constructor#0;n#ClientInfo#0" />
-            <element signature="n#!!block;n#handleClick#0;n#ClientInfo#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/back/db/heroesRoles.json">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/back/db/about.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/back/db/createDB.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/back/db/workWithDB.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-561" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/back/src/sockets.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" selection-start-line="3" selection-end-line="3" />
-          <folding>
-            <element signature="e#1682#1929#0" />
-            <element signature="e#3112#3672#0" />
-            <element signature="e#3747#4172#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-827" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/back/server.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="20" selection-start-line="20" selection-end-line="20" />
-          <folding>
-            <element signature="e#1266#1442#0" />
-            <element signature="e#1613#1789#0" />
-            <element signature="e#1849#1957#0" />
-            <element signature="e#2013#2743#0" />
-            <element signature="e#2798#3300#0" />
-            <element signature="e#3356#3644#0" />
-            <element signature="e#3698#3748#0" />
-            <element signature="e#3803#3853#0" />
-            <element signature="e#3902#4303#0" />
-            <element signature="e#4350#4864#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/back/db/heroesRoles.json" />
+    <entry file="file://$PROJECT_DIR$/back/db/about.js" />
+    <entry file="file://$PROJECT_DIR$/back/db/createDB.js" />
+    <entry file="file://$PROJECT_DIR$/back/db/workWithDB.js" />
+    <entry file="file://$PROJECT_DIR$/package.json" />
     <entry file="file://$PROJECT_DIR$/back/package.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="561">
@@ -761,16 +695,6 @@
     <entry file="file://$PROJECT_DIR$/front/webpack.prod.config.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/reducer.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="11" lean-forward="true" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="11" />
-          <folding>
-            <element signature="e#0#30#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/front/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="238">
@@ -781,52 +705,19 @@
     <entry file="file://$PROJECT_DIR$/front/src/components/custom/App/style.scss">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/components/custom/Profile/Profile.scss">
+    <entry file="file://$PROJECT_DIR$/tasks.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="21" selection-start-line="17" selection-start-column="21" selection-end-line="17" selection-end-column="21" />
+        <state relative-caret-position="204">
+          <caret line="12" column="1" lean-forward="true" selection-start-line="12" selection-start-column="1" selection-end-line="12" selection-end-column="1" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="9" column="17" lean-forward="true" selection-start-line="9" selection-start-column="17" selection-end-line="9" selection-end-column="17" />
-          <folding>
-            <element signature="e#28#89#0" />
-            <element signature="e#511#923#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/common/appConfig.js">
+    <entry file="file://$PROJECT_DIR$/front/src/components/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="254">
-          <caret line="133" column="17" lean-forward="true" selection-start-line="133" selection-start-column="17" selection-end-line="133" selection-end-column="17" />
+          <caret line="19" column="8" lean-forward="true" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="8" />
           <folding>
-            <element signature="e#141#314#0" />
-            <element signature="e#430#664#0" />
-            <element signature="e#679#929#0" />
-            <element signature="e#944#1036#0" />
-            <element signature="e#1051#1143#0" />
-            <element signature="e#1160#1505#0" />
-            <element signature="e#1522#1867#0" />
-            <element signature="e#1884#2087#0" />
-            <element signature="e#2104#2307#0" />
-            <element signature="e#2324#2590#0" />
-            <element signature="e#2607#2873#0" />
-            <element signature="e#3511#3565#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-300">
-          <caret line="69" column="77" selection-start-line="69" selection-start-column="77" selection-end-line="69" selection-end-column="77" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-            <element signature="e#3079#4733#0" />
+            <element signature="e#0#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -840,44 +731,145 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/components/index.js">
+    <entry file="file://$PROJECT_DIR$/front/src/common/appConfig.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="30" column="12" lean-forward="true" selection-start-line="30" selection-start-column="12" selection-end-line="30" selection-end-column="12" />
+        <state relative-caret-position="459">
+          <caret line="133" column="17" selection-start-line="133" selection-start-column="17" selection-end-line="133" selection-end-column="17" />
           <folding>
-            <element signature="e#0#39#0" expanded="true" />
+            <element signature="e#141#314#0" />
+            <element signature="e#430#664#0" />
+            <element signature="e#679#929#0" />
+            <element signature="e#944#1036#0" />
+            <element signature="e#1051#1143#0" />
+            <element signature="e#1160#1505#0" />
+            <element signature="e#1522#1867#0" />
+            <element signature="e#1884#2087#0" />
+            <element signature="e#2104#2307#0" />
+            <element signature="e#2324#2590#0" />
+            <element signature="e#2607#2873#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/components/custom/Profile/Profile.js">
+    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.scss">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="441">
-          <caret line="106" column="24" lean-forward="true" selection-start-line="106" selection-start-column="24" selection-end-line="106" selection-end-column="24" />
+        <state relative-caret-position="170">
+          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+          <folding>
+            <element signature="e#28#89#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/front/src/components/custom/Profile/Profile.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="394">
+          <caret line="47" column="12" lean-forward="true" selection-start-line="47" selection-start-column="12" selection-end-line="47" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ClientInfo/ClientInfo.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="8" column="2" lean-forward="true" selection-start-line="8" selection-start-column="2" selection-end-line="8" selection-end-column="2" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+            <element signature="n#!!block;n#constructor#0;n#ClientInfo#0" />
+            <element signature="n#!!block;n#handleClick#0;n#ClientInfo#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/back/src/firebase.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="527">
+          <caret line="31" column="23" selection-start-line="31" selection-start-column="8" selection-end-line="31" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/actions.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="292">
+          <caret line="43" column="22" selection-start-line="43" selection-start-column="16" selection-end-line="43" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/types.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="46" column="23" selection-start-line="46" selection-start-column="4" selection-end-line="46" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="615">
+          <caret line="75" column="95" lean-forward="true" selection-start-line="75" selection-start-column="95" selection-end-line="75" selection-end-column="95" />
           <folding>
             <element signature="e#0#26#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/actions.js">
+    <entry file="file://$PROJECT_DIR$/front/src/components/custom/Profile/Profile.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="39" column="28" lean-forward="true" selection-start-line="39" selection-start-column="28" selection-end-line="39" selection-end-column="28" />
+        <state relative-caret-position="411">
+          <caret line="106" column="14" selection-start-line="106" selection-start-column="8" selection-end-line="106" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/types.js">
+    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/reducer.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="217">
-          <caret line="21" column="35" selection-start-line="21" selection-start-column="21" selection-end-line="21" selection-end-column="35" />
+        <state relative-caret-position="-507">
+          <caret line="82" column="14" lean-forward="true" selection-start-line="82" selection-start-column="14" selection-end-line="82" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#30#0" expanded="true" />
+            <element signature="e#634#824#0" />
+            <element signature="e#833#971#0" />
+            <element signature="e#980#1121#0" />
+            <element signature="e#1130#1276#0" />
+            <element signature="e#1285#1538#0" />
+            <element signature="e#1547#1695#0" />
+            <element signature="e#1704#1856#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/back/src/sockets.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="80" column="11" lean-forward="true" selection-start-line="80" selection-start-column="11" selection-end-line="80" selection-end-column="11" />
+          <folding>
+            <element signature="e#194#196#0" />
+            <element signature="e#1682#1929#0" />
+            <element signature="e#1989#2349#0" />
+            <element signature="e#2428#2755#0" />
+            <element signature="e#2409#2969#0" />
+            <element signature="e#3044#3469#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/back/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="250">
+          <caret line="124" column="29" selection-start-line="124" selection-start-column="23" selection-end-line="124" selection-end-column="29" />
+          <folding>
+            <element signature="e#1266#1442#0" />
+            <element signature="e#1613#1789#0" />
+            <element signature="e#1849#1957#0" />
+            <element signature="e#2013#2743#0" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/sagas.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="314" column="47" selection-start-line="314" selection-start-column="47" selection-end-line="314" selection-end-column="47" />
+        <state relative-caret-position="428">
+          <caret line="376" column="51" selection-start-line="376" selection-start-column="51" selection-end-line="376" selection-end-column="51" />
           <folding>
             <element signature="e#0#105#0" expanded="true" />
             <element signature="n#!!block;n#createItemHandle#0" />
@@ -885,11 +877,18 @@
             <element signature="n#!!block;n#flagHandleComplete#0" />
             <element signature="n#!!block;n#msgMaker#0" />
             <element signature="e#1916#2847#0" />
-            <element signature="e#2950#3857#0" />
-            <element signature="e#3948#4057#0" />
-            <element signature="e#4112#4219#0" />
-            <element signature="e#5634#7065#0" />
-            <element signature="e#8577#9842#0" />
+            <element signature="e#4037#4146#0" />
+            <element signature="e#4201#4308#0" />
+            <element signature="e#4475#4483#0" />
+            <element signature="e#5628#6234#0" />
+            <element signature="e#6288#6572#0" />
+            <element signature="e#8405#8956#0" />
+            <element signature="e#8984#9365#0" />
+            <element signature="e#9394#9843#0" />
+            <element signature="e#9886#9998#0" />
+            <element signature="e#10501#10631#0" />
+            <element signature="e#10686#12146#0" />
+            <element signature="e#12198#13106#0" />
           </folding>
         </state>
       </provider>

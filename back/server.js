@@ -29,7 +29,8 @@ const {
     setKeyOnObject
 } = require('./src/tokens')({uniqid});
 
-const {participantsGet, participantAdd} = require('./src/firebase')();
+const Firebase = require('./src/firebase');
+const {participantsGet, participantAdd} = Firebase();
 
 const router = express.Router();
 
@@ -133,6 +134,7 @@ app.post('/participant/logout', function (req, res) {
     removeObject(token, userId);
 
     result.status = 200;
+    result.token = token;
 
     res.json(result);
 });
