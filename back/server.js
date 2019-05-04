@@ -30,7 +30,7 @@ const {
 } = require('./src/tokens')({uniqid});
 
 const Firebase = require('./src/firebase');
-const {participantsGet, participantAdd} = Firebase();
+const {Participant} = Firebase();
 
 const router = express.Router();
 
@@ -76,28 +76,50 @@ app.get('/participant/idGenerate', function (req, res) {
 
 app.post('/participant/create', function (req, res) {
     if (!req.body) return res.sendStatus(400);
-    /**
-     * -Взять с тела запроса идишник и имя
-     */
-    const {id, name} = req.body;
+
+    const {user} = req.body;
     const result = {};
 
-    if (id === undefined && name === undefined) {
-        return res.sendStatus(400);
-    }
-
-    /** -Проверить идишник в базе данных (есть ли такой же)*/
-    participantsGet().then(participants => {
-        if (participants.find(p => p.id === id)) {
-            result.error = 'Уже есть такой в базе. Кышъ'
+    Participant.add(user).then(data => {
+        if(data.error){
+            result.error = data.error;
         } else {
-            /** -(Сформировать токен если все ОК)*/
             result.token = addObject();
+            result.user = user;
+        }
 
-            result.name = name;
-            result.id = id;
+        res.json(result);
+    });
+});
 
-            participantAdd({id, name});
+app.post('/participant/edit', function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+
+    const {user} = req.body;
+    const result = {};
+
+    Participant.edit(user).then(data => {
+        if(data.error){
+            result.error = data.error;
+        } else {
+            result.user = data;
+        }
+
+        res.json(result);
+    });
+});
+
+app.post('/participant/get', function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+
+    const {user} = req.body;
+    const result = {};
+
+    Participant.get(user).then(data => {
+        if(data.error){
+            result.error = data.error;
+        } else {
+            result.user = data;
         }
 
         res.json(result);
@@ -111,7 +133,7 @@ app.post('/participant/login', function (req, res) {
     const result = {};
 
     /** -Проверить идишник в базе данных (есть ли такой же)*/
-    participantsGet().then(participants => {
+    Participant.multiGet().then(participants => {
         if (participants.find(p => p.id === id)) {
             result.token = addObject(0, id);
             result.id = id;
