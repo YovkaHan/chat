@@ -4,12 +4,12 @@ module.exports = function ({uniqid}) {
     const addObject = (num, userId) => {
         let _num = num ? num : 0;
         const token = uniqid('token');
-        if (!objectList.find(t => t.val === token)) {
+        if (!objectList.find(t => t.token === token)) {
             objectList.push({
-                val: token,
+                token,
                 userId,
                 expired: setTimeout(function () {
-                    const fTokenIndex = objectList.findIndex(t => t.val === token);
+                    const fTokenIndex = objectList.findIndex(t => t.token === token);
                     if (fTokenIndex >= 0) {
                         objectList.splice(fTokenIndex, 1);
                     }
@@ -24,9 +24,9 @@ module.exports = function ({uniqid}) {
     };
     const findObjectIndex = (token, userId) => {
         if(userId !== undefined){
-            return objectList.findIndex(t => t.val === token && t.userId === userId);
+            return objectList.findIndex(t => t.token === token && t.userId === userId);
         }
-        return objectList.findIndex(t => t.val === token);
+        return objectList.findIndex(t => t.token === token);
     };
     const getObject = (token) => {
         const index = objectList[findObjectIndex(token)];
@@ -44,9 +44,13 @@ module.exports = function ({uniqid}) {
             return false;
         }
     };
-    const setKeyOnObject = (token, userId, key) => {
-        objectList[findObjectIndex(token, userId)].key = key;
+    const setRSAKeyOnObject = (token, userId, key) => {
+        objectList[findObjectIndex(token, userId)].rsaKey = key;
         return objectList[findObjectIndex(token, userId)];
+    };
+    const setAESKeyOnObject = (token, key) => {
+        objectList[findObjectIndex(token)].aesKey = key;
+        return objectList[findObjectIndex(token)];
     };
 
     return {
@@ -54,6 +58,7 @@ module.exports = function ({uniqid}) {
         findObjectIndex,
         removeObject,
         getObject,
-        setKeyOnObject
+        setRSAKeyOnObject,
+        setAESKeyOnObject
     }
 };

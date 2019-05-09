@@ -9,7 +9,7 @@ const INIT_STATE = {
 
 /**
  * flags :
- *      stage(init, prepare, ready, destroy)
+ *      stage(init, prepared, connecting, ready, destroy)
  * */
 
 export const INIT_STATE_ITEM = {
@@ -24,8 +24,9 @@ export const INIT_STATE_ITEM = {
     },
     view: 'login',
     authToken: '',
-    userId: '',
-    userName: '',
+    user: {},
+    contacts: [],
+    conversations: [],
     list: [],
     buffer: [],
     participantId: undefined
@@ -72,9 +73,14 @@ const cases = (type) => {
                 draft[id].participantId = payload
             };
         }
-        case TYPES.APP_STAGE_PREPARE: {
+        case TYPES.APP_STAGE_PREPARED: {
             return (draft, payload, id) => {
-                draft[id].flags.stage = 'prepare'
+                draft[id].flags.stage = 'prepared'
+            };
+        }
+        case TYPES.APP_STAGE_CONNECTING: {
+            return (draft, payload, id) => {
+                draft[id].flags.stage = 'connecting'
             };
         }
         case TYPES.APP_STAGE_READY: {
@@ -131,6 +137,18 @@ const cases = (type) => {
         case TYPES.APP_VIEW_MAIN: {
             return (draft, payload, id) => {
                 draft[id].view = 'main';
+            };
+        }
+        case TYPES.APP_USER_INFO_COMPLETE: {
+            return (draft, payload, id) => {
+                if(payload.id){
+                    draft[id].user = payload;
+                } else {
+                    const contact = draft[id].contacts.find(c => c.login === payload.login);
+                    Object.keys(payload).map(key => {
+                        contact[key] = payload[key];
+                    })
+                }
             };
         }
         default : {

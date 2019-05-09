@@ -10,9 +10,7 @@ export const INIT_STATE_ITEM = {
     flags: {
         toggle: false,
         hover: false
-    },
-    avaSrc: '',
-    name: ''
+    }
 };
 
 const cases = (type) => {

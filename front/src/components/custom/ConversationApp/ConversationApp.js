@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
-import {flagHandle, createItem, valueChange, connectApp, appAuthorize, logIn, connectionTry} from './redux/actions';
+import {flagHandle, createItem, valueChange, connectApp, appAuthorize, logIn, connectionTry, appStageConnecting} from './redux/actions';
 
 const innerClass = (suffix, mainClass, rootClass) => {
     return `${mainClass}__${suffix} ${rootClass ? rootClass + '__' + suffix : ''}`.trim()
@@ -21,7 +21,7 @@ class ConversationApp extends React.Component {
 
         this.state = {
             visibleView: 'conversations',
-            userId: '1555082537_24ieiob0te81'
+            userId: '1556984823_a8wjv9okahh'
         };
 
         this.madeChildren = {
@@ -39,9 +39,10 @@ class ConversationApp extends React.Component {
     }
 
     componentDidUpdate(){
-        if(this.props.flags.stage === 'prepare' && this.props.flags.server === 'on' && this.props.flags.serverConnection === 'on'){
+        if(this.props.appPreparedToConnect){
+            this.props.appStageConnecting();
             this.props.connectApp();
-        } else if(this.props.flags.server === 'on' && this.props.flags.serverConnection === 'off'){
+        } else if(this.props.connectionLost){
             this.props.connectionTry();
         }
     }
@@ -132,12 +133,17 @@ const mapStateToProps = (state, props) => {
     const cId = props.pcbMade.id;
     const _object = state.Components.ConversationApp[cId];
 
+    const appPreparedToConnect = _object.flags.stage === 'prepared' && _object.flags.server === 'on' && _object.flags.serverConnection === 'on';
+    const connectionLost = _object.flags.server === 'on' && _object.flags.serverConnection === 'off';
+
     if(_object) {
         return ({
             flags: _object.flags,
             list: _object.list,
             buffer: _object.buffer,
-            view: _object.view
+            view: _object.view,
+            appPreparedToConnect,
+            connectionLost
         })
     } else {
         return {};
@@ -153,7 +159,8 @@ const mapDispatchers = (dispatch, props) => {
         connectApp: () => connectApp(cId),
         appAuthorize: () => appAuthorize(cId),
         logIn: (userId) => logIn(cId, userId),
-        connectionTry: () => connectionTry(cId)
+        connectionTry: () => connectionTry(cId),
+        appStageConnecting: () => appStageConnecting(cId),
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
     }, dispatch);

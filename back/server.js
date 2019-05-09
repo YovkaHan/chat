@@ -21,13 +21,14 @@ const rsaWrapper = require('./src/rsa-wrapper');
 
 // require('./src/keysGenerate');
 
+const Tokens = require('./src/tokens')({uniqid});
 const {
     addObject,
     findObjectIndex,
     removeObject,
     getObject,
-    setKeyOnObject
-} = require('./src/tokens')({uniqid});
+    setRSAKeyOnObject
+} = Tokens;
 
 const Firebase = require('./src/firebase');
 const {Participant} = Firebase();
@@ -196,10 +197,11 @@ app.post('/token/key', function (req, res) {
 
     if(token !== undefined  && userId !== undefined  && key !== undefined ) {
 
-        const object = setKeyOnObject(token, userId, key);
+        const object = setRSAKeyOnObject(token, userId, key);
 
-        if(object.key === key) {
-            result.key = rsaWrapper.getPublicKey('server');
+
+        if(object.rsaKey === key) {
+            result.key = rsaWrapper.arrayBufferToUtf8(rsaWrapper.getPublicKey('server'));
         } else {
             result.error = 'Something happen!'
         }
@@ -217,6 +219,5 @@ server.listen({
 });
 ioStart({
     server,
-    getObject,
-    rsaWrapper
+    Tokens
 });

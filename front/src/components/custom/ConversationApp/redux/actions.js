@@ -45,6 +45,10 @@ export function logOut(id) {
     return ({type: TYPES.APP_LOGOUT_BEGIN, id})
 }
 
+export function appStageConnecting(id) {
+    return ({type: TYPES.APP_STAGE_CONNECTING, id})
+}
+
 export default {
     initialize,
     flagHandle,
@@ -52,5 +56,6 @@ export default {
     deleteItem,
     appAuthorize,
     logIn,
-    logOut
+    logOut,
+    appStageConnecting
 }

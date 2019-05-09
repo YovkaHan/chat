@@ -14,7 +14,7 @@ class ClientInfo extends React.Component {
         className: '',
         rootClass: '',
         click: ()=>{},
-        defaultAvaSrc: '',
+        defaultAva: '',
         defaultName: 'Test Name'
     };
 
@@ -43,7 +43,7 @@ class ClientInfo extends React.Component {
         return {
             ...state,
             name: props.name ? props.name : props.defaultName,
-            avaSrc: props.avaSrc ? props.avaSrc : props.defaultAvaSrc
+            ava: props.ava ? props.ava : props.defaultAva
         }
     }
 
@@ -62,14 +62,14 @@ class ClientInfo extends React.Component {
         const {props, state, handleClick} = this;
         const {className, rootClass, pcb, pcbMade} = props;
         // const {Messages, Input} = this.madeChildren;
-        const {avaSrc, name} = state;
+        const {ava, name} = state;
         const mainClass = 'c-client-info';
 
         return (
             <div className={`${mainClass} ${className} ${rootClass}`.trim()} onClick={handleClick}>
                 <div className={innerClass('content', mainClass, rootClass)}>
                     <div className={`${mainClass}__avatar avatar`}>
-                        <div className={`avatar__pic`} style={{background: `url(${{avaSrc}})`}}></div>
+                        <div className={`avatar__pic`} style={{backgroundImage: `url(${ava})`}}></div>
                     </div>
                     <div className={`${mainClass}__name`}>{name}</div>
                 </div>
@@ -88,17 +88,18 @@ ClientInfo.propTypes = {
 
 const mapStateToProps = (state, props) => {
     const cId = props.pcbMade.id;
-    const _object = state.Components.ClientInfo[cId];
 
-    if(_object) {
-        return ({
-            flags: _object.flags,
-            avaSrc: _object.avaSrc,
-            name: _object.name
-        })
-    } else {
-        return {};
-    }
+    const Parent = props.pcbMade.relations.Parent;
+    const _object = state.Components.ClientInfo[cId];
+    const parentObject = state.Components[Parent.component][Parent.id];
+
+    const result = {};
+
+    result.flags = _object ? _object.flags : {};
+    result.ava = parentObject ? parentObject.user.ava : {};
+    result.name = parentObject ? parentObject.user.name : {};
+
+    return result;
 };
 
 const mapDispatchers = (dispatch, props) => {

@@ -1,60 +1,65 @@
 const crypto = window.crypto.subtle;
 import keypair from 'keypair';
+import converterWrapper from './converter-wrapper';
 
-const rsaParams = {name: "RSA-OAEP", hash: "SHA-1"};
+const rsaParams = {name: "RSA-OAEP", hash: {name: "SHA-1"}};
 
-function arrayBufferToUtf8(arrayBuffer) {
-    return new TextDecoder("utf-8").decode(arrayBuffer);
-}
-
-function base64StringToArrayBuffer(base64) {
-    let binary_string = atob(convertPemToBinary2(atob(base64)));
-    let len = binary_string.length;
-    let bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binary_string.charCodeAt(i);
+function addNewLines(str) {
+    let finalString = '';
+    while(str.length > 0) {
+        finalString += str.substring(0, 64) + '\n';
+        str = str.substring(64);
     }
-    return bytes.buffer;
+
+    return finalString;
 }
 
-function convertPemToBinary2(pem) {
-    let lines = pem.split('\n');
-    let encoded = '';
-    for (let i = 0; i < lines.length; i++) {
-        if (lines[i].trim().length > 0 &&
-            lines[i].indexOf('-BEGIN RSA PRIVATE KEY-') < 0 &&
-            lines[i].indexOf('-BEGIN RSA PUBLIC KEY-') < 0 &&
-            lines[i].indexOf('-BEGIN PRIVATE KEY-') < 0 &&
-            lines[i].indexOf('-BEGIN PUBLIC KEY-') < 0 &&
-            lines[i].indexOf('-END PUBLIC KEY-') < 0 &&
-            lines[i].indexOf('-END RSA PRIVATE KEY-') < 0 &&
-            lines[i].indexOf('-END PRIVATE KEY-') < 0 &&
-            lines[i].indexOf('-END RSA PUBLIC KEY-') < 0) {
-            encoded += lines[i].trim();
-        }
+function toPem(key, set) {
+    const b64 = addNewLines(converterWrapper.arrayBufferToBase64String(key));
+    let pem = null;
+
+    if(set === 'private'){
+        pem = "-----BEGIN PRIVATE KEY-----\n" + b64 + "-----END PRIVATE KEY-----";
+    } else if(set === 'public'){
+        pem = "-----BEGIN PUBLIC KEY-----\n" + b64 + "-----END PUBLIC KEY-----";
     }
-    return encoded;
-}
 
-function str2abUtf8(myString) {
-    return new TextEncoder("utf-8").encode(myString);
+    return pem;
 }
 
 function generate() {
-    return new keypair(2048, 65537);
-}
-
-function arrayBufferToBase64String(arrayBuffer) {
-    let byteArray = new Uint8Array(arrayBuffer);
-    let byteString = '';
-    for (let i = 0; i < byteArray.byteLength; i++) {
-        byteString += String.fromCharCode(byteArray[i]);
-    }
-    return btoa(byteString);
+    return new Promise(resolve => {
+        crypto.generateKey(
+            {
+                name: "RSA-OAEP",
+                modulusLength: 2048,
+                publicExponent: new Uint8Array([1, 0, 1]),
+                hash: "SHA-256",
+            },
+            true,
+            ["encrypt", "decrypt"]
+        ).then(keypair => {
+            const privateKey = crypto.exportKey(
+                "pkcs8",
+                keypair.privateKey
+            );
+            const publicKey = crypto.exportKey(
+                "spki",
+                keypair.publicKey
+            );
+            Promise.all([privateKey, publicKey]).then(keys => {
+                resolve({
+                    privateKey: toPem(keys[0], 'private'),
+                    publicKey: toPem(keys[1], 'public')
+                });
+            })
+        })
+    });
 }
 
 function importPublicKey(keyInPemFormat) {
-    const key = base64StringToArrayBuffer(keyInPemFormat);
+    const base64String = converterWrapper.convertPemToBinary2(keyInPemFormat);
+    const key = converterWrapper.base64StringToArrayBuffer(base64String);
 
     return new Promise(function (resolve, reject) {
 
@@ -68,22 +73,25 @@ function importPublicKey(keyInPemFormat) {
 }
 
 function importPrivateKey(keyInPemFormat) {
-    const key = base64StringToArrayBuffer(keyInPemFormat);
+    const base64String = converterWrapper.convertPemToBinary2(keyInPemFormat);
+    const key = converterWrapper.base64StringToArrayBuffer(base64String);
 
     return new Promise(function (resolve, reject) {
         crypto.importKey('pkcs8', key, rsaParams, false, ["decrypt"])
             .then(function (cryptoKey) {
                 resolve(cryptoKey);
-            });
+            }).catch(error => {
+            console.error(error);
+        });
     });
 }
 
 function publicEncrypt(keyInPemFormat, message) {
     return new Promise(function (resolve, reject) {
         importPublicKey(keyInPemFormat).then(function (key) {
-            crypto.encrypt(rsaParams, key, str2abUtf8(message))
+            crypto.encrypt(rsaParams, key, converterWrapper.str2abUtf8(message))
                 .then(function (encrypted) {
-                    resolve(arrayBufferToBase64String(encrypted));
+                    resolve(converterWrapper.arrayBufferToBase64String(encrypted));
                 });
         })
     });
@@ -92,20 +100,15 @@ function publicEncrypt(keyInPemFormat, message) {
 function privateDecrypt(keyInPemFormat, encryptedBase64Message) {
     return new Promise(function (resolve, reject) {
         importPrivateKey(keyInPemFormat).then(function (key) {
-            crypto.decrypt(rsaParams, key, base64StringToArrayBuffer(encryptedBase64Message))
+            crypto.decrypt(rsaParams, key, converterWrapper.base64StringToArrayBuffer(encryptedBase64Message))
                 .then(function (decrypted) {
-                    resolve(arrayBufferToUtf8(decrypted));
+                    resolve(converterWrapper.arrayBufferToUtf8(decrypted));
                 });
         });
     });
 }
 
 export default {
-    arrayBufferToUtf8,
-    base64StringToArrayBuffer,
-    convertPemToBinary2,
-    str2abUtf8,
-    arrayBufferToBase64String,
     importPublicKey,
     importPrivateKey,
     publicEncrypt,

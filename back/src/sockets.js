@@ -1,7 +1,11 @@
-module.exports = function ({server, getObject, rsaWrapper}) {
+module.exports = function ({server, Tokens}) {
     const io = require('socket.io')(server);
     const Firebase = require('./firebase');
+    const {Participant} = Firebase();
     const uniqid = require('uniqid');
+    const rsaWrapper = require('./rsa-wrapper');
+    const aesWrapper = require('./aes-wrapper');
+    const { getObject, setAESKeyOnObject} = Tokens;
 
     //
     // /**data: [{id, socket}]*/
@@ -62,15 +66,43 @@ module.exports = function ({server, getObject, rsaWrapper}) {
             console.log('user disconnected !!!!');
         });
 
-        socket.on('chat.connect.start', function (data) {
-            const {token, encryptedMsg} = data;
-
+        socket.on('chat.connect.firstHandshake', function (data) {
+            const {token, msg} = data;
             const tokenObject = getObject(token);
 
             if(tokenObject !== undefined){
                 const privateServerKey = rsaWrapper.getPrivateKey('server');
 
-                console.log(rsaWrapper.decrypt(privateServerKey, encryptedMsg));
+                if(tokenObject.token === rsaWrapper.decrypt(privateServerKey, msg)){
+                    const aesKey = aesWrapper.generateKey();
+                    const publicClientKey = tokenObject.rsaKey;
+                    setAESKeyOnObject(token, aesKey);
+
+                    socket.emit('chat.connect.firstHandshake.success', {
+                        msg: rsaWrapper.encrypt(publicClientKey, aesKey.toString('base64'))
+                    });
+                }else {
+                    socket.emit('chat.connect.firstHandshake.error');
+                }
+            } else {
+                socket.emit('chat.connect.firstHandshake.error');
+            }
+        });
+
+        socket.on('chat.connect.secondHandshake', function (data) {
+            const {token, msg} = data;
+            const tokenObject = getObject(token);
+
+            if(tokenObject !== undefined){
+                const aesKey = tokenObject.aesKey;
+
+                if(tokenObject.token === aesWrapper.decrypt(aesKey, msg)){
+                    socket.emit('chat.connect.secondHandshake.success');
+                }else {
+                    socket.emit('chat.connect.secondHandshake.error');
+                }
+            } else {
+                socket.emit('chat.connect.secondHandshake.error');
             }
         });
 
@@ -86,51 +118,59 @@ module.exports = function ({server, getObject, rsaWrapper}) {
         });
 
         socket.on('chat.user.info', function (data) {
-            const {token, encryptedMsg} = data;
+            /**encryptedMsg === {login || id}*/
+            const {token, msg} = data;
             const tokenObject = getObject(token);
 
             if(tokenObject !== undefined){
-                const privateServerKey = rsaWrapper.getPrivateKey('server');
-                const _data = JSON.parse(rsaWrapper.decrypt(privateServerKey, encryptedMsg));
-                console.log(_data);
+                const aesKey = tokenObject.aesKey;
+
+                const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+
+                Participant.get(_data).then(user => {
+
+                    socket.emit('chat.user.info', {
+                        msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(user))
+                    })
+                });
             }
         });
 
-        socket.on('message.sending', function (message) {
-
-            const _from = participants.data.find(p => p.id === message.from);
-            if (_from) {
-
-                const _to = participants.data.find(p => p.id === message.to);
-                if (_to) {
-                    _to.socket.emit('message.incoming', {message: message});
-                } else {
-                    socket.emit('message.sending.error', {error: 'TO not in participants'});
-                }
-            } else {
-                socket.emit('message.sending.error', {error: 'FROM not in participants'});
-            }
-        });
-
-        socket.on('conversation.start', function (participantBId, cId) {
-
-            if(!participantBId) {
-
-            }
-            if(cId){
-                const conversation = conversations.find(c => c.cId === cId);
-
-                if(conversation){
-
-                } else {
-
-                }
-            } else {
-                const participantA = participants.find(p => p.socket.id === socket.id);
-
-                conversations.add(participantA, participantB)
-            }
-        })
+        // socket.on('message.sending', function (message) {
+        //
+        //     const _from = participants.data.find(p => p.id === message.from);
+        //     if (_from) {
+        //
+        //         const _to = participants.data.find(p => p.id === message.to);
+        //         if (_to) {
+        //             _to.socket.emit('message.incoming', {message: message});
+        //         } else {
+        //             socket.emit('message.sending.error', {error: 'TO not in participants'});
+        //         }
+        //     } else {
+        //         socket.emit('message.sending.error', {error: 'FROM not in participants'});
+        //     }
+        // });
+        //
+        // socket.on('conversation.start', function (participantBId, cId) {
+        //
+        //     if(!participantBId) {
+        //
+        //     }
+        //     if(cId){
+        //         const conversation = conversations.find(c => c.cId === cId);
+        //
+        //         if(conversation){
+        //
+        //         } else {
+        //
+        //         }
+        //     } else {
+        //         const participantA = participants.find(p => p.socket.id === socket.id);
+        //
+        //         conversations.add(participantA, participantB)
+        //     }
+        // })
     });
 };
 

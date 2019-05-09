@@ -1,4 +1,4 @@
-import {take, call, put, select, fork, race, cancelled, takeEvery, delay, all} from 'redux-saga/effects';
+import {take, call, put, select, fork, race, cancelled, takeEvery, delay, all, actionChannel, cancel} from 'redux-saga/effects';
 import * as R from "ramda";
 import axios from 'axios';
 import moment from 'moment';
@@ -7,6 +7,8 @@ import {TYPES as CTYPES} from '../../../../common/core';
 import {INIT_STATE_ITEM} from './reducer';
 import {componentName} from '../';
 import rsaWrapper from '../../../../common/rsa-wrapper';
+import aesWrapper from '../../../../common/aes-wrapper';
+import converterWrapper from '../../../../common/converter-wrapper';
 import io from 'socket.io-client';
 import {eventChannel} from 'redux-saga';
 
@@ -95,6 +97,7 @@ const socketObject = () => {
 };
 // This is how channel is created
 const createSocketChannel = (socket, id) => eventChannel((emit) => {
+    console.log('CREATE SOCKET');
     const handler = (data) => {
         emit(data);
     };
@@ -103,12 +106,12 @@ const createSocketChannel = (socket, id) => eventChannel((emit) => {
         emit({req: 'chat.connection.success', data});
     }
 
-    function channelConnectionHandlerSuccess(data) {
+    function channelFirstHandShakeHandlerSuccess(data) {
         console.log(data);
-        emit({req: 'chat.connect.success', data});
+        emit({req: 'chat.connect.firstHandshake.success', data});
     }
 
-    function channelConnectionHandlerError(error) {
+    function channelFirstHandShakeHandlerError(error) {
         console.log(error);
     }
 
@@ -117,22 +120,39 @@ const createSocketChannel = (socket, id) => eventChannel((emit) => {
         emit({req: 'chat.disconnect.success', data});
     }
 
+    function channelSecondHandshakeHandlerSuccess(data) {
+        console.log(data);
+        emit({req: 'chat.connect.secondHandshake.success', data});
+    }
+
+    function userInfoHandler(data) {
+        const aesKey = localStorage.getItem('aesKey');
+        aesWrapper.decryptMessage(aesKey, data.msg).then(decryptedData => {
+            emit({req: 'chat.user.info', data: JSON.parse(decryptedData)});
+        });
+    }
+
     socket.on('chat.connection.success', chatConnectionHandlerSuccess);
-    socket.on('chat.connect.success', channelConnectionHandlerSuccess);
-    socket.on('chat.connect.error', channelConnectionHandlerError);
+    socket.on('chat.connect.firstHandshake.success', channelFirstHandShakeHandlerSuccess);
+    socket.on('chat.connect.firstHandshake.error', channelFirstHandShakeHandlerError);
+    socket.on('chat.connect.secondHandshake.success', channelSecondHandshakeHandlerSuccess);
+    socket.on('chat.user.info', userInfoHandler);
     socket.on('message.incoming', handler);
     socket.on('message.outgoing', handler);
     socket.on('message.sent', handler);
-    socket.on('chat.user.info', handler);
     socket.on('chat.disconnect.success', chatDisconnectHandlerSuccess);
     // socket.on('message.seen', handler);
     return () => {
-        socket.off('chat.connect.success', handler);
-        socket.off('chat.connect.error', handler);
-        socket.off('message.incoming', handler);
-        socket.off('message.sending', handler);
-        socket.off('message.sent', handler);
-        socket.off('chat.user.info', handler);
+        console.log('DELETE SOCKET');
+        socket.removeListener('chat.connection.success', chatConnectionHandlerSuccess);
+        socket.removeListener('chat.connect.firstHandshake.success', channelFirstHandShakeHandlerSuccess);
+        socket.removeListener('chat.connect.firstHandshake.error', channelFirstHandShakeHandlerError);
+        socket.removeListener('chat.connect.secondHandshake.success', channelSecondHandshakeHandlerSuccess);
+        socket.removeListener('chat.user.info', userInfoHandler);
+        socket.removeListener('message.incoming', handler);
+        socket.removeListener('message.sending', handler);
+        socket.removeListener('message.sent', handler);
+        socket.removeListener('chat.disconnect.success', chatDisconnectHandlerSuccess);
         // socket.off('message.seen', handler);
     };
 });
@@ -163,6 +183,30 @@ const tryConnectSaga = function* (socket, _id) {
 };
 // connection monitoring sagas
 
+const onConnectToChatFinalSaga = function* (socket, _id) {
+    while (true) {
+        const {id, data} = yield take(TYPES.CHANNEL_APP_CONNECT_FINAL);
+        if(id === _id){
+            const authToken = localStorage.getItem('authToken');
+            const clientPrivateKey = localStorage.getItem('clientPrivateKey');
+
+            rsaWrapper.privateDecrypt(clientPrivateKey, data.msg).then(aesKey => {
+
+                localStorage.setItem('aesKey', aesKey);
+
+                aesWrapper.encryptMessage(aesKey, authToken).then(msg => {
+                    socket.emit(
+                        `chat.connect.secondHandshake`,
+                        {
+                            token: authToken,
+                            msg
+                        }
+                    );
+                });
+            });
+        }
+    }
+};
 
 const onConnectToChatSaga = function* (socket, _id) {
     while (true) {
@@ -173,12 +217,12 @@ const onConnectToChatSaga = function* (socket, _id) {
 
             const serverPublicKey = localStorage.getItem('serverPublicKey');
 
-            rsaWrapper.publicEncrypt(serverPublicKey, 'Hello message').then(msg => {
+            rsaWrapper.publicEncrypt(serverPublicKey, authToken).then(msg => {
                 socket.emit(
-                    `chat.connect.start`,
+                    `chat.connect.firstHandshake`,
                     {
                         token: authToken,
-                        encryptedMsg: msg
+                        msg
                     }
                 );
             });
@@ -216,21 +260,21 @@ const onSendMessageSaga = function* (socket, _id) {
     }
 };
 
-const onGetUserInfo = function* (socket, _id) {
+const onUserInfo = function* (socket, _id) {
     while (true) {
-        const {id, payload} = yield take(TYPES.CHANNEL_CHAT_USER_INFO_GET);
+        const {id, payload} = yield take(TYPES.APP_USER_INFO);
 
         if(id === _id){
             const authToken = localStorage.getItem('authToken');
 
-            const serverPublicKey = localStorage.getItem('serverPublicKey');
+            const aesKey = localStorage.getItem('aesKey');
 
-            rsaWrapper.publicEncrypt(serverPublicKey, JSON.stringify(payload)).then(msg => {
+            aesWrapper.encryptMessage(aesKey, JSON.stringify(payload)).then(msg => {
                 socket.emit(
-                    'chat.user.info',
+                    `chat.user.info`,
                     {
                         token: authToken,
-                        encryptedMsg: msg
+                        msg: msg
                     }
                 );
             });
@@ -258,7 +302,7 @@ const listenServerSaga = function* (id) {
     const _socketObject = socketObject();
     const {connect, disconnect, reconnect} = _socketObject;
 
-    try {
+
         const {socket, timeout} = yield race({
             socket: call(connect),
             timeout: delay(2000),
@@ -271,6 +315,8 @@ const listenServerSaga = function* (id) {
         }
         const socketChannel = yield call(createSocketChannel, socket, id);
 
+    try {
+
         yield fork(listenDisconnectSaga, disconnect, id);
         yield fork(listenConnectSaga, reconnect, id);
         yield fork(tryConnectSaga, socket, id);
@@ -278,43 +324,53 @@ const listenServerSaga = function* (id) {
         yield fork(onConnectToChatSaga, socket, id);
         yield fork(onSendMessageSaga, socket, id);
         yield fork(onConversationSaga, socket, id);
+        yield fork(onConnectToChatFinalSaga, socket, id);
 
-        yield fork(onGetUserInfo, socket, id);
+        yield fork(onUserInfo, socket, id);
 
         while (true) {
             const payload = yield take(socketChannel);
 
             if(payload.req === 'chat.connection.success'){
                 yield put({type: TYPES.APP_SERVER_CONNECTION_ON, id});
-            } else if(payload.req === 'chat.connect.success'){
-                yield put({type: TYPES.PARTICIPANT_ID_SET, payload: payload.data, id});
+            } else if(payload.req === 'chat.connect.firstHandshake.success'){
+                yield put({type: TYPES.CHANNEL_APP_CONNECT_FINAL, id, data: payload.data});
+            } else if(payload.req === 'chat.connect.secondHandshake.success'){
                 yield put({type: TYPES.APP_CHANNEL_ON, id});
                 yield put({type: TYPES.APP_STAGE_READY, id});
-            } else if(payload.req === 'chat.disconnect.success'){
+            }else if(payload.req === 'chat.disconnect.success'){
                 yield put({type: TYPES.APP_DISCONNECT_ALLOW, id});
-            }
+            } else if(payload.req === 'chat.user.info'){
+                if(payload.data.error){
 
-            console.log(payload);
+                } else {
+                    yield put({type: TYPES.APP_USER_INFO_COMPLETE, payload: payload.data, id});
+                }
+            }
         }
     } catch (error) {
         console.log(error);
     } finally {
-        const action = yield cancelled();
-        if (action.id === id) {
+        if (yield cancelled()) {
+            console.log('END');
             disconnect(true);
+            socketChannel.close();
             yield put({type: TYPES.APP_CHANNEL_OFF, id});
         }
     }
 };
 
 const initServerListeningSaga = function* (action) {
-    yield put({type: TYPES.APP_STAGE_PREPARE, id: action.id});
+    yield put({type: TYPES.APP_STAGE_PREPARED, id: action.id});
 
     while (true) {
-        yield race({
-            task: call(listenServerSaga, action.id),
-            cancel: take(TYPES.APP_SERVER_DESTROY)
-        });
+        const task = yield fork(listenServerSaga, action.id);
+        const serverDestroy = yield take(TYPES.APP_SERVER_DESTROY);
+
+        if(serverDestroy.id === action.id){
+            yield cancel(task);
+            break;
+        }
     }
 };
 
@@ -386,14 +442,32 @@ const userLogout = () => {
     })
 };
 
+/**LOGIN*/
 const loginProcess = function* (action) {
     localStorage.setItem('userId', action.userId);
-    yield put({type: TYPES.APP_LOGIN_END, id: action.id})
+    const loginResult = yield call(userLogin, action);
+
+    if(loginResult.hasOwnProperty('error')){
+        localStorage.removeItem('userId');
+        yield put({type: TYPES.APP_LOGIN_ERROR, id: action.id})
+    } else {
+        const {token} = loginResult;
+
+        localStorage.setItem('authToken', token);
+        yield put({type: TYPES.APP_LOGIN_END, id: action.id})
+    }
 };
+const loginNext = function* (action) {
+    yield put({type: TYPES.APP_AUTHORIZATION_BEGIN, id: action.id})
+};
+
+/**LOGOUT*/
 const logoutProcess = function* (action) {
     yield put({type: TYPES.APP_STAGE_DESTROY, id: action.id});
     yield put({type: TYPES.APP_DISCONNECT_TRY, id: action.id});
     yield take(TYPES.APP_DISCONNECT_ALLOW);
+
+    yield put({type: TYPES.APP_SERVER_OFF, id: action.id});
 
     const logoutResult = yield call(userLogout);
 
@@ -407,89 +481,91 @@ const logoutProcess = function* (action) {
         yield put({type: TYPES.APP_LOGOUT_END, id: action.id});
     }
 };
-const loginNext = function* (action) {
-    yield put({type: TYPES.APP_VIEW_MAIN, id: action.id});
-    yield put({type: TYPES.APP_AUTHORIZATION_BEGIN, id: action.id})
+const afterLogout = function* (action) {
+    yield put({type: TYPES.APP_SERVER_DESTROY, id: action.id});
 };
 
+/**TOKEN CHECK*/
 const userAuthorizationProcess = function* (action) {
     const localToken =  localStorage.getItem('authToken');
+    const userId = localStorage.getItem('userId');
 
     /**Если токен есть то зачем генерировать новый ключ*/
     if(localToken){
-        const userId = localStorage.getItem('userId');
 
         if(!userId){
             yield put({type: TYPES.APP_VIEW_LOGIN, id: action.id});
         } else {
-            yield put({type: TYPES.APP_VIEW_MAIN, id: action.id});
-
             const checkResult = yield call(tokenCheck);
 
             if(checkResult.error) {
-                const loginResult = yield call(userLogin, action);
-
-                if(!loginResult.hasOwnProperty('error')){
-                    const {token, id} = loginResult;
-
-                    localStorage.setItem('authToken', token);
-
-                    yield put({
-                        type: TYPES.APP_AUTHORIZATION_END,
-                        id: action.id,
-                        payload: {authToken: token, userId: id}
-                    })
-                }
+                console.error(checkResult.error);
+                yield put({type: TYPES.APP_VIEW_LOGIN, id: action.id});
             } else {
-                yield put({type: TYPES.APP_SERVER_PREPARE, id: action.id});
+                yield put({
+                    type: TYPES.APP_AUTHORIZATION_END,
+                    id: action.id,
+                    payload: {authToken: localToken, userId}
+                });
             }
         }
     } else {
-        const result = yield call(userLogin, action);
+        yield put({type: TYPES.APP_LOGIN_BEGIN, id: action.id, userId});
+    }
+};
 
-        if(!result.hasOwnProperty('error')){
-            const {token, id} = result;
+/**TOKEN RECHECK and END OF AUTHORIZATION*/
+const userAuthorizationNext = function* (action) {
 
-            localStorage.setItem('authToken', token);
+    if(action.payload){
+        const keyPair = yield call(rsaWrapper.generate);
 
-            yield put({
-                type: TYPES.APP_AUTHORIZATION_END,
-                id: action.id,
-                payload: {authToken: token, userId: id}
-            })
+        localStorage.setItem('clientPublicKey', keyPair.privateKey);
+        localStorage.setItem('clientPrivateKey', keyPair.privateKey);
+
+        const serverPublicKey =  yield keyExchange();
+        localStorage.setItem('serverPublicKey', atob(serverPublicKey.key));
+
+        yield put({type: TYPES.APP_VIEW_MAIN, id: action.id});
+        yield put({type: TYPES.APP_SERVER_PREPARE, id: action.id})
+    } else {
+        const checkResult = yield call(tokenCheck);
+
+        if(checkResult.error) {
+            const loginResult = yield call(userLogin, action);
+
+            if(!loginResult.hasOwnProperty('error')){
+                const {token, id} = loginResult;
+
+                localStorage.setItem('authToken', token);
+
+                yield put({
+                    type: TYPES.APP_AUTHORIZATION_END,
+                    id: action.id,
+                    payload: {authToken: token, userId: id}
+                })
+            }
         } else {
-            console.error(result.error)
+            const keyPair = yield call(rsaWrapper.generate);
+
+            localStorage.setItem('clientPublicKey', keyPair.privateKey);
+            localStorage.setItem('clientPrivateKey', keyPair.privateKey);
+
+            const serverPublicKey =  yield keyExchange();
+            localStorage.setItem('serverPublicKey', atob(serverPublicKey.key));
+
+            yield put({type: TYPES.APP_VIEW_MAIN, id: action.id});
+            yield put({type: TYPES.APP_SERVER_PREPARE, id: action.id})
         }
     }
 };
-const userAuthorizationNext = function* (action) {
-    const checkResult = yield call(tokenCheck);
 
-    if(checkResult.error) {
-        const loginResult = yield call(userLogin, action);
+const afterStageReady = function* (action) {
+    const payload = {
+      id: localStorage.getItem('userId')
+    };
 
-        if(!loginResult.hasOwnProperty('error')){
-            const {token, id} = loginResult;
-
-            localStorage.setItem('authToken', token);
-
-            yield put({
-                type: TYPES.APP_AUTHORIZATION_END,
-                id: action.id,
-                payload: {authToken: token, userId: id}
-            })
-        }
-    } else {
-        const keyPair = rsaWrapper.generate();
-
-        localStorage.setItem('clientPublicKey', keyPair.public);
-        localStorage.setItem('clientPrivateKey', keyPair.private);
-
-        const serverPublicKey =  yield keyExchange();
-        localStorage.setItem('serverPublicKey', rsaWrapper.arrayBufferToBase64String(serverPublicKey.key.data));
-
-        yield put({type: TYPES.APP_SERVER_PREPARE, id: action.id})
-    }
+    yield put({type: TYPES.APP_USER_INFO, id: action.id, payload})
 };
 
 export default [
@@ -502,7 +578,9 @@ export default [
     takeEvery(TYPES.APP_LOGIN_END, loginNext),
     takeEvery(TYPES.APP_LOGOUT_BEGIN, logoutProcess),
     takeEvery(TYPES.APP_AUTHORIZATION_BEGIN, userAuthorizationProcess),
-    takeEvery(TYPES.APP_AUTHORIZATION_END, userAuthorizationNext)
+    takeEvery(TYPES.APP_AUTHORIZATION_END, userAuthorizationNext),
+    takeEvery(TYPES.APP_STAGE_READY, afterStageReady),
+    takeEvery(TYPES.APP_LOGOUT_END, afterLogout)
 ];
 
 /**

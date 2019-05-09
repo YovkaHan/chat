@@ -3,6 +3,12 @@ const rsaWrapper = {};
 const fs = require('fs');
 const NodeRSA = require('node-rsa');
 const crypto = require('crypto');
+const btoa = require('btoa');
+
+
+rsaWrapper.arrayBufferToUtf8 = (arrayBuffer) => {
+    return btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)));
+};
 
 // load keys from file
 rsaWrapper.initLoadServerKeys = (basePath) => {
@@ -53,7 +59,7 @@ rsaWrapper.serverExampleEncrypt = () => {
 rsaWrapper.encrypt = (publicKey, message) => {
     let enc = crypto.publicEncrypt({
         key: publicKey,
-        padding: crypto.RSA_PKCS1_OAEP_PADDING
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING
     }, Buffer.from(message));
 
     return enc.toString('base64');
@@ -62,7 +68,7 @@ rsaWrapper.encrypt = (publicKey, message) => {
 rsaWrapper.decrypt = (privateKey, message) => {
     let enc = crypto.privateDecrypt({
         key: privateKey,
-        padding: crypto.RSA_PKCS1_OAEP_PADDING
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING
     }, Buffer.from(message, 'base64'));
 
     return enc.toString();

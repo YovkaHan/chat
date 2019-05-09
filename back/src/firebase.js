@@ -1,16 +1,15 @@
+const firebase = require('firebase');
+firebase.initializeApp({
+    apiKey: "AIzaSyCf9GH0ejD0AsTc-fpeEdiuqyXkvzXoYaQ",
+    authDomain: "chat-6855d.firebaseapp.com",
+    databaseURL: "https://chat-6855d.firebaseio.com",
+    projectId: "chat-6855d",
+    storageBucket: "chat-6855d.appspot.com",
+    messagingSenderId: "387186080497"
+});
+const db = firebase.firestore();
+
 module.exports = function () {
-
-    const firebase = require('firebase');
-    firebase.initializeApp({
-        apiKey: "AIzaSyCf9GH0ejD0AsTc-fpeEdiuqyXkvzXoYaQ",
-        authDomain: "chat-6855d.firebaseapp.com",
-        databaseURL: "https://chat-6855d.firebaseio.com",
-        projectId: "chat-6855d",
-        storageBucket: "chat-6855d.appspot.com",
-        messagingSenderId: "387186080497"
-    });
-    const db = firebase.firestore();
-
     const entities = {
         Participant: {
             Schema: {
@@ -30,6 +29,12 @@ module.exports = function () {
                 },
                 ava: {
                     type: 'string'
+                },
+                contacts: {
+                    type: 'array'
+                },
+                conversations: {
+                    type: 'array'
                 }
             },
             multiGet: () => {
@@ -41,7 +46,27 @@ module.exports = function () {
                     if (id) {
                         return db.collection('participants').doc(id).get().then((doc) => {
                             if (doc.exists) {
-                                resolve(doc.data());
+                                const user = doc.data();
+
+                                const C1 = new Promise(res=>{
+                                    if(user.contacts){
+                                        Promise.all(user.contacts.map(cID => db.collection('participants').doc(cID).get().then((doc) => doc.exists ? doc.data().login : undefined))).then(contacts =>{
+                                            user.contacts = contacts.filter(c => c);
+                                            res();
+                                        });
+                                    }
+                                });
+                                const C2 = new Promise(res=>{
+                                    if(user.conversations){
+                                        Promise.all(user.conversations.map(cID => db.collection('conversations').doc(cID).get().then((doc) => doc.exists ? doc.data() : undefined))).then(conversations => {
+                                            user.conversations = conversations.filter(c => c);
+                                            res();
+                                        });
+                                    }
+                                });
+                                Promise.all([C1, C2]).then(() =>{
+                                    resolve(user);
+                                });
                             } else {
                                 resolve({
                                     error: {

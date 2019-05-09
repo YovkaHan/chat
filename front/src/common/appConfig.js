@@ -111,7 +111,13 @@ export const pcbTemplate = {
             ]
         },
         clientInfo0: {
-            component: 'ClientInfo'
+            component: 'ClientInfo',
+            relations: {
+                Parent: {
+                    id: 'convApp0',
+                    component: 'ConversationApp',
+                }
+            }
         },
         convList0: {
             component: 'ConversationList'

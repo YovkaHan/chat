@@ -5,7 +5,8 @@
   "author": "Jordan8XD",
   "license": "MIT",
   "scripts": {
-    "server": "nodemon ./server.js"
+    "server": "nodemon ./server.js",
+    "inspect": "node --inspect ./server.js"
   },
   "devDependencies": {
     "axios": "^0.18.0",
@@ -20,11 +21,13 @@
     "url-loader": "^1.1.1"
   },
   "dependencies": {
+    "btoa": "^1.2.1",
     "circular-dependency-plugin": "^5.0.2",
     "cors": "^2.8.5",
     "crypto-js": "^3.1.9-1",
     "express": "^4.16.3",
     "firebase": "^5.9.4",
+    "hybrid-crypto-js": "^0.1.7",
     "moment": "^2.24.0",
     "socket.io": "^2.1.1",
     "sqlite3": "^4.0.2",
