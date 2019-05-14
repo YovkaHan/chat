@@ -6,14 +6,17 @@ import {TYPES as CTYPES} from '../../../../common/core';
 import {INIT_STATE_ITEM} from './reducer';
 import io from 'socket.io-client';
 import {eventChannel} from 'redux-saga';
+import {componentName} from "../../ClientInfo";
 
 const time = () => moment().unix() * 1000;
 
 const idMake = (index) => name + index;
 
 function* createItemHandle({type, id, coreId}) {
+    yield put({type: TYPES.LENGTH_PLUS, payload: 1});
+
     const state = yield select();
-    const index = state.Components.Chat.length;
+    const index = state.Components[componentName].length;
     const _id = id ? id : idMake(index);
 
     if (coreId !== undefined)

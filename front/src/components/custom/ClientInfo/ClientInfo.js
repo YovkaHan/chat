@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
-import {flagHandle, createItem, byKeyChange} from './redux/actions';
+import {flagHandle, createItem, byKeyChange, deleteItem} from './redux/actions';
 
 const innerClass = (suffix, mainClass, rootClass) => {
     return `${mainClass}__${suffix} ${rootClass ? rootClass + '__' + suffix : ''}`.trim()
@@ -48,7 +48,7 @@ class ClientInfo extends React.Component {
     }
 
     componentDidUpdate(){
-
+        console.log('ClientInfo')
     }
 
     async handleClick(e) {
@@ -76,6 +76,10 @@ class ClientInfo extends React.Component {
             </div>
         )
     }
+
+    componentWillUnmount(){
+        this.props.deleteComponent()
+    }
 }
 
 ClientInfo.propTypes = {
@@ -87,17 +91,24 @@ ClientInfo.propTypes = {
 };
 
 const mapStateToProps = (state, props) => {
-    const cId = props.pcbMade.id;
-
-    const Parent = props.pcbMade.relations.Parent;
-    const _object = state.Components.ClientInfo[cId];
-    const parentObject = state.Components[Parent.component][Parent.id];
-
     const result = {};
+    console.log(props);
+    const cId = props.pcbMade.id;
+    const client = props.client;
 
+    const _object = state.Components.ClientInfo[cId];
+
+    if(!client){
+        const Parent = props.pcbMade.relations.Parent;
+        const parentObject = state.Components[Parent.component][Parent.id];
+
+        result.ava = parentObject ? parentObject.user.ava : {};
+        result.name = parentObject ? parentObject.user.name : {};
+    } else {
+        result.ava = client ? client.ava: {};
+        result.name = client ? client.name: {};
+    }
     result.flags = _object ? _object.flags : {};
-    result.ava = parentObject ? parentObject.user.ava : {};
-    result.name = parentObject ? parentObject.user.name : {};
 
     return result;
 };
@@ -110,6 +121,7 @@ const mapDispatchers = (dispatch, props) => {
         defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         avaChange: (value) => byKeyChange(cId, 'avaSrc', value),
         nameChange: (value) => byKeyChange(cId, 'name', value),
+        deleteComponent: () => deleteItem(cId)
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
     }, dispatch);

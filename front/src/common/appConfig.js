@@ -107,7 +107,17 @@ export const pcbTemplate = {
         convApp0: {
             component: 'ConversationApp',
             children:  [
-                {alias: 'Profile', id: 'profile0'}
+                {alias: 'Profile', id: 'profile0'},
+                {alias: 'Contacts', id: 'contactL0'},
+                {alias: 'Conversations', id: 'conversationL0'}
+            ]
+        },
+        convApp1: {
+            component: 'ConversationApp',
+            children:  [
+                {alias: 'Profile', id: 'profile1'},
+                {alias: 'Contacts', id: 'contactL1'},
+                {alias: 'Conversations', id: 'conversationL1'}
             ]
         },
         clientInfo0: {
@@ -119,14 +129,67 @@ export const pcbTemplate = {
                 }
             }
         },
+        clientInfo1: {
+            component: 'ClientInfo',
+            relations: {
+                Parent: {
+                    id: 'convApp1',
+                    component: 'ConversationApp',
+                }
+            }
+        },
         convList0: {
-            component: 'ConversationList'
+            component: 'ConversationList',
+            relations: {
+                Parent: {
+                    id: 'convApp0',
+                    component: 'ConversationApp',
+                },
+            }
+        },
+        convList1: {
+            component: 'ConversationList',
+            relations: {
+                Parent: {
+                    id: 'convApp1',
+                    component: 'ConversationApp',
+                },
+            }
         },
         conv0: {
             component: 'Conversation'
         },
         contactL0: {
-            component: 'ContactList'
+            component: 'ContactList',
+            relations: {
+                Parent: {
+                    id: 'convApp0',
+                    component: 'ConversationApp',
+                },
+                Contact: {
+                    template: 'ClientInfo0',
+                    component: 'ClientInfo',
+                }
+            }
+        },
+        contactL1: {
+            component: 'ContactList',
+            relations: {
+                Parent: {
+                    id: 'convApp1',
+                    component: 'ConversationApp',
+                },
+                Contact: {
+                    template: 'ClientInfo1',
+                    component: 'ClientInfo',
+                }
+            }
+        },
+        conversationL0: {
+            component: 'ConversationList',
+        },
+        conversationL1: {
+            component: 'ConversationList',
         },
         profile0: {
             component: 'Profile',
@@ -139,11 +202,26 @@ export const pcbTemplate = {
                     component: 'ConversationApp',
                 }
             }
+        },
+        profile1: {
+            component: 'Profile',
+            children:  [
+                {alias: 'User', id: 'clientInfo1'}
+            ],
+            relations: {
+                Parent: {
+                    id: 'convApp1',
+                    component: 'ConversationApp',
+                }
+            }
         }
     },
     templateList: {
         Button0: {
             component: 'Button'
+        },
+        ClientInfo0: {
+            component: 'ClientInfo'
         },
         Message0: {
             component: 'Message'

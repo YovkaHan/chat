@@ -4,6 +4,7 @@ import * as R from "ramda";
 import {INIT_STATE_ITEM} from './reducer';
 import {TYPES as CTYPES} from "../../../../common/core";
 import axios from 'axios';
+import {componentName} from "../../ClientInfo";
 
 function req(options) {
     return axios({
@@ -26,8 +27,10 @@ export default [
 ];
 
 function* createItemHandle({type, id, coreId}) {
+    yield put({type: TYPES.LENGTH_PLUS, payload: 1});
+
     const state = yield select();
-    const index = state.Components.Contacts.length;
+    const index = state.Components[componentName].length;
     const _id = id ? id : idMake(index);
 
     if (coreId !== undefined)

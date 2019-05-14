@@ -8,6 +8,8 @@ import {INIT_STATE_ITEM} from './reducer';
 const idMake = (index) => name + index;
 
 function* createItemHandle({type, id, coreId}) {
+    yield put({type: TYPES.LENGTH_PLUS, payload: 1});
+
     const state = yield select();
     const index = state.Components[componentName].length;
     const _id = id ? id : idMake(index);

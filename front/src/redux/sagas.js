@@ -10,22 +10,26 @@ import InputArea from '../components/custom/InputArea/redux/sagas';
 import Message from '../components/custom/Message/redux/sagas';
 import Chat from '../components/custom/Chat/redux/sagas';
 import ClientInfo from '../components/custom/ClientInfo/redux/sagas';
+import ContactList from '../components/custom/ContactList/redux/sagas';
+import ConversationList from '../components/custom/ConversationList/redux/sagas';
 import ConversationApp from '../components/custom/ConversationApp/redux/sagas';
 import Profile from '../components/custom/Profile/redux/sagas';
 
 export default function* rootSaga() {
     const sagas = [
-        ...Example,
         ...Button,
-        ...Message,
-        ...Lamp,
-        ...Panel,
-        ...MessageInput,
-        ...InputArea,
-        ...MessageList,
         ...Chat,
-        ...ConversationApp,
         ...ClientInfo,
+        ...ContactList,
+        ...ConversationList,
+        ...ConversationApp,
+        ...Example,
+        ...InputArea,
+        ...Lamp,
+        ...Message,
+        ...MessageInput,
+        ...MessageList,
+        ...Panel,
         ...Profile
     ];
 

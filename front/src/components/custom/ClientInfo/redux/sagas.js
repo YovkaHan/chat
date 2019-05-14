@@ -4,16 +4,15 @@ import moment from 'moment';
 import {TYPES, name} from "./types";
 import {TYPES as CTYPES} from '../../../../common/core';
 import {INIT_STATE_ITEM} from './reducer';
-import io from 'socket.io-client';
-import {eventChannel} from 'redux-saga';
+import {componentName} from '../';
 
-const time = () => moment().unix() * 1000;
-
-const idMake = (index) => name + index;
+const idMake = (index) => name + index + 'g';
 
 function* createItemHandle({type, id, coreId}) {
+    yield put({type: TYPES.LENGTH_PLUS, payload: 1});
+
     const state = yield select();
-    const index = state.Components.ClientInfo.length;
+    const index = state.Components[componentName].length;
     const _id = id ? id : idMake(index);
 
     if (coreId !== undefined)
@@ -29,7 +28,7 @@ function* deleteItemHandle({type, id}) {
 function* flagHandleComplete({type, payload, id}) {
     const state = yield select();
 
-    const _object = R.clone(state.Components.ClientInfo[id]);
+    const _object = R.clone(state.Components[componentName][id]);
     const {key, value} = payload;
 
     if (value !== undefined) {

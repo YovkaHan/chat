@@ -34,11 +34,11 @@ export function connectionTry(id) {
 }
 
 export function appAuthorize(id) {
-    return ({type: TYPES.APP_AUTHORIZATION_BEGIN, id})
+    return ({type: TYPES.APP_AUTHORIZATION_BEGIN, id, payload: {}})
 }
 
 export function logIn(id, userId) {
-    return ({type: TYPES.APP_LOGIN_BEGIN, id, userId})
+    return ({type: TYPES.APP_LOGIN_BEGIN, id, payload: {userId}})
 }
 
 export function logOut(id) {

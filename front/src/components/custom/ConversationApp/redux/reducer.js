@@ -24,24 +24,40 @@ export const INIT_STATE_ITEM = {
     },
     view: 'login',
     authToken: '',
-    user: {},
-    contacts: [],
-    conversations: [],
-    list: [],
-    buffer: [],
+    userId: '',
+    user: {
+        data: {},
+        type: 'object',
+        status: 'init'
+    },
+    contacts: {
+        data: {},
+        type: 'object',
+        status: 'init'
+    },
+    conversations: {
+        data: [],
+        type: 'array',
+        status: 'init'
+    },
     participantId: undefined
 };
 
 const cases = (type) => {
     switch (type) {
+        case TYPES.LENGTH_PLUS: {
+            return (draft, payload, id) => {
+                draft.length = draft.length + payload;
+            };
+        }
         case TYPES.ITEM_CREATE_COMPLETE: {
             return (draft, payload, id) => {
                 draft[id] = payload;
-                draft.length = draft.length + 1;
             };
         }
         case TYPES.ITEM_DELETE_COMPLETE: {
             return (draft, payload, id) => {
+                draft.length = draft.length - 1;
                 delete draft[id];
             };
         }
@@ -144,11 +160,21 @@ const cases = (type) => {
                 if(payload.id){
                     draft[id].user = payload;
                 } else {
-                    const contact = draft[id].contacts.find(c => c.login === payload.login);
+                    const contact = draft[id].contacts.data[payload.login];
                     Object.keys(payload).map(key => {
                         contact[key] = payload[key];
                     })
                 }
+            };
+        }
+        case TYPES.APP_USER_CONTACTS_COMPLETE: {
+            return (draft, payload, id) => {
+                draft[id].contacts = {...draft[id].contacts, data: payload};
+            };
+        }
+        case TYPES.APP_USER_CONVERSATIONS_COMPLETE: {
+            return (draft, payload, id) => {
+                draft[id].conversations = {...draft[id].conversations, data: payload};
             };
         }
         default : {

@@ -31,13 +31,56 @@ module.exports = function () {
                     type: 'string'
                 },
                 contacts: {
-                    type: 'array'
+                    type: 'array',
+                    isRequired: 'true'
                 },
                 conversations: {
                     type: 'array'
                 }
             },
-            multiGet: () => {
+            /**return Promise(Object)*/
+            multiSafeGet: (props) => {
+                return new Promise((resolve, reject) => {
+                    const {id} = props;
+                    if (id) {
+                        return db.collection('participants').doc(id).get().then((doc) => {
+                            if (doc.exists) {
+                                const user = doc.data();
+                                if (user.contacts) {
+                                    Promise.all(user.contacts.map(cID => db.collection('participants').doc(cID).get().then((doc) => doc.exists ? doc.data() : undefined))).then(contacts => {
+                                        const result = {};
+                                        contacts.map(c => {
+                                            result[c.login] = {
+                                                login: c.login,
+                                                name: c.name,
+                                                ava: c.ava
+                                            }
+                                        });
+                                        resolve(result);
+                                    });
+                                } else {
+                                    resolve({});
+                                }
+                            } else {
+                                resolve({
+                                    error: {
+                                        text: 'Participant not exist',
+                                        exist: false
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        resolve({
+                            error: {
+                                text: 'Missing required prop',
+                                required: true
+                            }
+                        });
+                    }
+                });
+            },
+            multiUnsafeGet: () => {
                 return db.collection('participants').get().then((snapshot) => snapshot.docs.map(doc => doc.data()));
             },
             get: (data) => {
@@ -54,6 +97,8 @@ module.exports = function () {
                                             user.contacts = contacts.filter(c => c);
                                             res();
                                         });
+                                    }else{
+                                        res();
                                     }
                                 });
                                 const C2 = new Promise(res=>{
@@ -62,6 +107,8 @@ module.exports = function () {
                                             user.conversations = conversations.filter(c => c);
                                             res();
                                         });
+                                    }else {
+                                        res();
                                     }
                                 });
                                 Promise.all([C1, C2]).then(() =>{
@@ -156,7 +203,6 @@ module.exports = function () {
                     });
 
                     if (requiredProps.every(key => data[key])) {
-                        console.log(data.id);
                         db.collection('participants').doc(data.id).get().then(function (doc) {
                             if (doc.exists) {
                                 resolve({

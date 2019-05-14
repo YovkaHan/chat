@@ -3,38 +3,38 @@ module.exports = function ({uniqid}) {
 
     const addObject = (num, userId) => {
         let _num = num ? num : 0;
-        const token = uniqid('token');
-        if (!objectList.find(t => t.token === token)) {
+        const authToken = uniqid('token');
+        if (!objectList.find(t => t.authToken === authToken)) {
             objectList.push({
-                token,
+                authToken,
                 userId,
                 expired: setTimeout(function () {
-                    const fTokenIndex = objectList.findIndex(t => t.token === token);
+                    const fTokenIndex = objectList.findIndex(t => t.authToken === authToken);
                     if (fTokenIndex >= 0) {
                         objectList.splice(fTokenIndex, 1);
                     }
                 }, 1000 * 60 * 60)
             });
-            return token;
+            return authToken;
         } else if (num < 10) {
             return addObject(++_num);
         } else {
             return undefined;
         }
     };
-    const findObjectIndex = (token, userId) => {
+    const findObjectIndex = (authToken, userId) => {
         if(userId !== undefined){
-            return objectList.findIndex(t => t.token === token && t.userId === userId);
+            return objectList.findIndex(t => t.authToken === authToken && t.userId === userId);
         }
-        return objectList.findIndex(t => t.token === token);
+        return objectList.findIndex(t => t.authToken === authToken);
     };
-    const getObject = (token) => {
-        const index = objectList[findObjectIndex(token)];
+    const getObject = (authToken) => {
+        const index = objectList[findObjectIndex(authToken)];
 
         return index === -1 ? undefined : index;
     };
-    const removeObject = (token, userId) => {
-        const fTokenIndex = findObjectIndex(token, userId);
+    const removeObject = (authToken, userId) => {
+        const fTokenIndex = findObjectIndex(authToken, userId);
 
         if (fTokenIndex >= 0) {
             clearTimeout(objectList[fTokenIndex].expired);
@@ -44,13 +44,13 @@ module.exports = function ({uniqid}) {
             return false;
         }
     };
-    const setRSAKeyOnObject = (token, userId, key) => {
-        objectList[findObjectIndex(token, userId)].rsaKey = key;
-        return objectList[findObjectIndex(token, userId)];
+    const setRSAKeyOnObject = (authToken, userId, key) => {
+        objectList[findObjectIndex(authToken, userId)].rsaKey = key;
+        return objectList[findObjectIndex(authToken, userId)];
     };
-    const setAESKeyOnObject = (token, key) => {
-        objectList[findObjectIndex(token)].aesKey = key;
-        return objectList[findObjectIndex(token)];
+    const setAESKeyOnObject = (authToken, key) => {
+        objectList[findObjectIndex(authToken)].aesKey = key;
+        return objectList[findObjectIndex(authToken)];
     };
 
     return {

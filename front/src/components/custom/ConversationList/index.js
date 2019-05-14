@@ -1,16 +1,16 @@
 import React from 'react';
-import ClientInfo from './ClientInfo';
+import ConversationList from './ConversationList';
 import Core from '../../../common/core';
 import actions from './redux/actions';
 import {TYPES} from './redux/types';
 
-import './ClientInfo.scss';
+import './ConversationList.scss';
 
-export const componentName = 'ClientInfo';
+export const componentName = 'ConversationList';
 
 export default {
     Component : (props)=> {
-        return (<Core {...props}><ClientInfo/></Core>)
+        return (<Core {...props}><ConversationList/></Core>)
     },
     actions,
     types: TYPES

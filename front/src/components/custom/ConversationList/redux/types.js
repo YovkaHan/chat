@@ -1,6 +1,6 @@
 import {actionTemplate} from '../../../../redux/common';
 
-export const name = 'profile';
+export const name = 'conversationList';
 
 const defaultTypes = {
     INITIALIZE: "INITIALIZE",

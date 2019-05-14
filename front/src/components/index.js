@@ -11,6 +11,8 @@ import MessageList from './custom/MessageList';
 import ConversationApp from './custom/ConversationApp';
 import ClientInfo from './custom/ClientInfo';
 import Profile from './custom/Profile';
+import ContactList from './custom/ContactList';
+import ConversationList from './custom/ConversationList';
 
 import Lamp from './template/Lamp';
 import Panel from './template/Panel';
@@ -18,20 +20,22 @@ import Channel from './template/Channel';
 
 
 export {
-    Example,
     Button,
-    Lamp,
-    Panel,
     Channel,
-    MyPanel,
     Chat,
+    ClientInfo,
+    ConversationApp,
+    ContactList,
+    ConversationList,
+    Example,
     InputArea,
     InputFlag,
-    List,
+    Lamp,
     Message,
     MessageInput,
     MessageList,
-    ConversationApp,
-    ClientInfo,
+    List,
+    MyPanel,
+    Panel,
     Profile
 }

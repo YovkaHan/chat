@@ -1,0 +1,15 @@
+.conversations {
+  &__item {
+    border: 1px solid black;
+    margin: 2px;
+
+    cursor: pointer;
+  }
+  .conversation {
+    &__content {
+      align-items: center;
+    }
+    flex-grow: 1;
+    width: auto;
+  }
+}

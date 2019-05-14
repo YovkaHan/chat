@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
-import {flagHandle, createItem, valueChange, connectApp, appAuthorize, logIn, connectionTry, appStageConnecting} from './redux/actions';
+import {flagHandle, createItem, valueChange, connectApp, appAuthorize, logIn, connectionTry, appStageConnecting, deleteItem} from './redux/actions';
 
 const innerClass = (suffix, mainClass, rootClass) => {
     return `${mainClass}__${suffix} ${rootClass ? rootClass + '__' + suffix : ''}`.trim()
@@ -25,7 +25,8 @@ class ConversationApp extends React.Component {
         };
 
         this.madeChildren = {
-            Profile: null
+            Profile: null,
+            Contacts: null
         };
         Object.keys(props.pcbMade.children).map(c=>{
             const name = props.pcbMade.children[c].component;
@@ -39,6 +40,7 @@ class ConversationApp extends React.Component {
     }
 
     componentDidUpdate(){
+        console.log('UPDATE');
         if(this.props.appPreparedToConnect){
             this.props.appStageConnecting();
             this.props.connectApp();
@@ -61,7 +63,7 @@ class ConversationApp extends React.Component {
     render() {
         const {props, state, handleClick, logInHandle} = this;
         const {className, rootClass, pcb, pcbMade, view} = props;
-        const {Profile} = this.madeChildren;
+        const {Profile, Contacts} = this.madeChildren;
         const {visibleView, userId} = state;
         const mainClass = 'c-conv-app';
 
@@ -105,9 +107,11 @@ class ConversationApp extends React.Component {
                                            <div className={`conversations`}  style={visibleView === 'conversations' ? {} : {display: 'none'}}>
 
                                            </div>
-                                           <div className={`contacts`} style={visibleView === 'contacts' ? {} : {display: 'none'}}>
-
-                                           </div>
+                                           <Contacts
+                                               core={{pcb, id: pcbMade.children['Contacts'].id, component: pcbMade.children['Contacts'].component}}
+                                               rootClass={`contacts`}
+                                               style={visibleView === 'contacts' ? {} : {display: 'none'}}
+                                           />
                                        </div>
                                    </div>
                                    <div className={`${innerClass('item', mainClass, rootClass)} right`}>
@@ -119,6 +123,10 @@ class ConversationApp extends React.Component {
                 </div>
             </div>
         )
+    }
+
+    componentWillUnmount(){
+        this.props.deleteComponent()
     }
 }
 
@@ -161,6 +169,7 @@ const mapDispatchers = (dispatch, props) => {
         logIn: (userId) => logIn(cId, userId),
         connectionTry: () => connectionTry(cId),
         appStageConnecting: () => appStageConnecting(cId),
+        deleteComponent: () => deleteItem(cId)
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
     }, dispatch);

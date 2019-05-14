@@ -79,13 +79,18 @@ app.post('/participant/create', function (req, res) {
     if (!req.body) return res.sendStatus(400);
 
     const {user} = req.body;
+    const {id} = user;
     const result = {};
+
+    if(!id){
+        user.id = moment().unix() + '_' + uniqid.process();
+    }
 
     Participant.add(user).then(data => {
         if(data.error){
             result.error = data.error;
         } else {
-            result.token = addObject();
+            result.authToken = addObject();
             result.user = user;
         }
 
@@ -110,6 +115,7 @@ app.post('/participant/edit', function (req, res) {
     });
 });
 
+/**req = {user} res = {user || error}*/
 app.post('/participant/get', function (req, res) {
     if (!req.body) return res.sendStatus(400);
 
@@ -127,14 +133,15 @@ app.post('/participant/get', function (req, res) {
     });
 });
 
+/**req = {id} res = {token, id || error}*/
 app.post('/participant/login', function (req, res) {
     if (!req.body) return res.sendStatus(400);
     /** -Взять с тела запроса идишник */
-    const id = req.body.id;
+    const {id} = req.body;
     const result = {};
 
     /** -Проверить идишник в базе данных (есть ли такой же)*/
-    Participant.multiGet().then(participants => {
+    Participant.multiUnsafeGet().then(participants => {
         if (participants.find(p => p.id === id)) {
             result.token = addObject(0, id);
             result.id = id;
@@ -145,16 +152,17 @@ app.post('/participant/login', function (req, res) {
     });
 });
 
+/**req = {token, id} res = {status, token || error}*/
 app.post('/participant/logout', function (req, res) {
     if (!req.body) return res.sendStatus(400);
-    /** -Взять с тела запроса token, userId*/
-    const {token, userId} = req.body;
+    /** -Взять с тела запроса authToken, userId*/
+    const {token, id} = req.body;
     const result = {};
 
     console.log('logout');
 
-    /** -Проверить token и удалить если будет*/
-    removeObject(token, userId);
+    /** -Проверить authToken и удалить если будет*/
+    removeObject(token, id);
 
     result.status = 200;
     result.token = token;
@@ -170,14 +178,15 @@ app.post('/conversation/info', function (req, res) {
     if (!req.body) return res.sendStatus(400);
 });
 
-app.post('/token/check', function (req, res) {
+/**req = {token, id} res = { || error}*/
+app.post('/authToken/check', function (req, res) {
     if (!req.body) return res.sendStatus(400);
 
-    const {token, userId} = req.body;
+    const {token, id} = req.body;
     const result = {};
 
-    if(token !== undefined && userId !== undefined) {
-        if(findObjectIndex(token, userId) !== -1){
+    if(token !== undefined && id !== undefined) {
+        if(findObjectIndex(token, id) !== -1){
 
         } else {
             result.error = 'Token expired or not exist. Please relogin.'
@@ -189,16 +198,16 @@ app.post('/token/check', function (req, res) {
     }
 });
 
-app.post('/token/key', function (req, res) {
+/**req = {token, id, key } res = {key || error}*/
+app.post('/authToken/key', function (req, res) {
     if (!req.body) return res.sendStatus(400);
 
-    const {token, userId, key} = req.body;
+    const {token, id, key} = req.body;
     const result = {};
 
-    if(token !== undefined  && userId !== undefined  && key !== undefined ) {
+    if(token !== undefined && id !== undefined && key !== undefined ) {
 
-        const object = setRSAKeyOnObject(token, userId, key);
-
+        const object = setRSAKeyOnObject(token, id, key);
 
         if(object.rsaKey === key) {
             result.key = rsaWrapper.arrayBufferToUtf8(rsaWrapper.getPublicKey('server'));

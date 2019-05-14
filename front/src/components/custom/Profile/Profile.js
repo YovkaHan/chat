@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {componentName} from './';
 import {bindActionCreators} from 'redux';
-import {flagHandle, createItem, valueChange} from './redux/actions';
+import {flagHandle, createItem, valueChange, deleteItem} from './redux/actions';
 
 const innerClass = (suffix, mainClass, rootClass) => {
     return `${mainClass}__${suffix} ${rootClass ? rootClass + '__' + suffix : ''}`.trim()
@@ -74,6 +74,10 @@ class Profile extends React.Component {
             </div>
         )
     }
+
+    componentWillUnmount(){
+        this.props.deleteComponent()
+    }
 }
 
 Profile.propTypes = {
@@ -116,6 +120,7 @@ const mapDispatchers = (dispatch, props) => {
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
         logOut: () => logOut(Parent.id),
+        deleteComponent: () => deleteItem(cId),
         valueChange: (value) => valueChange(cId, value)
     }, dispatch);
 };

@@ -64,14 +64,19 @@ export const INIT_STATE_ITEM = {
 
 const cases = (type) => {
     switch (type) {
+        case TYPES.LENGTH_PLUS: {
+            return (draft, payload, id) => {
+                draft.length = draft.length + payload;
+            };
+        }
         case TYPES.ITEM_CREATE_COMPLETE: {
             return (draft, payload, id) => {
                 draft[id] = payload;
-                draft.length = draft.length + 1;
             };
         }
         case TYPES.ITEM_DELETE_COMPLETE: {
             return (draft, payload, id) => {
+                draft.length = draft.length - 1;
                 delete draft[id];
             };
         }

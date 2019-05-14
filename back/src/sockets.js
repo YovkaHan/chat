@@ -73,7 +73,7 @@ module.exports = function ({server, Tokens}) {
             if(tokenObject !== undefined){
                 const privateServerKey = rsaWrapper.getPrivateKey('server');
 
-                if(tokenObject.token === rsaWrapper.decrypt(privateServerKey, msg)){
+                if(tokenObject.authToken === rsaWrapper.decrypt(privateServerKey, msg)){
                     const aesKey = aesWrapper.generateKey();
                     const publicClientKey = tokenObject.rsaKey;
                     setAESKeyOnObject(token, aesKey);
@@ -96,7 +96,7 @@ module.exports = function ({server, Tokens}) {
             if(tokenObject !== undefined){
                 const aesKey = tokenObject.aesKey;
 
-                if(tokenObject.token === aesWrapper.decrypt(aesKey, msg)){
+                if(tokenObject.authToken === aesWrapper.decrypt(aesKey, msg)){
                     socket.emit('chat.connect.secondHandshake.success');
                 }else {
                     socket.emit('chat.connect.secondHandshake.error');
@@ -131,6 +131,25 @@ module.exports = function ({server, Tokens}) {
 
                     socket.emit('chat.user.info', {
                         msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(user))
+                    })
+                });
+            }
+        });
+
+        socket.on('chat.user.contacts', function (data) {
+            /**encryptedMsg === {login || id}*/
+            const {token, msg} = data;
+            const tokenObject = getObject(token);
+
+            if(tokenObject !== undefined){
+                const aesKey = tokenObject.aesKey;
+
+                const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+
+                Participant.multiSafeGet({id: _data.userId}).then(contacts => {
+
+                    socket.emit('chat.user.contacts', {
+                        msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(contacts))
                     })
                 });
             }

@@ -39,6 +39,7 @@ const defaultTypes = {
     INITIALIZE: "INITIALIZE",
     FLAGS: "FLAGS",
     CREATE: "CREATE",
+    DELETE: "DELETE",
     FLAGS_COMPLETE: "FLAGS_COMPLETE"
 };
 const _sequence = ["name","root"];
@@ -60,6 +61,9 @@ export function flagHandle(id, key, value) {
 export function createItem(id, childId) {
     return ({type: TYPES.CREATE, payload: childId, id})
 }
+export function deleteItem(id) {
+    return ({type: TYPES.DELETE, id})
+}
 /**--------------------REDUCER-------------------------------*/
 const INIT_STATE = {
     length: 0
@@ -75,6 +79,12 @@ const cases = (type) => {
             return (draft, payload, id) => {
                 draft.length++;
                 draft[id] = {childId: payload, status: true};
+            };
+        }
+        case TYPES.DELETE: {
+            return (draft, payload, id) => {
+                draft.length--;
+                delete draft[id];
             };
         }
         case TYPES.CHANGE: {
@@ -106,13 +116,14 @@ class Core extends React.Component {
         super(props);
 
         const {createChildItem, core} = props;
-        const {id, component, template, pcb} = core;
+        const {id} = core;
 
         this.state = {
             id: rootIdGenerator.create(),
             status: false
         };
 
+        console.log(this.state.id, id);
         createChildItem(this.state.id, id);
     }
 
@@ -129,7 +140,9 @@ class Core extends React.Component {
     render(){
         const {status, id, madeSet} = this.state;
         const {children, items, core} = this.props;
-        const {component, template, pcb} = core;
+        const {component, template, pcb, relations} = core;
+
+        console.log(id, 'render', template);
 
         const child = (c, index) => {
 
@@ -137,7 +150,7 @@ class Core extends React.Component {
                 c,
                 {
                     key: index,
-                    pcbMade: component ? pcb.make(items[id].childId, template) : {},
+                    pcbMade: component ? pcb.make(items[id].childId, template, relations) : {},
                     pcb,
                     ...(()=>{
                         const result = {};
@@ -159,6 +172,10 @@ class Core extends React.Component {
             </React.Fragment>
         ) : null
     }
+
+    componentWillUnmount(){
+        this.props.deleteComponent(this.state.id)
+    }
 }
 
 const mapStateToProps = (state, props) => {
@@ -173,6 +190,7 @@ const mapDispatchers = (dispatch, props) => {
 
     return bindActionCreators({
         createChildItem: (id, childId) => createItem(childId, id),
+        deleteComponent: (id) => deleteItem(id)
     }, dispatch);
 };
 

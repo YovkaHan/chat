@@ -1,10 +1,11 @@
 function pcbGenerate(template) {
     const generated = {...template};
-    generated.make = (id, tName) => {
+    generated.make = (id, tName, relations) => {
         let result = undefined;
         if(template){
             if (tName && template.templateList.hasOwnProperty(tName)) {
                 result = {
+                    relations,
                     ...template.templateList[tName],
                     id,
                     make: generated.make,
@@ -26,6 +27,7 @@ function pcbGenerate(template) {
                 }
             } else if (template.idList.hasOwnProperty(id)) {
                 result = {
+                    relations,
                     ...template.idList[id],
                     id,
                     make: generated.make,
