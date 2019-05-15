@@ -31,7 +31,7 @@ const {
 } = Tokens;
 
 const Firebase = require('./src/firebase');
-const {Participant} = Firebase();
+const {Participant, Conversation, Message} = Firebase();
 
 const router = express.Router();
 
@@ -91,7 +91,7 @@ app.post('/participant/create', function (req, res) {
             result.error = data.error;
         } else {
             result.authToken = addObject();
-            result.user = user;
+            result.user = {...user, id: data.id};
         }
 
         res.json(result);
@@ -170,12 +170,101 @@ app.post('/participant/logout', function (req, res) {
     res.json(result);
 });
 
-app.post('/conversation/new', function (req, res) {
+app.post('/conversation/create', function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+
+    const {conversation} = req.body;
+    const {id} = conversation;
+    const result = {};
+
+    if(!id){
+        conversation.id = 'conv' + moment().unix() + '_' + uniqid.process();
+    }
+
+    Conversation.add(conversation).then(data => {
+        if(data.error){
+            result.error = data.error;
+        } else {
+            result.conversation = {...conversation, id: data.id};
+        }
+
+        res.json(result);
+    });
+});
+
+app.post('/conversation/edit', function (req, res) {
     if (!req.body) return res.sendStatus(400);
 });
 
-app.post('/conversation/info', function (req, res) {
+app.post('/conversation/get', function (req, res) {
     if (!req.body) return res.sendStatus(400);
+
+    const result = {};
+
+    Conversation.get(req.body).then(data => {
+        if(data.error){
+            result.error = data.error;
+        } else {
+            result.conversation = data;
+        }
+
+        res.json(result);
+    })
+
+});
+
+app.post('/message/get', function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+
+    const {id} = req.body;
+    const result = {};
+
+    Message.get(id).then(data => {
+        if(data.error){
+            result.error = data.error;
+        } else {
+            result.message = data;
+        }
+
+        res.json(result);
+    })
+
+});
+
+app.post('/message/create', function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+
+    const {message} = req.body;
+    const result = {};
+
+    Message.add(message).then(data => {
+        if(data.error){
+            result.error = data.error;
+        } else {
+            result.message = data;
+        }
+
+        res.json(result);
+    })
+
+});
+
+app.post('/message/edit', function (req, res) {
+    if (!req.body) return res.sendStatus(400);
+
+    const {message} = req.body;
+    const result = {};
+
+    Message.edit(message).then(data => {
+        if(data.error){
+            result.error = data.error;
+        } else {
+            result.message = data;
+        }
+
+        res.json(result);
+    })
+
 });
 
 /**req = {token, id} res = { || error}*/

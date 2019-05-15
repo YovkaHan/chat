@@ -1,4 +1,5 @@
 import React from 'react';
+import * as R from 'ramda';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from "redux";
@@ -100,7 +101,7 @@ const mapStateToProps = (state, props) => {
         return ({
             flags: _object.flags,
             updateAllow: _object.flags.update,
-            list: parentObject.contacts.data
+            list: R.clone(parentObject.contacts.data)
         })
     } else {
         return {};

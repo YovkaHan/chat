@@ -138,27 +138,6 @@ export const pcbTemplate = {
                 }
             }
         },
-        convList0: {
-            component: 'ConversationList',
-            relations: {
-                Parent: {
-                    id: 'convApp0',
-                    component: 'ConversationApp',
-                },
-            }
-        },
-        convList1: {
-            component: 'ConversationList',
-            relations: {
-                Parent: {
-                    id: 'convApp1',
-                    component: 'ConversationApp',
-                },
-            }
-        },
-        conv0: {
-            component: 'Conversation'
-        },
         contactL0: {
             component: 'ContactList',
             relations: {
@@ -187,9 +166,21 @@ export const pcbTemplate = {
         },
         conversationL0: {
             component: 'ConversationList',
+            relations: {
+                Parent: {
+                    id: 'convApp0',
+                    component: 'ConversationApp',
+                },
+            }
         },
         conversationL1: {
             component: 'ConversationList',
+            relations: {
+                Parent: {
+                    id: 'convApp1',
+                    component: 'ConversationApp',
+                },
+            }
         },
         profile0: {
             component: 'Profile',

@@ -1,8 +1,9 @@
 import React from 'react';
+import * as R from 'ramda';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from "redux";
-import {initItem} from "./redux/actions";
+import {initItem, deleteItem} from "./redux/actions";
 
 const innerClass = (sufix, mainClass, rootClass) => {
     return `${mainClass}__${sufix}${rootClass ? ' '+rootClass+'__'+sufix : ''}`.trim()
@@ -42,7 +43,7 @@ class ConversationList extends React.Component {
     static defaultProps = {
         className: '',
         rootClass: '',
-        list: {}
+        list: []
     };
 
     constructor(props){
@@ -82,12 +83,16 @@ class ConversationList extends React.Component {
             </div>
         )
     }
+
+    componentWillUnmount(){
+        this.props.deleteComponent()
+    }
 }
 ConversationList.propTypes = {
     className: PropTypes.string,
     rootClass: PropTypes.string,
     pcb: PropTypes.object,
-    list: PropTypes.object,
+    list: PropTypes.array,
     updateAllow: PropTypes.bool
 };
 
@@ -103,7 +108,7 @@ const mapStateToProps = (state, props) => {
         return ({
             flags: _object.flags,
             updateAllow: _object.flags.update,
-            list: parentObject.conversations.data
+            list: R.clone(parentObject.conversations.data)
         })
     } else {
         return {};
@@ -115,6 +120,7 @@ const mapDispatchers = (dispatch, props) => {
 
     return bindActionCreators({
         // initialize: (pcb) => initItem(cId, pcb),
+        deleteComponent: () => deleteItem(cId),
     }, dispatch);
 };
 
