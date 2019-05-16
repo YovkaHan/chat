@@ -5,6 +5,7 @@ import Message from '../components/custom/Message/redux/reducer';
 import Button from '../components/custom/Button/redux/reducer';
 import ContactList from '../components/custom/ContactList/redux/reducer';
 import ConversationList from '../components/custom/ConversationList/redux/reducer';
+import ConversationView from '../components/custom/ConversationView/redux/reducer';
 import MessageInput from '../components/custom/MessageInput/redux/reducer';
 import MessageList from '../components/custom/MessageList/redux/reducer';
 import Chat from '../components/custom/Chat/redux/reducer';
@@ -18,6 +19,7 @@ export default {
         Core: Core(),
         ContactList: ContactList(),
         ConversationList: ConversationList(),
+        ConversationView: ConversationView(),
         Example: Example(),
         Message: Message(),
         Button: Button(),

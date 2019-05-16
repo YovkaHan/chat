@@ -141,7 +141,7 @@ app.post('/participant/login', function (req, res) {
     const result = {};
 
     /** -Проверить идишник в базе данных (есть ли такой же)*/
-    Participant.multiUnsafeGet().then(participants => {
+    Participant.getAll().then(participants => {
         if (participants.find(p => p.id === id)) {
             result.token = addObject(0, id);
             result.id = id;

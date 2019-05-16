@@ -88,6 +88,12 @@ export const pcbTemplate = {
                 {alias: 'Messages', id: 'msgL0'},
                 {alias: 'Input', id: 'msgI0'},
             ],
+            relations: {
+                Parent: {
+                    id: 'convApp0',
+                    component: 'ConversationApp',
+                }
+            },
             config: {
                 from: 'A',
                 to: 'B'
@@ -99,6 +105,12 @@ export const pcbTemplate = {
                 {alias: 'Messages', id: 'msgL1'},
                 {alias: 'Input', id: 'msgI1'},
             ],
+            relations: {
+                Parent: {
+                    id: 'convApp0',
+                    component: 'ConversationApp',
+                }
+            },
             config: {
                 from: 'B',
                 to: 'A'
@@ -109,7 +121,8 @@ export const pcbTemplate = {
             children:  [
                 {alias: 'Profile', id: 'profile0'},
                 {alias: 'Contacts', id: 'contactL0'},
-                {alias: 'Conversations', id: 'conversationL0'}
+                {alias: 'Conversations', id: 'conversationL0'},
+                {alias: 'Conversation', id: 'conversationV0'}
             ]
         },
         convApp1: {
@@ -198,6 +211,18 @@ export const pcbTemplate = {
             component: 'Profile',
             children:  [
                 {alias: 'User', id: 'clientInfo1'}
+            ],
+            relations: {
+                Parent: {
+                    id: 'convApp1',
+                    component: 'ConversationApp',
+                }
+            }
+        },
+        conversationV0: {
+            component: 'ConversationView',
+            children:  [
+                {alias: 'Chat', id: 'chat0'}
             ],
             relations: {
                 Parent: {

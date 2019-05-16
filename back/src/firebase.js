@@ -39,27 +39,44 @@ module.exports = function () {
                 }
             },
             /**return Promise(Object)*/
-            multiSafeGet: (props) => {
+            safeGet: (props) => {
                 return new Promise((resolve, reject) => {
-                    const {id} = props;
+                    const {id, get} = props;
                     if (id) {
                         return db.collection('participants').doc(id).get().then((doc) => {
                             if (doc.exists) {
                                 const user = doc.data();
-                                if (user.contacts) {
-                                    Promise.all(user.contacts.map(cID => db.collection('participants').doc(cID).get().then((doc) => doc.exists ? doc.data() : undefined))).then(contacts => {
-                                        const result = {};
-                                        contacts.map(c => {
-                                            result[c.login] = {
-                                                login: c.login,
-                                                name: c.name,
-                                                ava: c.ava
-                                            }
+                                if(typeof get === 'string' && user.hasOwnProperty(get)){
+                                    if (get === 'contacts' && user.contacts) {
+                                        Promise.all(user.contacts.map(cID => db.collection('participants').doc(cID).get().then((doc) => doc.exists ? doc.data() : undefined))).then(contacts => {
+                                            const result = {};
+                                            contacts.map(c => {
+                                                result[c.login] = {
+                                                    login: c.login,
+                                                    name: c.name,
+                                                    ava: c.ava
+                                                }
+                                            });
+                                            resolve(result);
                                         });
-                                        resolve(result);
-                                    });
+                                    } else if(get === 'conversations' && user.conversations){
+                                        Promise.all(user.conversations.map(cID => db.collection('conversations').doc(cID).get().then((doc) => doc.exists ? doc.data() : undefined))).then(conversations => {
+                                            const result = {};
+                                            conversations.map(c => {
+                                                result[c.name] = c;
+                                            });
+                                            resolve(result);
+                                        });
+                                    }else {
+                                        resolve({});
+                                    }
                                 } else {
-                                    resolve({});
+                                    resolve({
+                                        error: {
+                                            text: 'Wrong prop to get',
+                                            exist: false
+                                        }
+                                    });
                                 }
                             } else {
                                 resolve({
@@ -80,7 +97,7 @@ module.exports = function () {
                     }
                 });
             },
-            multiUnsafeGet: () => {
+            getAll: () => {
                 return db.collection('participants').get().then((snapshot) => snapshot.docs.map(doc => doc.data()));
             },
             get: (data) => {

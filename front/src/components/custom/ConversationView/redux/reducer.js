@@ -11,12 +11,12 @@ export const INIT_STATE_ITEM = {
         toggle: false,
         hover: false,
         status: false,
-        stage: 'init',
-        update: false,
-        initiated: false
+        stage: 'init'
     },
-    list: {},
-    current: undefined
+    messageList: [],
+    messageBuffer: {},
+    conversationId: undefined,
+    conversation: {}
 };
 
 const cases = (type) => {

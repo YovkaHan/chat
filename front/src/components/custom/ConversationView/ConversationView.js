@@ -9,7 +9,7 @@ const innerClass = (sufix, mainClass, rootClass) => {
     return `${mainClass}__${sufix}${rootClass ? ' '+rootClass+'__'+sufix : ''}`.trim()
 };
 
-class ContactList extends React.Component {
+class ConversationView extends React.Component {
 
     static defaultProps = {
         className: '',
@@ -47,32 +47,11 @@ class ContactList extends React.Component {
         const {props, state, madeRelations} = this;
         const {Contact} = madeRelations;
         const {pcbMade, flags, className, rootClass, pcb, list, style} = props;
-        const mainClass = 'c-contacts';
+        const mainClass = 'c-conversation-view';
 
         return(
             <div className={`${mainClass} ${className} ${rootClass}`.trim()} style={style}>
                 <div className={innerClass('content', mainClass, rootClass)}>
-                    <div className={`panel`}>
-                        <input type="text" className={`panel__item input-search`}/>
-                        <div className={`panel__item close-btn hidden`}>
-                            <i className={`icon material-icons`}>
-                                close
-                            </i>
-                        </div>
-                    </div>
-                    <div className={`list`}>
-                        {
-                            Object.keys(list).map(key => (
-                                <Contact
-                                    core={{pcb, template: pcbMade.relations['Contact'].template, component: pcbMade.relations['Contact'].component}}
-                                    key={key}
-                                    client={list[key]}
-                                    rootClass={`contact`}
-                                    className={rootClass+'__item'}
-                                />
-                            ))
-                        }
-                    </div>
                 </div>
             </div>
         )
@@ -81,7 +60,7 @@ class ContactList extends React.Component {
         this.props.deleteComponent()
     }
 }
-ContactList.propTypes = {
+ConversationView.propTypes = {
     className: PropTypes.string,
     rootClass: PropTypes.string,
     pcb: PropTypes.object,
@@ -94,14 +73,12 @@ const mapStateToProps = (state, props) => {
     const cId = props.pcbMade.id;
 
     const Parent = props.pcbMade.relations.Parent;
-    const _object = state.Components.ContactList[cId];
+    const _object = state.Components.ConversationView[cId];
     const parentObject = state.Components[Parent.component][Parent.id];
 
     if(_object) {
         return ({
             flags: _object.flags,
-            updateAllow: _object.flags.update,
-            list: R.clone(parentObject.contacts.data)
         })
     } else {
         return {};
@@ -117,4 +94,4 @@ const mapDispatchers = (dispatch, props) => {
     }, dispatch);
 };
 
-export default connect(mapStateToProps, mapDispatchers)(ContactList);
+export default connect(mapStateToProps, mapDispatchers)(ConversationView);

@@ -1,0 +1,11 @@
+{
+  "name": "Chat",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "server": "yarn --cwd ./back server",
+    "inspect": "yarn --cwd ./back inspect",
+    "dev": "yarn --cwd ./front dev",
+    "build": "yarn --cwd ./front build"
+  }
+}

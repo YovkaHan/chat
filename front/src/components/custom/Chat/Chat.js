@@ -33,18 +33,11 @@ class Chat extends React.Component {
             this.madeChildren[c] = require('../../')[name].Component;
         });
 
-        props.startChannel();
-
         this.handleClick = ::this.handleClick;
     }
 
     componentDidUpdate(){
-        if(this.props.flags.connection === 'off'
-            && this.props.flags.server === 'on'
-            && this.props.flags.chat === 'ready'
-        ){
-            this.props.connectChat();
-        }
+
     }
 
     async handleClick(e) {
@@ -68,12 +61,12 @@ class Chat extends React.Component {
                         core={{pcb, id: pcbMade.children['Messages'].id, component: pcbMade.children['Messages'].component}}
                         rootClass={`msgs`}
                     />
-                    <Input
-                        core={{pcb, id: pcbMade.children['Input'].id, component: pcbMade.children['Input'].component}}
-                        from={props.from ? props.from : props.pcbMade.config.from}
-                        to={props.from ? props.from : props.pcbMade.config.to}
-                        rootClass={`inpt-msg`}
-                    />
+                    {/*<Input*/}
+                        {/*core={{pcb, id: pcbMade.children['Input'].id, component: pcbMade.children['Input'].component}}*/}
+                        {/*from={props.from ? props.from : props.pcbMade.config.from}*/}
+                        {/*to={props.from ? props.from : props.pcbMade.config.to}*/}
+                        {/*rootClass={`inpt-msg`}*/}
+                    {/*/>*/}
                 </div>
             </div>
         )
@@ -89,12 +82,16 @@ Chat.propTypes = {
 const mapStateToProps = (state, props) => {
     const cId = props.pcbMade.id;
     const _object = state.Components.Chat[cId];
+    const Parent = props.pcbMade.relations.Parent;
+    const parentObject = state.Components[Parent.component][Parent.id];
 
     if(_object) {
         return ({
             flags: _object.flags,
             list: _object.list,
-            buffer: _object.buffer
+            buffer: _object.buffer,
+            chatSelected: parentObject.conversation.chosen,
+            data: parentObject.conversation.data
         })
     } else {
         return {};

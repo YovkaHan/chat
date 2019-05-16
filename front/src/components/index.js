@@ -13,6 +13,7 @@ import ClientInfo from './custom/ClientInfo';
 import Profile from './custom/Profile';
 import ContactList from './custom/ContactList';
 import ConversationList from './custom/ConversationList';
+import ConversationView from './custom/ConversationView';
 
 import Lamp from './template/Lamp';
 import Panel from './template/Panel';
@@ -27,6 +28,7 @@ export {
     ConversationApp,
     ContactList,
     ConversationList,
+    ConversationView,
     Example,
     InputArea,
     InputFlag,

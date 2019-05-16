@@ -250,12 +250,28 @@ const createSocketChannel = (socket, authToken, id) => eventChannel((emit) => {
         });
     }
 
+    function userConversationsHandler(data, authToken) {
+        const aesKey = _store.get(authToken, ['aesKey'])[0];
+        aesWrapper.decryptMessage(aesKey, data.msg).then(decryptedData => {
+            emit({req: 'chat.user.conversations', data: JSON.parse(decryptedData)});
+        });
+    }
+
+    function conversationGetHandler(data, authToken) {
+        const aesKey = _store.get(authToken, ['aesKey'])[0];
+        aesWrapper.decryptMessage(aesKey, data.msg).then(decryptedData => {
+            emit({req: 'chat.conversation.get', data: JSON.parse(decryptedData)});
+        });
+    }
+
     socket.on('chat.connection.success', chatConnectionHandlerSuccess);
     socket.on('chat.connect.firstHandshake.success', channelFirstHandShakeHandlerSuccess);
     socket.on('chat.connect.firstHandshake.error', channelFirstHandShakeHandlerError);
     socket.on('chat.connect.secondHandshake.success', channelSecondHandshakeHandlerSuccess);
     socket.on('chat.user.info', (data)=>userInfoHandler(data, authToken));
     socket.on('chat.user.contacts', (data)=>userContactsHandler(data, authToken));
+    socket.on('chat.user.conversations', (data)=>userConversationsHandler(data, authToken));
+    socket.on('chat.conversation.get', (data)=>conversationGetHandler(data, authToken));
     socket.on('message.incoming', handler);
     socket.on('message.outgoing', handler);
     socket.on('message.sent', handler);
@@ -269,6 +285,8 @@ const createSocketChannel = (socket, authToken, id) => eventChannel((emit) => {
         socket.removeListener('chat.connect.secondHandshake.success', channelSecondHandshakeHandlerSuccess);
         socket.removeListener('chat.user.info', userInfoHandler);
         socket.removeListener('chat.user.contacts', userContactsHandler);
+        socket.removeListener('chat.user.conversations', userConversationsHandler);
+        socket.removeListener('chat.conversation.get', conversationGetHandler);
         socket.removeListener('message.incoming', handler);
         socket.removeListener('message.sending', handler);
         socket.removeListener('message.sent', handler);
@@ -423,10 +441,31 @@ const onUserConversations = function* (socket, authToken, _id) {
 
         if (id === _id) {
             const aesKey = _store.get(authToken, ['aesKey'])[0];
+            const userId = _store.get(authToken, ['userId'])[0];
 
-            aesWrapper.encryptMessage(aesKey, JSON.stringify(payload)).then(msg => {
+            aesWrapper.encryptMessage(aesKey, JSON.stringify({userId})).then(msg => {
                 socket.emit(
                     `chat.user.conversations`,
+                    {
+                        token: authToken,
+                        msg: msg
+                    }
+                );
+            });
+        }
+    }
+};
+
+const onConversationGet = function* (socket, authToken, _id) {
+    while (true) {
+        const {id, payload} = yield take(TYPES.APP_CONVERSATION_GET);
+
+        if (id === _id) {
+            const aesKey = _store.get(authToken, ['aesKey'])[0];
+
+            aesWrapper.encryptMessage(aesKey, JSON.stringify({id: payload.conversationId})).then(msg => {
+                socket.emit(
+                    `chat.conversation.get`,
                     {
                         token: authToken,
                         msg: msg
@@ -485,6 +524,8 @@ const listenServerSaga = function* (id) {
 
         yield fork(onUserInfo, socket, authToken, id);
         yield fork(onUserContacts, socket, authToken, id);
+        yield fork(onUserConversations, socket, authToken, id);
+        yield fork(onConversationGet, socket, authToken, id);
 
         while (true) {
             const payload = yield take(socketChannel);
@@ -504,6 +545,7 @@ const listenServerSaga = function* (id) {
                 } else {
                     yield put({type: TYPES.APP_USER_INFO_COMPLETE, payload: payload.data, id});
                     yield put({type: TYPES.APP_USER_CONTACTS, id});
+                    yield put({type: TYPES.APP_USER_CONVERSATIONS, id});
                 }
             } else if (payload.req === 'chat.user.contacts') {
                 if (payload.data.error) {
@@ -516,6 +558,12 @@ const listenServerSaga = function* (id) {
                     console.error(payload.data.error);
                 } else {
                     yield put({type: TYPES.APP_USER_CONVERSATIONS_COMPLETE, payload: payload.data, id});
+                }
+            } else if (payload.req === 'chat.conversation.get') {
+                if (payload.data.error) {
+                    console.error(payload.data.error);
+                } else {
+                    yield put({type: TYPES.APP_CONVERSATION_GET_COMPLETE, payload: payload.data, id});
                 }
             }
         }

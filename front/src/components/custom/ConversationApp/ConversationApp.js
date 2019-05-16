@@ -27,7 +27,8 @@ class ConversationApp extends React.Component {
         this.madeChildren = {
             Profile: null,
             Contacts: null,
-            Conversations: null
+            Conversations: null,
+            Conversation: null
         };
         Object.keys(props.pcbMade.children).map(c=>{
             const name = props.pcbMade.children[c].component;
@@ -63,7 +64,7 @@ class ConversationApp extends React.Component {
     render() {
         const {props, state, handleClick, logInHandle} = this;
         const {className, rootClass, pcb, pcbMade, view} = props;
-        const {Profile, Contacts, Conversations} = this.madeChildren;
+        const {Profile, Contacts, Conversations, Conversation} = this.madeChildren;
         const {visibleView, userId} = state;
         const mainClass = 'c-conv-app';
 
@@ -117,7 +118,9 @@ class ConversationApp extends React.Component {
                                        </div>
                                    </div>
                                    <div className={`${innerClass('item', mainClass, rootClass)} right`}>
-
+                                       <Conversation
+                                           core={{pcb, id: pcbMade.children['Conversation'].id, component: pcbMade.children['Conversation'].component}}
+                                       />
                                    </div>
                                </React.Fragment>
                             )

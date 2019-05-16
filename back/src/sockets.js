@@ -1,7 +1,7 @@
 module.exports = function ({server, Tokens}) {
     const io = require('socket.io')(server);
     const Firebase = require('./firebase');
-    const {Participant} = Firebase();
+    const {Participant, Conversation} = Firebase();
     const uniqid = require('uniqid');
     const rsaWrapper = require('./rsa-wrapper');
     const aesWrapper = require('./aes-wrapper');
@@ -146,7 +146,7 @@ module.exports = function ({server, Tokens}) {
 
                 const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
 
-                Participant.multiSafeGet({id: _data.userId}).then(contacts => {
+                Participant.safeGet({id: _data.userId, get: 'contacts'}).then(contacts => {
 
                     socket.emit('chat.user.contacts', {
                         msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(contacts))
@@ -154,6 +154,45 @@ module.exports = function ({server, Tokens}) {
                 });
             }
         });
+
+        socket.on('chat.user.conversations', function (data) {
+            /**encryptedMsg === {login || id}*/
+            const {token, msg} = data;
+            const tokenObject = getObject(token);
+
+            if(tokenObject !== undefined){
+                const aesKey = tokenObject.aesKey;
+
+                const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+
+                Participant.safeGet({id: _data.userId, get: 'conversations'}).then(conversations => {
+
+                    socket.emit('chat.user.conversations', {
+                        msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(conversations))
+                    })
+                });
+            }
+        });
+
+        socket.on('chat.conversation.get', function (data) {
+            /**encryptedMsg === {login || id}*/
+            const {token, msg} = data;
+            const tokenObject = getObject(token);
+
+            if(tokenObject !== undefined){
+                const aesKey = tokenObject.aesKey;
+
+                const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+
+                Conversation.get({id: _data.id}).then(conversation => {
+
+                    socket.emit('chat.conversation.get', {
+                        msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(conversation))
+                    })
+                });
+            }
+        });
+
 
         // socket.on('message.sending', function (message) {
         //

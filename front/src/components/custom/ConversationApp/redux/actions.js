@@ -49,6 +49,10 @@ export function appStageConnecting(id) {
     return ({type: TYPES.APP_STAGE_CONNECTING, id})
 }
 
+export function conversationGet(id, conversationId) {
+    return ({type: TYPES.APP_CONVERSATION_GET, payload: {conversationId}, id})
+}
+
 export default {
     initialize,
     flagHandle,
@@ -57,5 +61,6 @@ export default {
     appAuthorize,
     logIn,
     logOut,
-    appStageConnecting
+    appStageConnecting,
+    conversationGet
 }

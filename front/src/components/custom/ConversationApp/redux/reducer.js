@@ -36,9 +36,13 @@ export const INIT_STATE_ITEM = {
         status: 'init'
     },
     conversations: {
-        data: [],
-        type: 'array',
+        data: {},
+        type: 'object',
         status: 'init'
+    },
+    conversation: {
+        chosen: false,
+        data: {}
     },
     participantId: undefined
 };
@@ -157,7 +161,7 @@ const cases = (type) => {
         }
         case TYPES.APP_USER_INFO_COMPLETE: {
             return (draft, payload, id) => {
-                if(payload.id){
+                if (payload.id) {
                     draft[id].user = payload;
                 } else {
                     const contact = draft[id].contacts.data[payload.login];

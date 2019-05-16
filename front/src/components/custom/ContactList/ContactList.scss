@@ -41,6 +41,10 @@
       justify-content: center;
       cursor: pointer;
 
+      &.hidden {
+        display: none;
+      }
+
       .icon {
         display: flex;
         align-items: center;

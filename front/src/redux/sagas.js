@@ -12,6 +12,7 @@ import Chat from '../components/custom/Chat/redux/sagas';
 import ClientInfo from '../components/custom/ClientInfo/redux/sagas';
 import ContactList from '../components/custom/ContactList/redux/sagas';
 import ConversationList from '../components/custom/ConversationList/redux/sagas';
+import ConversationView from '../components/custom/ConversationView/redux/sagas';
 import ConversationApp from '../components/custom/ConversationApp/redux/sagas';
 import Profile from '../components/custom/Profile/redux/sagas';
 
@@ -22,6 +23,7 @@ export default function* rootSaga() {
         ...ClientInfo,
         ...ContactList,
         ...ConversationList,
+        ...ConversationView,
         ...ConversationApp,
         ...Example,
         ...InputArea,

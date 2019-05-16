@@ -13,7 +13,7 @@ class Conversation extends React.Component {
     static defaultProps = {
         className: '',
         rootClass: '',
-        list: {}
+        list: []
     };
 
     constructor(props){
@@ -24,14 +24,19 @@ class Conversation extends React.Component {
         };
     }
 
+    chooseConversation = () => {
+        this.props.chooseConversationHandler(this.props.data.id);
+    };
+
     render(){
-        const {props, state} = this;
-        const {className, rootClass} = props;
+        const {props, state, chooseConversation} = this;
+        const {className, rootClass, data} = props;
         const mainClass = 'conversation';
 
         return(
-            <div className={`${mainClass} ${className} ${rootClass}`.trim()} style={style}>
+            <div className={`${mainClass} ${className} ${rootClass}`.trim()} onClick={chooseConversation}>
                 <div className={innerClass('content', mainClass, rootClass)}>
+                    <div className={`${mainClass}__name`}>{data.name}</div>
                 </div>
             </div>
         )
@@ -62,23 +67,43 @@ class ConversationList extends React.Component {
     //     }
     // }
 
+    chooseConversationHandler = (convId) => {
+        this.props.chooseConversation(convId);
+    };
+
     render(){
-        const {props, state} = this;
+        const {props, state, chooseConversationHandler} = this;
         const {className, rootClass, list, style} = props;
         const mainClass = 'c-conversations';
 
         return(
             <div className={`${mainClass} ${className} ${rootClass}`.trim()} style={style}>
                 <div className={innerClass('content', mainClass, rootClass)}>
-                    {
-                        list.map(c => (
-                            <Conversation
-                                key={c.id}
-                                data={c}
-                                className={rootClass+'__item'}
-                            />
-                        ))
-                    }
+                    <div className={`panel`}>
+                        <input type="text" className={`panel__item input-search`}/>
+                        <div className={`panel__item close-btn hidden`}>
+                            <i className={`icon material-icons`}>
+                                close
+                            </i>
+                        </div>
+                        <div className={`panel__item add-btn`}>
+                            <i className={`icon material-icons`}>
+                                add
+                            </i>
+                        </div>
+                    </div>
+                    <div className={`list`}>
+                        {
+                            Object.keys(list).map(key => (
+                                <Conversation
+                                    key={key}
+                                    data={list[key]}
+                                    className={rootClass+'__item'}
+                                    chooseConversationHandler={chooseConversationHandler}
+                                />
+                            ))
+                        }
+                    </div>
                 </div>
             </div>
         )
@@ -92,7 +117,7 @@ ConversationList.propTypes = {
     className: PropTypes.string,
     rootClass: PropTypes.string,
     pcb: PropTypes.object,
-    list: PropTypes.array,
+    list: PropTypes.object,
     updateAllow: PropTypes.bool
 };
 
@@ -117,9 +142,13 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchers = (dispatch, props) => {
     const cId = props.pcbMade.id;
+    const Parent = props.pcbMade.relations.Parent;
+
+    const {conversationGet} = require('../../')[Parent.component].actions;
 
     return bindActionCreators({
         // initialize: (pcb) => initItem(cId, pcb),
+        chooseConversation: (conversationId) => conversationGet(Parent.id, conversationId),
         deleteComponent: () => deleteItem(cId),
     }, dispatch);
 };
