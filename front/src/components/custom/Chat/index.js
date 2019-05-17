@@ -1,15 +1,27 @@
 import React from 'react';
 import Chat from './Chat';
-import Core from '../../../common/core';
+import Core, {rootIdGenerator} from '../../../common/core';
 import actions from './redux/actions';
 import {TYPES} from './redux/types';
 
 import './Chat.scss';
 
+export const componentName = 'Chat';
+
+class Component extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            coreId: rootIdGenerator.create()
+        }
+    }
+    render(){
+        return(<Core {...this.props} coreId={this.state.coreId}><Chat/></Core>)
+    }
+}
+
 export default {
-    Component : (props)=> {
-        return (<Core {...props}><Chat/></Core>)
-    },
+    Component,
     actions,
     types: TYPES
 }

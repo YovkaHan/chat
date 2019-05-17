@@ -13,8 +13,8 @@ export function valueChange(id, value) {
     return ({type: TYPES.CHANGE, payload: {key: 'value', value}, id})
 }
 
-export function createItem(id, coreId) {
-    return ({type: TYPES.ITEM_CREATE, coreId, id})
+export function createItem(id, coreId, afterCreated) {
+    return ({type: TYPES.ITEM_CREATE, coreId, id, payload:{callback:afterCreated}})
 }
 
 export function deleteItem(id) {
@@ -33,6 +33,10 @@ export function initialized(id) {
     return ({type: TYPES.FLAGS, payload: [{key: 'initiated', value: true}, {key: 'stage', value: 'waiting'}], id})
 }
 
+export function innerUpdate(id, data) {
+    return ({type: TYPES.INNER_UPDATE, id, payload: data})
+}
+
 export default {
     initialize,
     flagHandle,
@@ -40,5 +44,6 @@ export default {
     deleteItem,
     updateAllow,
     updateForbit,
-    initialized
+    initialized,
+    innerUpdate
 }

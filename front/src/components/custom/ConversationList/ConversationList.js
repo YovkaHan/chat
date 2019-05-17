@@ -48,7 +48,7 @@ class ConversationList extends React.Component {
     static defaultProps = {
         className: '',
         rootClass: '',
-        list: []
+        list: {}
     };
 
     constructor(props){

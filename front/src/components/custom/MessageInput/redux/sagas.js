@@ -4,6 +4,7 @@ import {TYPES as IA_TYPES} from '../../InputArea/redux/types';
 import * as R from "ramda";
 import {INIT_STATE_ITEM} from "../../Button/redux/reducer";
 import {TYPES as CTYPES} from "../../../../common/core";
+import {componentName} from '../';
 
 const idMake = (index) => name + index;
 
@@ -40,18 +41,19 @@ function* initiateTask({type, pcb, id}) {
     yield fork(inputAreaListenSaga, pcb, id);
 }
 
-function* createItemHandle({type, id, coreId}) {
+function* createItemHandle({type, id, coreId, payload}) {
+    yield put({type: TYPES.LENGTH_PLUS, payload: 1});
+
+    const {callback} = payload;
     const state = yield select();
-    const index = state.Components.MessageInput.length;
+    const index = state.Components[componentName].length;
     const _id = id ? id : idMake(index);
-
-    console.log(_id);
-
 
     if (coreId !== undefined)
         yield put({type: CTYPES.CREATE, payload:_id, id: coreId});
 
     yield put({type: TYPES.ITEM_CREATE_COMPLETE, payload: R.clone(INIT_STATE_ITEM), id: _id});
+    callback();
 }
 
 function* deleteItemHandle({type, id}) {

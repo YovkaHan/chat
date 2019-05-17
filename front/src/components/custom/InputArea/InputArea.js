@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from "redux";
-import {flagHandle, dataChange} from "./redux/actions";
+import {flagHandle, dataChange, deleteItem} from "./redux/actions";
 
 const innerClass = (sufix, mainClass, rootClass) => {
     return `${mainClass}__${sufix} ${rootClass ? rootClass + '__' + sufix : ''}`.trim()
@@ -16,6 +16,7 @@ class InputArea extends React.Component {
         label: 'Label:',
         placeholder: '',
         pcb: {id: 'testId'},
+        data: [],
         width: 300,
         click: ()=>{
             console.log('click')
@@ -70,6 +71,10 @@ class InputArea extends React.Component {
             </div>
         )
     }
+
+    componentWillUnmount(){
+        this.props.deleteComponent()
+    }
 }
 
 InputArea.propTypes = {
@@ -94,11 +99,15 @@ const mapStateToProps = (state, props) => {
     const cId = props.pcbMade.id;
     const _object = state.Components.InputArea[cId];
 
-    return ({
-        flags: _object.flags,
-        value: props.value ? props.value : _object.value,
-        data: _object.data
-    })
+    if (_object) {
+        return ({
+            flags: _object.flags,
+            value: props.value ? props.value : _object.value,
+            data: _object.data
+        })
+    } else {
+        return {};
+    }
 };
 
 const mapDispatchers = (dispatch, props) => {
@@ -108,7 +117,8 @@ const mapDispatchers = (dispatch, props) => {
         //defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
-        dataChange: (data) => dataChange(cId, data)
+        dataChange: (data) => dataChange(cId, data),
+        deleteComponent: () => deleteItem(cId)
     }, dispatch);
 };
 

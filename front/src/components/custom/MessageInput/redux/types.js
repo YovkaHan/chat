@@ -13,7 +13,8 @@ const defaultTypes = {
     ITEM_CREATE_COMPLETE: "ITEM_CREATE_COMPLETE",
     ITEM_DELETE: "ITEM_DELETE",
     ITEM_DELETE_COMPLETE: "ITEM_DELETE_COMPLETE",
-    SEND_MSG: "SEND_MSG"
+    SEND_MSG: "SEND_MSG",
+    LENGTH_PLUS: "LENGTH_PLUS"
 };
 
 const _sequence = ["name","root"];

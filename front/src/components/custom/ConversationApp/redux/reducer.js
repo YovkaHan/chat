@@ -181,6 +181,17 @@ const cases = (type) => {
                 draft[id].conversations = {...draft[id].conversations, data: payload};
             };
         }
+        case TYPES.APP_CONVERSATION_GET_COMPLETE: {
+            return (draft, payload, id) => {
+                draft[id].conversation.chosen = true;
+                draft[id].conversation.data = R.clone(payload);
+            };
+        }
+        case TYPES.APP_CLEAR: {
+            return (draft, payload, id) => {
+                draft[id].conversation = INIT_STATE_ITEM.conversation;
+            };
+        }
         default : {
             return () => {
             }

@@ -1,8 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
+import * as R from 'ramda';
 import {bindActionCreators} from "redux";
-import {itemInit} from "./redux/actions";
+import {itemInit, deleteItem} from "./redux/actions";
 import {InputArea, Button, List, Message} from '../../';
 
 const innerClass = (sufix, mainClass, rootClass) => {
@@ -26,7 +27,7 @@ class MessageList extends React.Component {
     constructor(props){
         super(props);
 
-        props.initialize(props.pcb);
+        // props.initialize(props.pcb);
 
         //  this.handleClick = ::this.handleClick;
     }
@@ -53,6 +54,10 @@ class MessageList extends React.Component {
             </div>
         )
     }
+
+    componentWillUnmount(){
+        this.props.deleteComponent()
+    }
 }
 
 MessageList.propTypes = {
@@ -66,15 +71,16 @@ MessageList.propTypes = {
 const mapStateToProps = (state, props) => {
     const cId = props.pcbMade.id;
     const {List} = props.pcbMade.relations;
+    const ListProps = List.props;
 
     const _object = state.Components.MessageList[cId];
-    const _list = state.Components[List.component][List.id].list;
-    const _buffer = state.Components[List.component][List.id].buffer;
+    const _list = R.path(ListProps.list, state.Components[List.component][List.id]);
+   // const _buffer = state.Components[List.component][List.id].buffer;
 
     if(_object) {
         return ({
             flags: _object.flags,
-            list: [..._list, ..._buffer]
+            list: [..._list]
         })
     } else {
         return {};
@@ -86,6 +92,7 @@ const mapDispatchers = (dispatch, props) => {
 
     return bindActionCreators({
         initialize: (pcb) => itemInit(cId, pcb),
+        deleteComponent: () => deleteItem(cId)
     }, dispatch);
 };
 

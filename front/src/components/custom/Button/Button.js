@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
-import {flagHandle, createItem, valueChange} from './redux/actions';
+import {flagHandle, createItem, deleteItem, valueChange} from './redux/actions';
 
 const innerClass = (suffix, mainClass, rootClass) => {
     return `${mainClass}__${suffix} ${rootClass ? rootClass + '__' + suffix : ''}`.trim()
@@ -53,6 +53,10 @@ class Button extends React.Component {
             </div>
         )
     }
+
+    componentWillUnmount(){
+        this.props.deleteComponent()
+    }
 }
 
 Button.propTypes = {
@@ -85,7 +89,8 @@ const mapDispatchers = (dispatch, props) => {
         defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
-        valueChange: (value) => valueChange(cId, value)
+        valueChange: (value) => valueChange(cId, value),
+        deleteComponent: () => deleteItem(cId)
     }, dispatch);
 };
 

@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
-import {flagHandle, createItem, valueChange, startChannel, connectChat} from './redux/actions';
+import {flagHandle, createItem, deleteItem, valueChange, startChannel, connectChat} from './redux/actions';
 
 const innerClass = (suffix, mainClass, rootClass) => {
     return `${mainClass}__${suffix} ${rootClass ? rootClass + '__' + suffix : ''}`.trim()
@@ -61,15 +61,19 @@ class Chat extends React.Component {
                         core={{pcb, id: pcbMade.children['Messages'].id, component: pcbMade.children['Messages'].component}}
                         rootClass={`msgs`}
                     />
-                    {/*<Input*/}
-                        {/*core={{pcb, id: pcbMade.children['Input'].id, component: pcbMade.children['Input'].component}}*/}
-                        {/*from={props.from ? props.from : props.pcbMade.config.from}*/}
-                        {/*to={props.from ? props.from : props.pcbMade.config.to}*/}
-                        {/*rootClass={`inpt-msg`}*/}
-                    {/*/>*/}
+                    <Input
+                        core={{pcb, id: pcbMade.children['Input'].id, component: pcbMade.children['Input'].component}}
+                        from={props.from ? props.from : props.pcbMade.config.from}
+                        to={props.from ? props.from : props.pcbMade.config.to}
+                        rootClass={`inpt-msg`}
+                    />
                 </div>
             </div>
         )
+    }
+
+    componentWillUnmount(){
+        this.props.deleteComponent()
     }
 }
 
@@ -87,11 +91,7 @@ const mapStateToProps = (state, props) => {
 
     if(_object) {
         return ({
-            flags: _object.flags,
-            list: _object.list,
-            buffer: _object.buffer,
-            chatSelected: parentObject.conversation.chosen,
-            data: parentObject.conversation.data
+            flags: _object.flags
         })
     } else {
         return {};
@@ -105,7 +105,8 @@ const mapDispatchers = (dispatch, props) => {
         createItem: () => createItem(),
         defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         startChannel: () => startChannel(cId),
-        connectChat: () => connectChat(cId)
+        connectChat: () => connectChat(cId),
+        deleteComponent: () => deleteItem(cId)
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
     }, dispatch);

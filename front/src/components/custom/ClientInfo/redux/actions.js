@@ -13,8 +13,8 @@ export function byKeyChange(id, key, value) {
     return ({type: TYPES.CHANGE, payload: {key, value}, id})
 }
 
-export function createItem(id, coreId) {
-    return ({type: TYPES.ITEM_CREATE, coreId, id})
+export function createItem(id, coreId, afterCreated) {
+    return ({type: TYPES.ITEM_CREATE, coreId, id, payload:{callback:afterCreated}})
 }
 
 export function deleteItem(id) {

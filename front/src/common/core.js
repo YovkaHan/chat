@@ -8,11 +8,11 @@ import * as R from 'ramda';
 /** Сгенерить child id*/
 /** Замапить child id*/
 
-const rootIdGenerator = (() => {
+export const rootIdGenerator = (() => {
     const root = {};
     let length = 0;
 
-    const create =()=>{
+    const create = () => {
         let result = `core${length}`;
         length++;
         root[result] = null;
@@ -20,7 +20,7 @@ const rootIdGenerator = (() => {
     };
 
     const set = (coreId, id) => {
-        if(result.hasOwnProperty(coreId)){
+        if (result.hasOwnProperty(coreId)) {
             root[coreId] = id;
             return true;
         } else {
@@ -28,7 +28,7 @@ const rootIdGenerator = (() => {
         }
     };
 
-    return  {
+    return {
         create,
         set
     };
@@ -40,30 +40,40 @@ const defaultTypes = {
     FLAGS: "FLAGS",
     CREATE: "CREATE",
     DELETE: "DELETE",
-    FLAGS_COMPLETE: "FLAGS_COMPLETE"
+    FLAGS_COMPLETE: "FLAGS_COMPLETE",
+    CREATE_COMPLETE: "CREATE_COMPLETE"
 };
-const _sequence = ["name","root"];
+const _sequence = ["name", "root"];
 const _template = {
     name: "CORE",
     root: {...defaultTypes}
 };
-const foo = (() =>{
+const foo = (() => {
     return actionTemplate(_sequence, _template, '__');
 })();
 export const TYPES = foo;
+
 /**--------------------ACTIONS--------------------------------*/
 export function initialize(id) {
     return {type: TYPES.INITIALIZE, id};
 }
+
 export function flagHandle(id, key, value) {
     return ({type: TYPES.FLAGS, payload: {key, value}, id})
 }
+
 export function createItem(id, childId) {
     return ({type: TYPES.CREATE, payload: childId, id})
 }
+
 export function deleteItem(id) {
     return ({type: TYPES.DELETE, id})
 }
+
+export function childItemCreated(id) {
+    return ({type: TYPES.CREATE_COMPLETE, id})
+}
+
 /**--------------------REDUCER-------------------------------*/
 const INIT_STATE = {
     length: 0
@@ -78,7 +88,12 @@ const cases = (type) => {
         case TYPES.CREATE: {
             return (draft, payload, id) => {
                 draft.length++;
-                draft[id] = {childId: payload, status: true};
+                draft[id] = {childId: payload, status: true, created: false};
+            };
+        }
+        case TYPES.CREATE_COMPLETE: {
+            return (draft, payload, id) => {
+                draft[id] = {...draft[id], created: true};
             };
         }
         case TYPES.DELETE: {
@@ -109,40 +124,43 @@ const cases = (type) => {
 export const reducer = function () {
     return createReducer(cases, INIT_STATE);
 };
+let num = 0;
 
 class Core extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
 
-        const {createChildItem, core} = props;
+        const {createChildItem, core, childItemCreated, coreId} = props;
         const {id} = core;
 
         this.state = {
-            id: rootIdGenerator.create(),
-            status: false
+            status: false,
+            created: false
         };
-
-        console.log(this.state.id, id);
-        createChildItem(this.state.id, id);
+        createChildItem(props.coreId, id, () => childItemCreated(props.coreId));
     }
 
-    componentDidUpdate(props, state){
-        if(!state.status && this.props.items.hasOwnProperty(state.id)){
-            this.setState({status: true})
-        }
+    callback() {
+        this.setState({created: true}, () => {
+            this.state.created = true;
+            console.log(this.state);
+        })
     }
 
-    // shouldComponentUpdate() {
-    //     return !this.state.status;
+    // componentDidUpdate(props, state){
+    //     if(!state.status && this.props.items.hasOwnProperty(state.id)){
+    //         this.setState({status: true})
+    //     }
     // }
 
-    render(){
-        const {status, id, madeSet} = this.state;
-        const {children, items, core} = this.props;
+    render() {
+        const {status} = this.state;
+        const {children, item, core, coreId, itemCreated} = this.props;
         const {component, template, pcb, relations} = core;
 
-        console.log(id, 'render', template);
+        num++;
+        console.log(coreId, 'render', num);
 
         const child = (c, index) => {
 
@@ -150,12 +168,12 @@ class Core extends React.Component {
                 c,
                 {
                     key: index,
-                    pcbMade: component ? pcb.make(items[id].childId, template, relations) : {},
+                    pcbMade: component ? pcb.make(item.childId, template, relations) : {},
                     pcb,
-                    ...(()=>{
+                    ...(() => {
                         const result = {};
-                        Object.keys(this.props).map(key=>{
-                            if(key !== 'core')
+                        Object.keys(this.props).map(key => {
+                            if (key !== 'core')
                                 result[key] = this.props[key];
                         });
                         return result;
@@ -164,8 +182,8 @@ class Core extends React.Component {
             )
         };
 
-        return status ? (
-             <React.Fragment>
+        return item && itemCreated ? (
+            <React.Fragment>
                 {
                     child(children)
                 }
@@ -173,15 +191,18 @@ class Core extends React.Component {
         ) : null
     }
 
-    componentWillUnmount(){
-        this.props.deleteComponent(this.state.id)
+    componentWillUnmount() {
+        this.props.deleteComponent(this.props.coreId)
     }
 }
 
 const mapStateToProps = (state, props) => {
-   return ({
-       items: state.Components.Core
-   })
+    const item = state.Components.Core[props.coreId];
+
+    return ({
+        item,
+        itemCreated: item ? item.created : false
+    })
 };
 
 const mapDispatchers = (dispatch, props) => {
@@ -189,8 +210,9 @@ const mapDispatchers = (dispatch, props) => {
     const {createItem} = require(`../components/`)[props.core.component].actions;
 
     return bindActionCreators({
-        createChildItem: (id, childId) => createItem(childId, id),
-        deleteComponent: (id) => deleteItem(id)
+        createChildItem: (id, childId, afterCreated) => createItem(childId, id, afterCreated),
+        deleteComponent: (id) => deleteItem(id),
+        childItemCreated: (id) => childItemCreated(id)
     }, dispatch);
 };
 

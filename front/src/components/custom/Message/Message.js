@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from "redux";
-import {flagHandle, createItem} from "./redux/actions";
+import {flagHandle, createItem, deleteItem} from "./redux/actions";
 import moment from 'moment';
 
 const innerClass = (sufix, mainClass, rootClass) => {
@@ -18,7 +18,10 @@ class Message extends React.Component {
         from: 'TestFrom',
         createItem: () => {console.log('createItem function')},
         msg: 'Hello. My name is Test and this is test-message!',
-        date: 1551792177575
+        date: {
+            seconds: 1551792177575,
+            nanoseconds: 0
+        }
     };
 
     constructor(props) {
@@ -47,10 +50,14 @@ class Message extends React.Component {
                 <div className={innerClass('content', mainClass, rootClass)}>
                     <div className={innerClass('from', mainClass, rootClass)}>{from}</div>
                     <div className={innerClass('msg', mainClass, rootClass)}>{msg}</div>
-                    <div className={innerClass('date', mainClass, rootClass)}>{moment(date).format('DD.MM.YYYY, HH:mm:ss a')}</div>
+                    <div className={innerClass('date', mainClass, rootClass)}>{moment(date.seconds * 1000).format('DD.MM.YYYY, HH:mm:ss a')}</div>
                 </div>
             </div>
         )
+    }
+
+    componentWillUnmount(){
+        this.props.deleteComponent()
     }
 }
 
@@ -84,6 +91,7 @@ const mapDispatchers = (dispatch, props) => {
     return bindActionCreators({
         defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         createItem: () => createItem(),
+        deleteComponent: () => deleteItem(cId)
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
         // valueChange: (value) => valueChange(cId, value)

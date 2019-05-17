@@ -11,12 +11,24 @@ export const INIT_STATE_ITEM = {
         toggle: false,
         hover: false,
         status: false,
-        stage: 'init'
+        updating: false,
+        stage: 'init' /**init, chat, blank, new*/
     },
-    messageList: [],
-    messageBuffer: {},
-    conversationId: undefined,
-    conversation: {}
+    data: {
+        messageList: [],
+        messageBuffer: {},
+        conId: undefined,
+        conName: undefined,
+        conSet: undefined,
+    },
+    _data: {
+        _messageList: [],
+        _messageBuffer: {},
+        _conId: undefined,
+        _conName: undefined,
+        _conSet: undefined,
+    }
+
 };
 
 const cases = (type) => {
@@ -53,6 +65,29 @@ const cases = (type) => {
                 Object.keys(_initClone).map(d => {
                     draft[d] = _initClone[d];
                 });
+            };
+        }
+        case TYPES.INNER_UPDATE: {
+            return (draft, payload, id) => {
+                draft[id].flags.updating = true;
+            };
+        }
+        case TYPES.VIEW_STATUS: {
+            return (draft, payload, id) => {
+                if(!draft[id].flags.updating && draft[id].data.conId){
+                    draft[id].flags.stage = 'chat';
+                }else if(!draft[id].flags.updating && !draft[id].data.conId) {
+                    draft[id].flags.stage = 'blank';
+                }
+            };
+        }
+        case TYPES.INNER_UPDATE_COMPLETE: {
+            return (draft, payload, id) => {
+                Object.keys(payload).map(key =>{
+                    draft[id]._data[`_${key}`] = R.clone(payload[key]);
+                    draft[id].data[key] = R.clone(payload[key]);
+                });
+                draft[id].flags.updating = false;
             };
         }
         default : {

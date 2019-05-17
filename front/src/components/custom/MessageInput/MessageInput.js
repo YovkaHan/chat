@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from "redux";
-import {initialize, sendMsg} from "./redux/actions";
+import {initialize, sendMsg, deleteItem} from "./redux/actions";
 
 const innerClass = (sufix, mainClass, rootClass) => {
     return `${mainClass}__${sufix}${rootClass ? ' ' + rootClass + '__' + sufix : ''}`.trim()
@@ -18,7 +18,7 @@ class MessageInput extends React.Component {
     constructor(props) {
         super(props);
 
-        props.initialize();
+        // props.initialize();
 
         this.madeChildren = {
             InputArea: null,
@@ -35,7 +35,7 @@ class MessageInput extends React.Component {
     render() {
         const {props, state, handleClick} = this;
         const {flags, className, rootClass, pcb, pcbMade, sendMsg} = props;
-        const {mayBeSend} = flags;
+        const {mayBeSend} = flags ? flags : {};
         const mainClass = 'my-msg-input';
 
         const InputArea = this.madeChildren.InputArea;
@@ -60,6 +60,10 @@ class MessageInput extends React.Component {
                 </div>
             </div>
         )
+    }
+
+    componentWillUnmount(){
+        this.props.deleteComponent()
     }
 }
 
@@ -91,7 +95,8 @@ const mapDispatchers = (dispatch, props) => {
 
     return bindActionCreators({
         initialize: () => initialize(cId, props.pcbMade),
-        sendMsg: () => sendMsg(cId, props.pcbMade, props.from ? props.from : undefined, props.to ? props.to : undefined)
+        sendMsg: () => sendMsg(cId, props.pcbMade, props.from ? props.from : undefined, props.to ? props.to : undefined),
+        deleteComponent: () => deleteItem(cId)
         // defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
