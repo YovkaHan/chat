@@ -1,17 +1,4 @@
-import {
-    take,
-    call,
-    put,
-    select,
-    fork,
-    race,
-    cancelled,
-    takeEvery,
-    delay,
-    all,
-    actionChannel,
-    cancel
-} from 'redux-saga/effects';
+import {take, call, put, select, fork, race, cancelled, takeEvery, delay, all, actionChannel, cancel} from 'redux-saga/effects';
 import * as R from "ramda";
 import axios from 'axios';
 import moment from 'moment';
@@ -61,20 +48,6 @@ function* flagHandleComplete({type, payload, id}) {
     }
 
     yield put({type: TYPES.FLAGS_COMPLETE, payload: _object.flags, id});
-}
-
-function* msgMaker({type, payload, pcb, id, from, to, cId}) {
-    const _time = time();
-    const _payload = {
-        from: 'TestFrom',
-        to: 'TestTo',
-        cId,
-        id: from + _time + to,
-        msg: payload.join(' '),
-        date: _time
-    };
-
-    yield put({type: TYPES.MESSAGE_MAKING_FINISHED, payload: _payload, id});
 }
 
 function Store() {
@@ -266,6 +239,13 @@ const createSocketChannel = (socket, authToken, id) => eventChannel((emit) => {
         });
     }
 
+    function eventHandler(data, authToken) {
+        const aesKey = _store.get(authToken, ['aesKey'])[0];
+        aesWrapper.decryptMessage(aesKey, data.msg).then(decryptedData => {
+            emit({req: 'event', data: JSON.parse(decryptedData)});
+        });
+    }
+
     socket.on('chat.connection.success', chatConnectionHandlerSuccess);
     socket.on('chat.connect.firstHandshake.success', channelFirstHandShakeHandlerSuccess);
     socket.on('chat.connect.firstHandshake.error', channelFirstHandShakeHandlerError);
@@ -277,6 +257,7 @@ const createSocketChannel = (socket, authToken, id) => eventChannel((emit) => {
     socket.on('message.incoming', handler);
     socket.on('message.outgoing', handler);
     socket.on('message.sent', handler);
+    socket.on('event', (data)=>eventHandler(data, authToken));
     socket.on('chat.disconnect.success', chatDisconnectHandlerSuccess);
     // socket.on('message.seen', handler);
     return () => {
@@ -292,6 +273,7 @@ const createSocketChannel = (socket, authToken, id) => eventChannel((emit) => {
         socket.removeListener('message.incoming', handler);
         socket.removeListener('message.sending', handler);
         socket.removeListener('message.sent', handler);
+        socket.removeListener('event', eventHandler);
         socket.removeListener('chat.disconnect.success', chatDisconnectHandlerSuccess);
         // socket.off('message.seen', handler);
     };
@@ -375,20 +357,6 @@ const tryDisconnectSaga = function* (socket, authToken, _id) {
                 `chat.disconnect`,
                 {
                     token: authToken,
-                }
-            );
-        }
-    }
-};
-const onSendMessageSaga = function* (socket, authToken, _id) {
-    while (true) {
-        const {id, payload} = yield take(TYPES.CHANNEL_CHAT_SEND);
-
-        if (id === _id) {
-            socket.emit(
-                'message.sending',
-                {
-                    ...payload
                 }
             );
         }
@@ -493,6 +461,72 @@ const onConversationSaga = function* (socket, authToken, _id) {
     }
 };
 
+/**EVENT MANAGER*/
+const eventManager = function* (action){
+    console.log('EVENT MANAGER');
+    const {id, payload} = action;
+    const {pcb} = payload;
+    const {Conversation} = pcb.relations;
+    const ConversationTypes = require(`../../${Conversation.component}`).default.types;
+
+    while (true) {
+        const MSG_MAKING_COMPLETE = yield take(ConversationTypes.MSG_MAKING_COMPLETE);
+        const conversationId = MSG_MAKING_COMPLETE.id;
+        if(Conversation.id === conversationId){
+            const state = yield select();
+            const {date, data} = MSG_MAKING_COMPLETE.payload;
+            const participants = state.Components[componentName][id].conversation.data.participants;
+            let from =  state.Components[componentName][id].user.login;
+            let to = undefined;
+            if(state.Components[componentName][id].conversation.data.set !== 'multi'){
+                if(participants[0] === state.Components[componentName][id].user.login){
+                    to = participants[1];
+                }else {
+                    to = participants[0];
+                }
+            }
+            const event = {
+                data: {
+                    message: {
+                        data,
+                        from,
+                        to,
+                        date
+                    },
+                    conversation: {
+                        id: state.Components[componentName][id].conversation.data.id,
+                        set: state.Components[componentName][id].conversation.data.set,
+                        messageListId: state.Components[componentName][id].conversation.data.messageListId
+                    },
+                },
+                name: 'message.new'
+            };
+
+            yield put({type: TYPES.EVENT_SEND, id, payload: event});
+        }
+    }
+};
+
+const onEventManagerSaga = function* (socket, authToken, _id) {
+    while (true) {
+        const {id, payload} = yield take(TYPES.EVENT_SEND);
+
+        if (id === _id) {
+            const aesKey = _store.get(authToken, ['aesKey'])[0];
+
+            aesWrapper.encryptMessage(aesKey, JSON.stringify(payload)).then(msg => {
+                socket.emit(
+                    'event',
+                    {
+                        token: authToken,
+                        msg
+                    }
+                );
+            });
+        }
+    }
+};
+
 // Saga to switch on channel.
 const listenServerSaga = function* (id) {
     const state = yield select();
@@ -520,7 +554,6 @@ const listenServerSaga = function* (id) {
         yield fork(tryConnectSaga, socket, id);
         yield fork(tryDisconnectSaga, socket, authToken, id);
         yield fork(onConnectToChatSaga, socket, authToken, id);
-        yield fork(onSendMessageSaga, socket, authToken, id);
         yield fork(onConversationSaga, socket, authToken, id);
         yield fork(onConnectToChatFinalSaga, socket, authToken, id);
 
@@ -528,6 +561,8 @@ const listenServerSaga = function* (id) {
         yield fork(onUserContacts, socket, authToken, id);
         yield fork(onUserConversations, socket, authToken, id);
         yield fork(onConversationGet, socket, authToken, id);
+
+        yield fork(onEventManagerSaga, socket, authToken, id);
 
         while (true) {
             const payload = yield take(socketChannel);
@@ -823,7 +858,6 @@ export default [
     takeEvery(TYPES.FLAGS, flagHandleComplete),
     takeEvery(TYPES.ITEM_CREATE, createItemHandle),
     takeEvery(TYPES.ITEM_DELETE, deleteItemHandle),
-    takeEvery(TYPES.MESSAGE_MAKING_BEGIN, msgMaker),
     takeEvery(TYPES.APP_SERVER_PREPARE, initServerListeningSaga),
     takeEvery(TYPES.APP_LOGIN_BEGIN, loginProcess),
     takeEvery(TYPES.APP_LOGIN_END, loginNext),
@@ -831,7 +865,8 @@ export default [
     takeEvery(TYPES.APP_AUTHORIZATION_BEGIN, userAuthorizationProcess),
     takeEvery(TYPES.APP_AUTHORIZATION_END, userAuthorizationNext),
     takeEvery(TYPES.APP_STAGE_READY, afterStageReady),
-    takeEvery(TYPES.APP_LOGOUT_END, afterLogout)
+    takeEvery(TYPES.APP_LOGOUT_END, afterLogout),
+    takeEvery(TYPES.APP_EVENT_MANAGER, eventManager)
 ];
 
 /**

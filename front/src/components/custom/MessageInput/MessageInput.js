@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from "redux";
-import {initialize, sendMsg, deleteItem} from "./redux/actions";
+import {initialize, sendMsg, deleteItem, initComponent} from "./redux/actions";
 
 const innerClass = (sufix, mainClass, rootClass) => {
     return `${mainClass}__${sufix}${rootClass ? ' ' + rootClass + '__' + sufix : ''}`.trim()
@@ -18,7 +18,7 @@ class MessageInput extends React.Component {
     constructor(props) {
         super(props);
 
-        // props.initialize();
+        props.initialize();
 
         this.madeChildren = {
             InputArea: null,
@@ -34,8 +34,7 @@ class MessageInput extends React.Component {
 
     render() {
         const {props, state, handleClick} = this;
-        const {flags, className, rootClass, pcb, pcbMade, sendMsg} = props;
-        const {mayBeSend} = flags ? flags : {};
+        const {sendAllow, className, rootClass, pcb, pcbMade, sendMsg} = props;
         const mainClass = 'my-msg-input';
 
         const InputArea = this.madeChildren.InputArea;
@@ -52,8 +51,8 @@ class MessageInput extends React.Component {
                     <Send
                         core={{pcb, id: pcbMade.children['Send'].id, component: pcbMade.children['Send'].component}}
                         value={'Send'}
-                        disabled={!mayBeSend}
-                        className={`${!mayBeSend ? 'my-btn--disabled' : ''}`.trim()}
+                        disabled={!sendAllow}
+                        className={`${!sendAllow ? 'my-btn--disabled' : ''}`.trim()}
                         rootClass={'send'}
                         click={sendMsg}
                     />
@@ -70,7 +69,8 @@ class MessageInput extends React.Component {
 MessageInput.propTypes = {
     className: PropTypes.string,
     rootClass: PropTypes.string,
-    pcb: PropTypes.object
+    pcb: PropTypes.object,
+    sendAllow: PropTypes.bool
 };
 
 
@@ -82,7 +82,7 @@ const mapStateToProps = (state, props) => {
 
     if (_object) {
         return ({
-            flags: _object.flags,
+            sendAllow: _object.flags.mayBeSend,
             value: props.value ? props.value : _object.value
         })
     } else {
@@ -94,7 +94,7 @@ const mapDispatchers = (dispatch, props) => {
     const cId = props.pcbMade.id;
 
     return bindActionCreators({
-        initialize: () => initialize(cId, props.pcbMade),
+        initialize: () => initComponent(cId, props.pcbMade),
         sendMsg: () => sendMsg(cId, props.pcbMade, props.from ? props.from : undefined, props.to ? props.to : undefined),
         deleteComponent: () => deleteItem(cId)
         // defaultClick: (e) => flagHandle(cId, 'toggle', e.target.value),

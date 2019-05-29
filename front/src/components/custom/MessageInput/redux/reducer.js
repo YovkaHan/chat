@@ -10,7 +10,8 @@ export const INIT_STATE_ITEM = {
     flags: {
         hover: false,
         mayBeSend: false,
-        status: false
+        status: false,
+        sending: false
     },
     value: ''
 };

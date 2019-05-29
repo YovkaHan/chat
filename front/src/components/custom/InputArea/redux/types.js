@@ -12,7 +12,8 @@ const defaultTypes = {
     ITEM_CREATE_COMPLETE: "ITEM_CREATE_COMPLETE",
     ITEM_DELETE: "ITEM_DELETE",
     ITEM_DELETE_COMPLETE: "ITEM_DELETE_COMPLETE",
-    LENGTH_PLUS: "LENGTH_PLUS"
+    LENGTH_PLUS: "LENGTH_PLUS",
+    CLEAR: "CLEAR"
 };
 
 const _sequence = ["name", "root"];

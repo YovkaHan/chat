@@ -5,6 +5,7 @@
   "author": "Jordan8XD",
   "license": "MIT",
   "scripts": {
+    "token": "nodemon ./src/tokens.js",
     "server": "nodemon ./server.js",
     "inspect": "node --inspect ./server.js"
   },
@@ -29,6 +30,7 @@
     "firebase": "^5.9.4",
     "hybrid-crypto-js": "^0.1.7",
     "moment": "^2.24.0",
+    "node-ipc": "^9.1.1",
     "socket.io": "^2.1.1",
     "sqlite3": "^4.0.2",
     "uniqid": "^5.0.3",

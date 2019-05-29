@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const btoa = require('btoa');
+const atob = require('atob');
 
 const aesWrapper = {};
 

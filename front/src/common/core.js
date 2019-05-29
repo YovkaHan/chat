@@ -124,7 +124,7 @@ const cases = (type) => {
 export const reducer = function () {
     return createReducer(cases, INIT_STATE);
 };
-let num = 0;
+// let num = 0;
 
 class Core extends React.Component {
 
@@ -159,8 +159,8 @@ class Core extends React.Component {
         const {children, item, core, coreId, itemCreated} = this.props;
         const {component, template, pcb, relations} = core;
 
-        num++;
-        console.log(coreId, 'render', num);
+        // num++;
+        // console.log(coreId, 'render', num);
 
         const child = (c, index) => {
 

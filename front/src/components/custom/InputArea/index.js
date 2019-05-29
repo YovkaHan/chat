@@ -2,6 +2,7 @@ import React from 'react';
 import InputArea from './InputArea';
 import Core, {rootIdGenerator} from '../../../common/core';
 import actions from './redux/actions';
+import {TYPES} from "./redux/types";
 
 import './InputArea.scss';
 
@@ -21,5 +22,6 @@ class Component extends React.Component{
 
 export default {
     Component,
-    actions
+    actions,
+    types: TYPES
 }

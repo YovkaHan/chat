@@ -16,19 +16,70 @@ const uniqid = require('uniqid');
 const moment = require('moment');
 const rsaWrapper = require('./src/rsa-wrapper');
 
-//rsaWrapper.initLoadServerKeys('./back/src');
-// rsaWrapper.serverExampleEncrypt();
+const flags = {
+    tokens: false
+};
 
-// require('./src/keysGenerate');
+/**IPC*/
+const ipc = require('node-ipc');
 
-const Tokens = require('./src/tokens')({uniqid});
-const {
-    addObject,
-    findObjectIndex,
-    removeObject,
-    getObject,
-    setRSAKeyOnObject
-} = Tokens;
+ipc.config.id = 'server';
+ipc.config.retry = 1500;
+ipc.config.silent = true;
+
+let Tokens = {
+    addObject: () => new Promise(resolve => {
+        resolve(undefined)
+    }),
+    findObjectIndex: () => new Promise(resolve => {
+        resolve(undefined)
+    }),
+    removeObject: () => new Promise(resolve => {
+        resolve(undefined)
+    }),
+    getObject: () => new Promise(resolve => {
+        resolve(undefined)
+    }),
+    setRSAKeyOnObject: () => new Promise(resolve => {
+        resolve(undefined)
+    })
+};
+ipc.connectTo('tokens');
+ipc.of['tokens'].on('connect', () => {
+    ipc.of['tokens'].emit('connection', ipc.config.id);
+
+    ipc.of['tokens'].emit('method.props');
+});
+ipc.of['tokens'].on('disconnect', (dataObj) => {
+    flags.tokens = false;
+    console.log('Token object is NOT ready');
+});
+ipc.of['tokens'].on('method.props.result', (dataObj) => {
+    Object.keys(dataObj).map(key => {
+        const foo = dataObj[key];
+
+        Tokens[key] = function () {
+            const props = {};
+            foo.map((p, i) => props[p] = arguments[i] !== undefined ? arguments[i] : undefined);
+
+            return new Promise(resolve => {
+                ipc.of['tokens'].emit(`${key}`, props);
+
+                ipc.of['tokens'].on(`${key}.result`, (data) => {
+                    resolve(JSON.parse(data))
+                });
+
+                ipc.of['tokens'].on(`${key}.error`, (data) => {
+                    console.error(data);
+                    resolve(JSON.parse(data))
+                })
+            })
+        }
+    });
+
+    flags.tokens = true;
+    console.log('Token object is ready');
+});
 
 const Firebase = require('./src/firebase');
 const {Participant, Conversation, Message} = Firebase();
@@ -67,6 +118,20 @@ app.use(expressWinston.errorLogger({
     )
 }));
 
+app.use(function (req, res, next) {
+    if (Object.keys(flags).every(key => flags[key])) {
+        next();
+    } else {
+        setTimeout(() => {
+            if (Object.keys(flags).every(key => flags[key])) {
+                next();
+            } else {
+                res.sendStatus(502);
+            }
+        }, 2000);
+    }
+});
+
 app.get('/participant/idGenerate', function (req, res) {
     const result = {};
 
@@ -82,19 +147,23 @@ app.post('/participant/create', function (req, res) {
     const {id} = user;
     const result = {};
 
-    if(!id){
+    if (!id) {
         user.id = moment().unix() + '_' + uniqid.process();
     }
 
     Participant.add(user).then(data => {
-        if(data.error){
+        if (data.error) {
             result.error = data.error;
-        } else {
-            result.authToken = addObject();
-            result.user = {...user, id: data.id};
-        }
 
-        res.json(result);
+            res.json(result);
+        } else {
+            Tokens.addObject().then(authToken => {
+                result.authToken = authToken;
+                result.user = {...user, id: data.id};
+
+                res.json(result);
+            });
+        }
     });
 });
 
@@ -105,7 +174,7 @@ app.post('/participant/edit', function (req, res) {
     const result = {};
 
     Participant.edit(user).then(data => {
-        if(data.error){
+        if (data.error) {
             result.error = data.error;
         } else {
             result.user = data;
@@ -123,7 +192,7 @@ app.post('/participant/get', function (req, res) {
     const result = {};
 
     Participant.get(user).then(data => {
-        if(data.error){
+        if (data.error) {
             result.error = data.error;
         } else {
             result.user = data;
@@ -143,12 +212,17 @@ app.post('/participant/login', function (req, res) {
     /** -Проверить идишник в базе данных (есть ли такой же)*/
     Participant.getAll().then(participants => {
         if (participants.find(p => p.id === id)) {
-            result.token = addObject(0, id);
-            result.id = id;
+            Tokens.addObject(0, id).then(token => {
+                result.token = token;
+                result.id = id;
+
+                res.json(result);
+            });
         } else {
             result.error = 'В базе нет такого пользователя. Кышъ';
+
+            res.json(result);
         }
-        res.json(result);
     });
 });
 
@@ -162,12 +236,13 @@ app.post('/participant/logout', function (req, res) {
     console.log('logout');
 
     /** -Проверить authToken и удалить если будет*/
-    removeObject(token, id);
+    Tokens.removeObject(token, id).then(() => {
 
-    result.status = 200;
-    result.token = token;
+        result.status = 200;
+        result.token = token;
 
-    res.json(result);
+        res.json(result);
+    });
 });
 
 app.post('/conversation/create', function (req, res) {
@@ -177,12 +252,12 @@ app.post('/conversation/create', function (req, res) {
     const {id} = conversation;
     const result = {};
 
-    if(!id){
+    if (!id) {
         conversation.id = 'conv' + moment().unix() + '_' + uniqid.process();
     }
 
     Conversation.add(conversation).then(data => {
-        if(data.error){
+        if (data.error) {
             result.error = data.error;
         } else {
             result.conversation = {...conversation, id: data.id};
@@ -202,7 +277,7 @@ app.post('/conversation/get', function (req, res) {
     const result = {};
 
     Conversation.get(req.body).then(data => {
-        if(data.error){
+        if (data.error) {
             result.error = data.error;
         } else {
             result.conversation = data;
@@ -220,7 +295,7 @@ app.post('/message/get', function (req, res) {
     const result = {};
 
     Message.get(id).then(data => {
-        if(data.error){
+        if (data.error) {
             result.error = data.error;
         } else {
             result.message = data;
@@ -238,7 +313,7 @@ app.post('/message/create', function (req, res) {
     const result = {};
 
     Message.add(message).then(data => {
-        if(data.error){
+        if (data.error) {
             result.error = data.error;
         } else {
             result.message = data;
@@ -256,7 +331,7 @@ app.post('/message/edit', function (req, res) {
     const result = {};
 
     Message.edit(message).then(data => {
-        if(data.error){
+        if (data.error) {
             result.error = data.error;
         } else {
             result.message = data;
@@ -274,14 +349,16 @@ app.post('/authToken/check', function (req, res) {
     const {token, id} = req.body;
     const result = {};
 
-    if(token !== undefined && id !== undefined) {
-        if(findObjectIndex(token, id) !== -1){
+    if (token !== undefined && id !== undefined) {
+        Tokens.findObjectIndex(token, id).then(index => {
+            if (index !== -1) {
 
-        } else {
-            result.error = 'Token expired or not exist. Please relogin.'
-        }
+            } else {
+                result.error = 'Token expired or not exist. Please relogin.'
+            }
 
-        res.json(result);
+            res.json(result);
+        });
     } else {
         return res.sendStatus(400);
     }
@@ -294,17 +371,17 @@ app.post('/authToken/key', function (req, res) {
     const {token, id, key} = req.body;
     const result = {};
 
-    if(token !== undefined && id !== undefined && key !== undefined ) {
+    if (token !== undefined && id !== undefined && key !== undefined) {
 
-        const object = setRSAKeyOnObject(token, id, key);
+        Tokens.setRSAKeyOnObject(token, id, key).then(object => {
+            if (object.rsaKey === key) {
+                result.key = rsaWrapper.arrayBufferToUtf8(rsaWrapper.getPublicKey('server'));
+            } else {
+                result.error = 'Something happen!'
+            }
 
-        if(object.rsaKey === key) {
-            result.key = rsaWrapper.arrayBufferToUtf8(rsaWrapper.getPublicKey('server'));
-        } else {
-            result.error = 'Something happen!'
-        }
-        
-        res.json(result);
+            res.json(result);
+        });
     } else {
         return res.sendStatus(400);
     }
@@ -315,6 +392,7 @@ server.listen({
 }, () => {
     console.log('server started')
 });
+
 ioStart({
     server,
     Tokens

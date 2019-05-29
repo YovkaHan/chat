@@ -47,9 +47,9 @@ class ClientInfo extends React.Component {
         }
     }
 
-    componentDidUpdate(){
-        console.log('ClientInfo')
-    }
+    // componentDidUpdate(){
+    //     console.log('ClientInfo')
+    // }
 
     async handleClick(e) {
         if(!this.props.disabled){
@@ -92,7 +92,6 @@ ClientInfo.propTypes = {
 
 const mapStateToProps = (state, props) => {
     const result = {};
-    console.log(props);
     const cId = props.pcbMade.id;
     const client = props.client;
 

@@ -80,8 +80,11 @@ export const pcbTemplate = {
             component: 'MessageList',
             relations: {
                 List: {
-                    id: 'chat1',
-                    component: 'Chat'
+                    id: 'conversationV1',
+                    component: 'ConversationView',
+                    props: {
+                        list: ['data', 'messageList']
+                    }
                 },
             },
         },
@@ -96,10 +99,6 @@ export const pcbTemplate = {
                     id: 'conversationV0',
                     component: 'ConversationView',
                 }
-            },
-            config: {
-                from: 'A',
-                to: 'B'
             }
         },
         chat1: {
@@ -110,13 +109,9 @@ export const pcbTemplate = {
             ],
             relations: {
                 Parent: {
-                    id: 'convApp0',
+                    id: 'conversationV1',
                     component: 'ConversationApp',
                 }
-            },
-            config: {
-                from: 'B',
-                to: 'A'
             }
         },
         convApp0: {
@@ -126,15 +121,28 @@ export const pcbTemplate = {
                 {alias: 'Contacts', id: 'contactL0'},
                 {alias: 'Conversations', id: 'conversationL0'},
                 {alias: 'Conversation', id: 'conversationV0'}
-            ]
+            ],
+            relations: {
+                Conversation: {
+                    id: 'chat0',
+                    component: 'Chat',
+                }
+            }
         },
         convApp1: {
             component: 'ConversationApp',
             children:  [
                 {alias: 'Profile', id: 'profile1'},
                 {alias: 'Contacts', id: 'contactL1'},
-                {alias: 'Conversations', id: 'conversationL1'}
-            ]
+                {alias: 'Conversations', id: 'conversationL1'},
+                {alias: 'Conversation', id: 'conversationV1'}
+            ],
+            relations: {
+                Conversation: {
+                    id: 'chat1',
+                    component: 'Chat',
+                }
+            }
         },
         clientInfo0: {
             component: 'ClientInfo',
@@ -230,6 +238,18 @@ export const pcbTemplate = {
             relations: {
                 Parent: {
                     id: 'convApp0',
+                    component: 'ConversationApp',
+                }
+            }
+        },
+        conversationV1: {
+            component: 'ConversationView',
+            children:  [
+                {alias: 'Chat', id: 'chat1'}
+            ],
+            relations: {
+                Parent: {
+                    id: 'convApp1',
                     component: 'ConversationApp',
                 }
             }

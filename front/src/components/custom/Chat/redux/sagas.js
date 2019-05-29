@@ -8,7 +8,7 @@ import io from 'socket.io-client';
 import {eventChannel} from 'redux-saga';
 import {componentName} from '../';
 
-const time = () => moment().unix() * 1000;
+const time = () => moment().unix();
 
 const idMake = (index) => name + index;
 
@@ -46,22 +46,19 @@ function* flagHandleComplete({type, payload, id}) {
     yield put({type: TYPES.FLAGS_COMPLETE, payload: _object.flags, id});
 }
 
-function* msgMaker({type, payload, pcb, id, from, to}) {
+function* msgMaker({type, payload, id, from, to}) {
     const _time = time();
     const _payload = {
-        from: 'TestFrom',
-        to: 'TestTo',
-        id: from + _time + to,
-        msg: payload.join(' '),
+        data: payload.join(' '),
         date: _time
     };
 
-    yield put({type: TYPES.MSG_MAKE_COMPLETE, payload: _payload, id});
+    yield put({type: TYPES.MSG_MAKING_COMPLETE, payload: _payload, id});
 }
 
 export default [
     takeEvery(TYPES.FLAGS, flagHandleComplete),
     takeEvery(TYPES.ITEM_CREATE, createItemHandle),
     takeEvery(TYPES.ITEM_DELETE, deleteItemHandle),
-    takeEvery(TYPES.MSG_MAKE, msgMaker),
+    takeEvery(TYPES.MSG_MAKING, msgMaker),
 ];

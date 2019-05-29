@@ -1,61 +1,16 @@
 module.exports = function ({server, Tokens}) {
     const io = require('socket.io')(server);
     const Firebase = require('./firebase');
-    const {Participant, Conversation} = Firebase();
+    const {Participant, Conversation, Message,  MessageList} = Firebase();
+    const events = require('./eventManager');
+    const {GlobalEventManager} = events();
     const uniqid = require('uniqid');
     const rsaWrapper = require('./rsa-wrapper');
     const aesWrapper = require('./aes-wrapper');
-    const { getObject, setAESKeyOnObject} = Tokens;
 
-    //
-    // /**data: [{id, socket}]*/
-    // const participants = {
-    //     data: [],
-    //     maxCount: 2,
-    //     add: function (socket) {
-    //         if (this.maxCount > 0) {
-    //             const cId = uniqid();
-    //             this.data.push({id: cId, socket});
-    //             this.maxCount--;
-    //             return cId;
-    //         }
-    //
-    //         return undefined;
-    //     },
-    //     remove: function (participant) {
-    //         const _participantIndex = this.data.findIndex(p => p.id === participant.id);
-    //         if (_participantIndex >= 0) {
-    //             this.data.splice(_participantIndex,1);
-    //             this.maxCount++;
-    //         }
-    //     }
-    // };
-    //
-    // /**data: [{id, socket}]*/
-    // const conversations = {
-    //     data: [],
-    //     maxCount: 1,
-    //     add: function (participantA, participantB) {
-    //         if (this.maxCount > 0) {
-    //             const cId = uniqid();
-    //             this.data.push({idA: participantA.id, idB: participantB.id, cId});
-    //             this.maxCount--;
-    //             return cId;
-    //         }
-    //
-    //         return undefined;
-    //     },
-    //     remove: function (cId) {
-    //         const conversationIndex = this.data.findIndex(c=> c.cId === cId);
-    //
-    //         if(conversationIndex){
-    //             this.data.splice(1, conversationIndex);
-    //             return cId;
-    //         } else {
-    //             return undefined;
-    //         }
-    //     }
-    // };
+    const _GlobalEventManager = GlobalEventManager();
+
+    const LocalEventManagers = {};
 
     io.on('connection', (socket) => {
 
@@ -68,42 +23,47 @@ module.exports = function ({server, Tokens}) {
 
         socket.on('chat.connect.firstHandshake', function (data) {
             const {token, msg} = data;
-            const tokenObject = getObject(token);
 
-            if(tokenObject !== undefined){
-                const privateServerKey = rsaWrapper.getPrivateKey('server');
+            Tokens.getObject(token).then(tokenObject => {
+                if(tokenObject !== undefined){
+                    const privateServerKey = rsaWrapper.getPrivateKey('server');
 
-                if(tokenObject.authToken === rsaWrapper.decrypt(privateServerKey, msg)){
-                    const aesKey = aesWrapper.generateKey();
-                    const publicClientKey = tokenObject.rsaKey;
-                    setAESKeyOnObject(token, aesKey);
+                    if(tokenObject.authToken === rsaWrapper.decrypt(privateServerKey, msg)){
+                        const aesKey = aesWrapper.generateKey();
+                        const publicClientKey = tokenObject.rsaKey;
 
-                    socket.emit('chat.connect.firstHandshake.success', {
-                        msg: rsaWrapper.encrypt(publicClientKey, aesKey.toString('base64'))
-                    });
-                }else {
+                        Tokens.setAESKeyOnObject(token, aesWrapper.arrayBufferToBase64String(aesKey)).then(()=>{
+                            socket.emit('chat.connect.firstHandshake.success', {
+                                msg: rsaWrapper.encrypt(publicClientKey, aesKey.toString('base64'))
+                            });
+                        });
+                    }else {
+                        socket.emit('chat.connect.firstHandshake.error');
+                    }
+                } else {
                     socket.emit('chat.connect.firstHandshake.error');
                 }
-            } else {
-                socket.emit('chat.connect.firstHandshake.error');
-            }
+            });
         });
 
         socket.on('chat.connect.secondHandshake', function (data) {
             const {token, msg} = data;
-            const tokenObject = getObject(token);
 
-            if(tokenObject !== undefined){
-                const aesKey = tokenObject.aesKey;
+            Tokens.getObject(token).then(tokenObject => {
+                if(tokenObject !== undefined){
+                    const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
 
-                if(tokenObject.authToken === aesWrapper.decrypt(aesKey, msg)){
-                    socket.emit('chat.connect.secondHandshake.success');
-                }else {
+                    if(tokenObject.authToken === aesWrapper.decrypt(aesKey, msg)){
+                        // const EM = new GlobalEventManager({socket, userId: tokenObject.userId});
+                        // EventManagers[tokenObject.userId] = EM;
+                        socket.emit('chat.connect.secondHandshake.success');
+                    }else {
+                        socket.emit('chat.connect.secondHandshake.error');
+                    }
+                } else {
                     socket.emit('chat.connect.secondHandshake.error');
                 }
-            } else {
-                socket.emit('chat.connect.secondHandshake.error');
-            }
+            });
         });
 
         socket.on('chat.disconnect', function () {
@@ -120,115 +80,125 @@ module.exports = function ({server, Tokens}) {
         socket.on('chat.user.info', function (data) {
             /**encryptedMsg === {login || id}*/
             const {token, msg} = data;
-            const tokenObject = getObject(token);
 
-            if(tokenObject !== undefined){
-                const aesKey = tokenObject.aesKey;
+            Tokens.getObject(token).then(tokenObject => {
+                if(tokenObject !== undefined){
+                    const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
 
-                const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+                    const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
 
-                Participant.get(_data).then(user => {
+                    Participant.get(_data).then(user => {
 
-                    socket.emit('chat.user.info', {
-                        msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(user))
-                    })
-                });
-            }
+                        socket.emit('chat.user.info', {
+                            msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(user))
+                        })
+                    });
+                }
+            });
         });
 
         socket.on('chat.user.contacts', function (data) {
             /**encryptedMsg === {login || id}*/
             const {token, msg} = data;
-            const tokenObject = getObject(token);
 
-            if(tokenObject !== undefined){
-                const aesKey = tokenObject.aesKey;
+            Tokens.getObject(token).then(tokenObject => {
+                if(tokenObject !== undefined){
+                    const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
 
-                const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+                    const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
 
-                Participant.safeGet({id: _data.userId, get: 'contacts'}).then(contacts => {
+                    Participant.safeGet({id: _data.userId, get: 'contacts'}).then(contacts => {
 
-                    socket.emit('chat.user.contacts', {
-                        msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(contacts))
-                    })
-                });
-            }
+                        socket.emit('chat.user.contacts', {
+                            msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(contacts))
+                        })
+                    });
+                }
+            });
         });
 
         socket.on('chat.user.conversations', function (data) {
             /**encryptedMsg === {login || id}*/
             const {token, msg} = data;
-            const tokenObject = getObject(token);
 
-            if(tokenObject !== undefined){
-                const aesKey = tokenObject.aesKey;
+            Tokens.getObject(token).then(tokenObject => {
+                if(tokenObject !== undefined){
+                    const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
 
-                const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+                    const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
 
-                Participant.safeGet({id: _data.userId, get: 'conversations'}).then(conversations => {
+                    Participant.safeGet({id: _data.userId, get: 'conversations'}).then(conversations => {
 
-                    socket.emit('chat.user.conversations', {
-                        msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(conversations))
-                    })
-                });
-            }
+                        socket.emit('chat.user.conversations', {
+                            msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(conversations))
+                        })
+                    });
+                }
+            });
         });
 
         socket.on('chat.conversation.get', function (data) {
             /**encryptedMsg === {login || id}*/
             const {token, msg} = data;
-            const tokenObject = getObject(token);
 
-            if(tokenObject !== undefined){
-                const aesKey = tokenObject.aesKey;
+            Tokens.getObject(token).then(tokenObject => {
+                if(tokenObject !== undefined){
+                    const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
 
-                const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+                    const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
 
-                Conversation.get({id: _data.id}).then(conversation => {
+                    Conversation.get({id: _data.id}).then(conversation => {
 
-                    socket.emit('chat.conversation.get', {
-                        msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(conversation))
-                    })
-                });
-            }
+                        socket.emit('chat.conversation.get', {
+                            msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(conversation))
+                        })
+                    });
+                }
+            });
         });
 
+        socket.on('event', function (data) {
+            /**encryptedMsg === {login || id}*/
+            const {token, msg} = data;
 
-        // socket.on('message.sending', function (message) {
-        //
-        //     const _from = participants.data.find(p => p.id === message.from);
-        //     if (_from) {
-        //
-        //         const _to = participants.data.find(p => p.id === message.to);
-        //         if (_to) {
-        //             _to.socket.emit('message.incoming', {message: message});
-        //         } else {
-        //             socket.emit('message.sending.error', {error: 'TO not in participants'});
-        //         }
-        //     } else {
-        //         socket.emit('message.sending.error', {error: 'FROM not in participants'});
-        //     }
-        // });
-        //
-        // socket.on('conversation.start', function (participantBId, cId) {
-        //
-        //     if(!participantBId) {
-        //
-        //     }
-        //     if(cId){
-        //         const conversation = conversations.find(c => c.cId === cId);
-        //
-        //         if(conversation){
-        //
-        //         } else {
-        //
-        //         }
-        //     } else {
-        //         const participantA = participants.find(p => p.socket.id === socket.id);
-        //
-        //         conversations.add(participantA, participantB)
-        //     }
-        // })
+            Tokens.getObject(token).then(tokenObject => {
+                if(tokenObject !== undefined){
+                    const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
+
+                    const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+
+                    const eventData = _GlobalEventManager.eventToData(_data);
+                    const {message, conversation} = eventData;
+
+                    let promises = conversation.set === 'multi' ? ['from'] : ['from', 'to'];
+
+                    promises = promises.map(p => {
+                       return Participant.get({login: message[p]}).then(result => {
+                           return message[p] = result.id;
+                       });
+                    });
+
+                    Promise.all(promises).then(data=> {
+                        message.from = data[0];
+                        message.to = data[1]
+                    }).then(()=>{
+                        /**Create/Add Message*/
+                        Message.add(message).then(msgResult=>{
+
+                            if(conversation.hasOwnProperty('id')){
+                                /**Add message to Message List*/
+                                MessageList.addMessage({id: conversation.messageListId, msgId: msgResult.id})
+                            }else {
+                                console.error('No conversation ID in Event Data')
+                            }
+                        });
+                    });
+
+                    console.log(_data);
+                }
+            });
+        });
+
     });
 };
 

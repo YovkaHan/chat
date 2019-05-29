@@ -1,4 +1,5 @@
 const firebase = require('firebase');
+const uniqid = require('uniqid');
 firebase.initializeApp({
     apiKey: "AIzaSyCf9GH0ejD0AsTc-fpeEdiuqyXkvzXoYaQ",
     authDomain: "chat-6855d.firebaseapp.com",
@@ -35,7 +36,7 @@ module.exports = function () {
                     isRequired: 'true'
                 },
                 conversations: {
-                    type: 'array'
+                    type: 'string'
                 }
             },
             /**return Promise(Object)*/
@@ -60,12 +61,14 @@ module.exports = function () {
                                             resolve(result);
                                         });
                                     } else if(get === 'conversations' && user.conversations){
-                                        Promise.all(user.conversations.map(cID => db.collection('conversations').doc(cID).get().then((doc) => doc.exists ? doc.data() : undefined))).then(conversations => {
-                                            const result = {};
-                                            conversations.map(c => {
-                                                result[c.name] = c;
+                                        db.collection('conversationLists').doc(user.conversations).get().then((doc) => doc.exists ? doc.data().conversations : undefined).then(conversations => {
+                                            Promise.all(conversations.map(cID => db.collection('conversations').doc(cID).get().then((doc) => doc.exists ? doc.data() : undefined))).then(conversations => {
+                                                const result = {};
+                                                conversations.map(c => {
+                                                    result[c.name] = c;
+                                                });
+                                                resolve(result);
                                             });
-                                            resolve(result);
                                         });
                                     }else {
                                         resolve({});
@@ -103,7 +106,7 @@ module.exports = function () {
             get: (data) => {
                 return new Promise((resolve, reject) => {
                     const {login, id} = data;
-                    if (id) {
+                    if (id !== undefined) {
                         return db.collection('participants').doc(id).get().then((doc) => {
                             if (doc.exists) {
                                 const user = doc.data();
@@ -120,9 +123,11 @@ module.exports = function () {
                                 });
                                 const C2 = new Promise(res=>{
                                     if(user.conversations){
-                                        Promise.all(user.conversations.map(cID => db.collection('conversations').doc(cID).get().then((doc) => doc.exists ? doc.data() : undefined))).then(conversations => {
-                                            user.conversations = conversations.filter(c => c);
-                                            res();
+                                        db.collection('conversationLists').doc(user.conversations).get().then((doc) => doc.exists ? doc.data().conversations : undefined).then(conversations => {
+                                            Promise.all(conversations.map(cID => db.collection('conversations').doc(cID).get().then((doc) => doc.exists ? doc.data() : undefined))).then(conversations => {
+                                                user.conversations = conversations.filter(c => c);
+                                                res();
+                                            });
                                         });
                                     }else {
                                         res();
@@ -147,9 +152,49 @@ module.exports = function () {
                             const participants = snapshot.docs.map(doc => doc.data());
                             const participant = participants.find(p => p.login === login);
 
-                            delete participant.id;
-
                             resolve(participant);
+                            /*try{
+                                delete participant.id;
+                                delete participant.conversations;
+                                delete participant.contacts;
+
+                                if(!participant.hasOwnProperty('id') && !participant.hasOwnProperty('conversations') && !participant.hasOwnProperty('contacts')){
+                                    resolve(participant);
+                                }else {
+                                    throw true;
+                                }
+                            }catch (e) {
+                                resolve({});
+                            }*/
+                        });
+                    } else {
+                        resolve({
+                            error: {
+                                text: 'Missing required prop',
+                                required: true
+                            }
+                        });
+                    }
+                });
+            },
+            getUnsafe: (id) => {
+                return new Promise((resolve, reject) => {
+                    if (id) {
+                        return db.collection('participants').doc(id).get().then((doc) => {
+                            if (doc.exists) {
+                                const user = doc.data();
+
+                                resolve(user);
+                            } else {
+                                resolve({
+                                    error: {
+                                        text: 'Participant not exist',
+                                        exist: false
+                                    }
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.log("Error getting document:", error);
                         });
                     } else {
                         resolve({
@@ -357,6 +402,71 @@ module.exports = function () {
                 });
             },
         },
+        ConversationList: {
+            Schema:{
+                id: {
+                    type: 'string',
+                    isRequired: 'true',
+                    isUnique: 'true'
+                },
+                conversations: {
+                    type: 'array'
+                },
+            },
+            get(id){
+                return new Promise(resolve => {
+                    if(id !== undefined){
+                        db.collection('conversationLists').doc(id).get().then(doc => {
+                            if(doc.exists){
+                                resolve(doc.data());
+                            }else {
+                                resolve({
+                                    error: {
+                                        text: 'List not exist',
+                                        exist: false
+                                    }
+                                });
+                            }
+                        })
+                    }else {
+                        resolve({
+                            error: {
+                                text: 'Missing required prop',
+                                required: true
+                            }
+                        });
+                    }
+                });
+            },
+            onChange(id){
+               return new Promise(resolve => {
+                   if(id){
+                       resolve(db.collection("conversationLists").where('id', '==', id))
+                   }else {
+                       resolve({
+                           error: {
+                               text: 'Missing required prop',
+                               required: true
+                           }
+                       });
+                   }
+               })
+            },
+            doc(id){
+                return new Promise(resolve => {
+                    if(id){
+                        resolve(db.collection('conversationLists').doc(id))
+                    }else {
+                        resolve({
+                            error: {
+                                text: 'Missing required prop',
+                                required: true
+                            }
+                        });
+                    }
+                })
+            }
+        },
         MessageList: {
             Schema: {
                 id: {
@@ -515,7 +625,9 @@ module.exports = function () {
                                     if(mLDoc.exists){
                                         const mLData = mLDoc.data();
                                         mLData.messages.push(msgId);
-                                        resolve({});
+                                        db.collection('messageLists').doc(id).set(mLData).then((result)=>{
+                                            resolve(result);
+                                        })
                                     }else {
                                         resolve({
                                             error: {
@@ -614,14 +726,10 @@ module.exports = function () {
                 data: {
                     type: 'string',
                     isRequired: 'true'
-                },
-                status: {
-                    type: 'string'
                 }
             },
             get: (id) => {
                 return new Promise((resolve, reject) => {
-                    console.log(id);
                     if (id !== undefined && typeof id === 'string') {
                         db.collection('messages').doc(id).get().then(function (doc) {
                             if (doc.exists) {
@@ -652,6 +760,11 @@ module.exports = function () {
                     const requiredProps = [];
                     const _schema = entities.Message.Schema;
                     const _data = data ? data : {};
+                    Object.keys(_data).map(key => {
+                        if(_data[key] == undefined){
+                            delete _data[key];
+                        }
+                    });
 
                     if(!_data.hasOwnProperty('id')){
                         _data.id = getId('messages');
@@ -736,6 +849,182 @@ module.exports = function () {
                         });
                     }
                 });
+            }
+        },
+        Event: {
+            Schema: {
+                id: {
+                    type: 'string',
+                    isRequired: 'true',
+                    isUnique: 'true'
+                },
+                date: {
+                    type: 'string',
+                    isRequired: 'true'
+                },
+                data: {
+                    type: 'map',
+                    isRequired: 'true'
+                },
+                name: {
+                    type: 'string',
+                    isRequired: 'true'
+                }
+            },
+            add: (props) => {
+                return new Promise((resolve, reject) => {
+                    const requiredProps = [];
+                    const _schema = entities.Event.Schema;
+                    const _props = props ? props : {};
+
+                    _props.id = `${Date.now()}_${getId('events')}`;
+
+                    Object.keys(_schema).map(key => {
+                        if (_schema[key].isRequired)
+                            requiredProps.push(key);
+                    });
+
+                    if (requiredProps.every(key => _props[key])) {
+                        db.collection('messages').doc(_props.id).get().then(function (doc) {
+                            if (doc.exists) {
+                                resolve({
+                                    error: {
+                                        text: 'Event exist',
+                                        exist: true
+                                    }
+                                });
+                            } else {
+                                db.collection('events').doc(_props.id).set(_props).then(()=> {
+                                    resolve(_props);
+                                }).catch(error =>  resolve({
+                                    error: {
+                                        text: error
+                                    }
+                                }));
+                            }
+                        }).catch(function (error) {
+                            console.log("Error getting document:", error);
+                        });
+                    } else {
+                        resolve({
+                            error: {
+                                text: 'Missing required prop',
+                                required: true
+                            }
+                        });
+                    }
+                });
+            },
+            delete: (id) => {
+                return new Promise((resolve, reject) => {
+                    if (id) {
+                        db.collection("cities").doc(id).delete().then(function() {
+                            resolve();
+                        }).catch(function(error) {
+                            resolve({
+                                error: {
+                                    text: error
+                                }
+                            });
+                        });
+                    } else {
+                        resolve({
+                            error: {
+                                text: 'Missing required prop',
+                                required: true
+                            }
+                        });
+                    }
+                });
+            }
+        },
+        EventList: {
+            Schema: {
+                id: {
+                    type: 'string',
+                    isRequired: 'true',
+                    isUnique: 'true'
+                },
+                conversationId: {
+                    type: 'string',
+                    isRequired: 'true'
+                },
+                events: {
+                    type: 'collection'
+                },
+                userId: {
+                    type: 'string',
+                    isRequired: 'true'
+                },
+            },
+            get: (props) => {
+                return new Promise((resolve, reject) => {
+                    const {conversationId, userId, id} = props;
+                    if(id){
+                        db.collection('eventLists').doc(id).get().then((doc) => {
+                            if (doc.exists) {
+                                resolve(doc.data());
+                            } else {
+                                resolve({
+                                    error: {
+                                        text: 'Event List is not exist',
+                                        exist: false
+                                    }
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.log("Error getting document:", error);
+                        });
+                    } else if (conversationId !== undefined && userId !== undefined) {
+                        db.collection('eventLists').where('conversationId', '==', conversationId).where('userId', '==', userId).get().then(snapshot => {
+                            if (snapshot.empty) {
+                                resolve({
+                                    error: {
+                                        text: 'No matching documents.',
+                                        exist: false
+                                    }
+                                });
+                            }
+                            snapshot.forEach(doc => {
+                                resolve(doc.data());
+                            });
+                        })
+                            .catch(err => {
+                                console.log('Error getting documents', err);
+                            });
+                    } else {
+                        resolve({
+                            error: {
+                                text: 'Missing required prop',
+                                required: true
+                            }
+                        });
+                    }
+                });
+            },
+            getEventArray: (props) => {
+                return new Promise((resolve, reject) => {
+                    const {eventId, eventListId, conversationId, userId} = props;
+                    entities.EventList.get({id: eventListId, conversationId, userId}).then(eventList => {
+                        if (eventList.error) {
+                            resolve(eventList);
+                        }else {
+                            const date = eventId.slice('_')[0];
+                            eventList.events.get(date).then(doc => {
+                                if(doc.exists){
+                                    const data = doc.data().data;
+                                }else {
+                                    resolve({
+                                        error: {
+                                            text: 'No such event in this list or wrong list sequence',
+                                            exist: false
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    });
+                })
             }
         }
     };

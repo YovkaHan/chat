@@ -51,6 +51,11 @@ const cases = (type) => {
                 });
             };
         }
+        case TYPES.CLEAR: {
+            return (draft, payload, id) => {
+                draft[id].data = [];
+            };
+        }
         default : {
             return () => {
             }

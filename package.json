@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "server": "yarn --cwd ./back server",
+    "tokens": "node ./back/src/tokens.js",
     "inspect": "yarn --cwd ./back inspect",
     "dev": "yarn --cwd ./front dev",
     "build": "yarn --cwd ./front build"

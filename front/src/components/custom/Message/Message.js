@@ -17,11 +17,8 @@ class Message extends React.Component {
         disabled: false,
         from: 'TestFrom',
         createItem: () => {console.log('createItem function')},
-        msg: 'Hello. My name is Test and this is test-message!',
-        date: {
-            seconds: 1551792177575,
-            nanoseconds: 0
-        }
+        data: 'Hello. My name is Test and this is test-message!',
+        date: 1559068029
     };
 
     constructor(props) {
@@ -39,7 +36,7 @@ class Message extends React.Component {
 
     render() {
         const {props, state, handleClick} = this;
-        const {className, rootClass, disabled, from, msg, date} = props;
+        const {className, rootClass, disabled, from, data, date} = props;
         const mainClass = 'c-message';
 
         return (
@@ -49,8 +46,8 @@ class Message extends React.Component {
             >
                 <div className={innerClass('content', mainClass, rootClass)}>
                     <div className={innerClass('from', mainClass, rootClass)}>{from}</div>
-                    <div className={innerClass('msg', mainClass, rootClass)}>{msg}</div>
-                    <div className={innerClass('date', mainClass, rootClass)}>{moment(date.seconds * 1000).format('DD.MM.YYYY, HH:mm:ss a')}</div>
+                    <div className={innerClass('data', mainClass, rootClass)}>{data}</div>
+                    <div className={innerClass('date', mainClass, rootClass)}>{moment(date * 1000).format('DD.MM.YYYY, HH:mm:ss a')}</div>
                 </div>
             </div>
         )
@@ -66,7 +63,7 @@ Message.propTypes = {
     className: PropTypes.string,
     rootClass: PropTypes.string,
     from: PropTypes.string,
-    msg: PropTypes.string,
+    data: PropTypes.string,
     date: PropTypes.number,
     createItem: PropTypes.func
 };

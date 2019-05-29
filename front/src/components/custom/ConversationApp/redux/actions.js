@@ -53,6 +53,10 @@ export function conversationGet(id, conversationId) {
     return ({type: TYPES.APP_CONVERSATION_GET, payload: {conversationId}, id})
 }
 
+export function eventManager(id, pcb) {
+    return ({type: TYPES.APP_EVENT_MANAGER, payload: {pcb}, id})
+}
+
 export default {
     initialize,
     flagHandle,
@@ -62,5 +66,6 @@ export default {
     logIn,
     logOut,
     appStageConnecting,
-    conversationGet
+    conversationGet,
+    eventManager
 }

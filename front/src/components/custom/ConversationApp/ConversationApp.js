@@ -2,7 +2,9 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
-import {flagHandle, createItem, valueChange, connectApp, appAuthorize, logIn, connectionTry, appStageConnecting, deleteItem} from './redux/actions';
+import {
+    flagHandle, createItem, valueChange, connectApp, appAuthorize, logIn, connectionTry, appStageConnecting, deleteItem, eventManager
+} from './redux/actions';
 
 const innerClass = (suffix, mainClass, rootClass) => {
     return `${mainClass}__${suffix} ${rootClass ? rootClass + '__' + suffix : ''}`.trim()
@@ -37,6 +39,7 @@ class ConversationApp extends React.Component {
         });
 
         props.appAuthorize();
+        props.eventManager();
 
         this.handleClick = ::this.handleClick;
     }
@@ -174,7 +177,8 @@ const mapDispatchers = (dispatch, props) => {
         logIn: (userId) => logIn(cId, userId),
         connectionTry: () => connectionTry(cId),
         appStageConnecting: () => appStageConnecting(cId),
-        deleteComponent: () => deleteItem(cId)
+        deleteComponent: () => deleteItem(cId),
+        eventManager: () => eventManager(cId, props.pcbMade)
         // mouseOver: () => flagHandle(cId, 'hover', true),
         // mouseOut: () => flagHandle(cId, 'hover', false),
     }, dispatch);

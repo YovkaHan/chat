@@ -14,7 +14,8 @@ const defaultTypes = {
     ITEM_DELETE: "ITEM_DELETE",
     ITEM_DELETE_COMPLETE: "ITEM_DELETE_COMPLETE",
     SEND_MSG: "SEND_MSG",
-    LENGTH_PLUS: "LENGTH_PLUS"
+    LENGTH_PLUS: "LENGTH_PLUS",
+    INIT_COMPONENT: "INIT_COMPONENT"
 };
 
 const _sequence = ["name","root"];

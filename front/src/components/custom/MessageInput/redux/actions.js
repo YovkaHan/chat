@@ -5,6 +5,10 @@ export function initialize(id, pcb) {
     return {type: TYPES.INITIALIZE, pcb, id};
 }
 
+export function initComponent(id, pcb) {
+    return {type: TYPES.INIT_COMPONENT, payload:{pcb}, id};
+}
+
 export function initItem(id, pcb) {
     return {type: TYPES.ITEM_INITIALIZE, pcb, id};
 }
@@ -30,5 +34,6 @@ export default {
     initItem,
     flagHandle,
     createItem,
-    deleteItem
+    deleteItem,
+    initComponent
 }

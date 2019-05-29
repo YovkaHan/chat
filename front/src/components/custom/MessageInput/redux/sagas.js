@@ -2,7 +2,7 @@ import {select, takeEvery, put, take, fork} from 'redux-saga/effects'
 import {TYPES, name} from "./types";
 import {TYPES as IA_TYPES} from '../../InputArea/redux/types';
 import * as R from "ramda";
-import {INIT_STATE_ITEM} from "../../Button/redux/reducer";
+import {INIT_STATE_ITEM} from "./reducer";
 import {TYPES as CTYPES} from "../../../../common/core";
 import {componentName} from '../';
 
@@ -10,7 +10,7 @@ const idMake = (index) => name + index;
 
 export default [
     takeEvery(TYPES.FLAGS, flagHandleComplete),
-    takeEvery(TYPES.INITIALIZE, initiateTask),
+    takeEvery(TYPES.INIT_COMPONENT, initiateTask),
     takeEvery(TYPES.ITEM_CREATE, createItemHandle),
     takeEvery(TYPES.ITEM_DELETE, deleteItemHandle),
     takeEvery(TYPES.SEND_MSG, sendingMsg)
@@ -23,12 +23,12 @@ function* inputAreaListenSaga(pcb) {
     while (true) {
         const {id} = yield take(_IATypes.CHANGE);
 
-        if(id === InputArea.id){
+        if (id === InputArea.id) {
             const state = yield select();
 
             const _object = R.clone(state.Components[InputArea.component][InputArea.id]);
 
-            if(_object.data.length){
+            if (_object.data.length) {
                 yield put({type: TYPES.FLAGS, payload: {key: 'mayBeSend', value: true}, id: pcb.id})
             } else {
                 yield put({type: TYPES.FLAGS, payload: {key: 'mayBeSend', value: false}, id: pcb.id})
@@ -37,8 +37,9 @@ function* inputAreaListenSaga(pcb) {
     }
 }
 
-function* initiateTask({type, pcb, id}) {
-    yield fork(inputAreaListenSaga, pcb, id);
+function* initiateTask({type, payload, id}) {
+    if (payload.hasOwnProperty('pcb'))
+        yield fork(inputAreaListenSaga, payload.pcb, id);
 }
 
 function* createItemHandle({type, id, coreId, payload}) {
@@ -50,7 +51,7 @@ function* createItemHandle({type, id, coreId, payload}) {
     const _id = id ? id : idMake(index);
 
     if (coreId !== undefined)
-        yield put({type: CTYPES.CREATE, payload:_id, id: coreId});
+        yield put({type: CTYPES.CREATE, payload: _id, id: coreId});
 
     yield put({type: TYPES.ITEM_CREATE_COMPLETE, payload: R.clone(INIT_STATE_ITEM), id: _id});
     callback();
@@ -66,32 +67,24 @@ function* flagHandleComplete({type, payload, id}) {
     const _object = R.clone(state.Components.MessageInput[id]);
     const {key, value} = payload;
 
-    if(value !== undefined){
+    if (value !== undefined) {
         _object.flags[key] = value;
-    }else{
+    } else {
         _object.flags[key] = !_object.flags[key];
     }
 
-    yield put({ type: TYPES.FLAGS_COMPLETE, payload: _object.flags, id });
+    yield put({type: TYPES.FLAGS_COMPLETE, payload: _object.flags, id});
 }
 
 function* sendingMsg({type, pcb, id, from, to}) {
     const {MsgConstructor} = pcb.relations;
     const {InputArea} = pcb.children;
     const _MCTypes = require(`../../${MsgConstructor.component}`).default.types;
+    const _IATypes = require(`../../${InputArea.component}`).default.types;
 
     const state = yield select();
-    const msg = state.Components[InputArea.component][InputArea.id].data;
-    let _from = from;
-    let _to = to;
+    const data = state.Components[InputArea.component][InputArea.id].data;
 
-    /**Затычка*/
-    if(_from === undefined && _to === undefined){
-        const make = pcb.make(pcb.relations.MsgConstructor.id);
-
-        _from = make.config.from;
-        _to = make.config.to;
-    }
-
-    yield put({ type: _MCTypes.MSG_MAKE, payload: msg, pcb, id: MsgConstructor.id, from: _from, to: _to });
+    yield put({type: _MCTypes.MSG_MAKING, payload: data, id: MsgConstructor.id});
+    yield put({type: _IATypes.CLEAR, id: InputArea.id});
 }
