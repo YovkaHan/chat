@@ -183,7 +183,7 @@ export const pcbTemplate = {
                     component: 'ConversationApp',
                 },
                 Contact: {
-                    template: 'ClientInfo1',
+                    template: 'ClientInfo0',
                     component: 'ClientInfo',
                 }
             }

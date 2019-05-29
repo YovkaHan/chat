@@ -508,21 +508,59 @@ const eventManager = function* (action){
 };
 
 const onEventManagerSaga = function* (socket, authToken, _id) {
-    while (true) {
-        const {id, payload} = yield take(TYPES.EVENT_SEND);
 
-        if (id === _id) {
-            const aesKey = _store.get(authToken, ['aesKey'])[0];
+    yield fork(eventSend);
+    yield fork(eventManagerSync);
 
-            aesWrapper.encryptMessage(aesKey, JSON.stringify(payload)).then(msg => {
-                socket.emit(
-                    'event',
-                    {
-                        token: authToken,
-                        msg
+    function* eventManagerSync() {
+        while (true) {
+            const {id, payload} = yield take(TYPES.APP_STAGE_READY);
+
+            if (id === _id) {
+                const aesKey = _store.get(authToken, ['aesKey'])[0];
+                const userId = _store.get(authToken, ['userId'])[0];
+
+                const mocks = {
+                    '1556984823_a8wjv9okahh': {
+                        'conv1557912754_3vojvp112qi': '1559147013785_D7l2NucnGt6bu7hlPbPf',
+                        'conv1557873362_4f8jvodkrkh': '1559146929299_aend6EjMdD24hW0IemGp'
+                    },
+                    '1555156736_8hcjufg64ce': {
+                        'conv1557912754_3vojvp112qi': '1559147013367_gDqZu4ZHaTlCBEJaAtMr',
+                        'conv1557873362_4f8jvodkrkh': '1559146929781_juxUQKw0RsJ7asiBViTB'
                     }
-                );
-            });
+                };
+
+                aesWrapper.encryptMessage(aesKey, JSON.stringify({lastEvents: mocks[userId]})).then(msg => {
+                    socket.emit(
+                        'event.manager.last',
+                        {
+                            token: authToken,
+                            msg
+                        }
+                    );
+                });
+            }
+        }
+    }
+
+    function* eventSend() {
+        while (true) {
+            const {id, payload} = yield take(TYPES.EVENT_SEND);
+
+            if (id === _id) {
+                const aesKey = _store.get(authToken, ['aesKey'])[0];
+
+                aesWrapper.encryptMessage(aesKey, JSON.stringify(payload)).then(msg => {
+                    socket.emit(
+                        'event',
+                        {
+                            token: authToken,
+                            msg
+                        }
+                    );
+                });
+            }
         }
     }
 };

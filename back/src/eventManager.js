@@ -1,5 +1,5 @@
 const Firebase = require('./firebase');
-const {Event, EventList, ConversationList, Participant, db} = Firebase();
+const {Event, EventList, ConversationList, Participant, Conversation, Message} = Firebase();
 
 const dataFromEvent = {
     'message.new': {
@@ -34,10 +34,11 @@ const OuterEvent = (data) => {
 
 class LocalEventManager {
     constructor(props) {
-        const {socket, userId} = props;
+        const {socket, userId, lastEvents} = props;
 
         this.socket = socket;
         this.userId = userId;
+        this.lastEvents = lastEvents;
         this.conversationListner = undefined;
         this.conversationListners = {};
 
@@ -50,7 +51,7 @@ class LocalEventManager {
             this.conversationListner();
         }
 
-        const user = await Participant.getUnsafe(this.userId);
+        const user = await Participant.getUnsafe({id: this.userId});
         if (user.hasOwnProperty('conversations')) {
             const ref = await ConversationList.doc(user.conversations);
             ref.onSnapshot(docSnapshot => {
@@ -60,7 +61,7 @@ class LocalEventManager {
     }
 
     async setListeners() {
-        const user = await Participant.getUnsafe(this.userId);
+        const user = await Participant.getUnsafe({id: this.userId});
         if (user.hasOwnProperty(conversations)) {
             const cL = await ConversationList.get(user.conversations);
 
@@ -81,12 +82,54 @@ class LocalEventManager {
 }
 
 function GlobalEventManager(){
-    function eventProcess(event){
+    async function eventProcess(event, other){
         switch (event.name){
             case 'message.new': {
                 /**Find Conversation*/
+                const eventData = eventToData(event);
+                const {message, conversation} = eventData;
+                const {msgId} = other;
+
                 /**Through conversation.participants and conversation.set create Events*/
+
+                const conRes = await Conversation.get({id: conversation.id});
+                const {participants, set} = conRes;
+
+                const msgRef = await Message.getRef({id: msgId});
+
+                const messageSentEvent = await Event.add({name: 'message.sent', data: {message: msgRef}});
+                const messageReceivedEvent = await Event.add({name: 'message.received', data: {message: msgRef}});
+
                 /**Push events to lists. Events "message.sent" to sender and "message.received" to participants except sender*/
+
+                const _participants = {
+                    sender: undefined,
+                    receivers: []
+                };
+                await function () {
+                  return new Promise(resolve => {
+                      Promise.all(participants.map(async p=>{
+                          if(p === message.from){
+                              _participants.sender = await Participant.get({login: p});
+                          }else {
+                              _participants.receivers.push(await Participant.get({login: p}));
+                          }
+                      })).then(()=>{
+                          resolve();
+                      });
+                  })
+                }();
+
+                const senderEL = await EventList.get({userId: _participants.sender.id, conversationId: conversation.id});
+                const receiversEL = await Promise.all(_participants.receivers.map(async r=>{
+                  return await EventList.get({userId: r.id, conversationId: conversation.id});
+                }));
+
+                await EventList.addEvent({id: senderEL.id, event: messageSentEvent});
+                await Promise.all(receiversEL.map(async r=>{
+                    return await EventList.addEvent({id: r.id, event: messageReceivedEvent});
+                }));
+
                 break;
             }
             case 'message.edit': {
@@ -115,7 +158,7 @@ function GlobalEventManager(){
             const result = {};
 
             Object.keys(resObj).map(key=>{
-                result[key] = _event.data[key];
+                result[key] = JSON.parse(JSON.stringify(_event.data[key]));
             });
 
             return result;
@@ -125,7 +168,8 @@ function GlobalEventManager(){
     }
 
     return {
-        eventToData
+        eventToData,
+        eventProcess
     }
 }
 

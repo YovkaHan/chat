@@ -3,7 +3,7 @@ module.exports = function ({server, Tokens}) {
     const Firebase = require('./firebase');
     const {Participant, Conversation, Message,  MessageList} = Firebase();
     const events = require('./eventManager');
-    const {GlobalEventManager} = events();
+    const {GlobalEventManager, LocalEventManager} = events();
     const uniqid = require('uniqid');
     const rsaWrapper = require('./rsa-wrapper');
     const aesWrapper = require('./aes-wrapper');
@@ -183,7 +183,7 @@ module.exports = function ({server, Tokens}) {
                         message.to = data[1]
                     }).then(()=>{
                         /**Create/Add Message*/
-                        Message.add(message).then(msgResult=>{
+                        return Message.add(message).then(msgResult=>{
 
                             if(conversation.hasOwnProperty('id')){
                                 /**Add message to Message List*/
@@ -191,10 +191,27 @@ module.exports = function ({server, Tokens}) {
                             }else {
                                 console.error('No conversation ID in Event Data')
                             }
+                            return msgResult.id;
                         });
+                    }).then((msgId)=>{
+                        _GlobalEventManager.eventProcess(_data, {msgId});
                     });
+                }
+            });
+        });
 
-                    console.log(_data);
+        socket.on('event.manager.last', function (data) {
+            const {token, msg} = data;
+
+            Tokens.getObject(token).then(tokenObject => {
+                if(tokenObject !== undefined){
+                    const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
+                    const {userId} = tokenObject;
+
+                    const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+                    const {lastEvents} = _data;
+
+                    LocalEventManagers[userId] = new LocalEventManager({socket, userId, lastEvents});
                 }
             });
         });

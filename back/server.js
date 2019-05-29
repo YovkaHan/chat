@@ -291,10 +291,9 @@ app.post('/conversation/get', function (req, res) {
 app.post('/message/get', function (req, res) {
     if (!req.body) return res.sendStatus(400);
 
-    const {id} = req.body;
     const result = {};
 
-    Message.get(id).then(data => {
+    Message.get(req.body).then(data => {
         if (data.error) {
             result.error = data.error;
         } else {

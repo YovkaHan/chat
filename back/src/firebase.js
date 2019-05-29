@@ -1,4 +1,5 @@
 const firebase = require('firebase');
+const admin = require('firebase-admin');
 const uniqid = require('uniqid');
 firebase.initializeApp({
     apiKey: "AIzaSyCf9GH0ejD0AsTc-fpeEdiuqyXkvzXoYaQ",
@@ -40,9 +41,9 @@ module.exports = function () {
                 }
             },
             /**return Promise(Object)*/
-            safeGet: (props) => {
+            safeGet: (data) => {
                 return new Promise((resolve, reject) => {
-                    const {id, get} = props;
+                    const {id, get} = data;
                     if (id) {
                         return db.collection('participants').doc(id).get().then((doc) => {
                             if (doc.exists) {
@@ -177,9 +178,10 @@ module.exports = function () {
                     }
                 });
             },
-            getUnsafe: (id) => {
+            getUnsafe: (data) => {
                 return new Promise((resolve, reject) => {
-                    if (id) {
+                    const {id} = data;
+                    if (id !== undefined) {
                         return db.collection('participants').doc(id).get().then((doc) => {
                             if (doc.exists) {
                                 const user = doc.data();
@@ -370,12 +372,12 @@ module.exports = function () {
             get: (data) => {
                 return new Promise((resolve, reject) => {
                     const {id} = data;
-                    if (id) {
+                    if (id !== undefined) {
                          db.collection('conversations').doc(id).get().then((doc) => {
                             if (doc.exists) {
                                 const conv = doc.data();
 
-                                entities.MessageList.get(conv.messageListId).then(mL => {
+                                entities.MessageList.get({id: conv.messageListId}).then(mL => {
                                     conv.messageList = mL;
                                     resolve(conv);
                                 });
@@ -413,8 +415,9 @@ module.exports = function () {
                     type: 'array'
                 },
             },
-            get(id){
+            get(data){
                 return new Promise(resolve => {
+                    const {id} = data;
                     if(id !== undefined){
                         db.collection('conversationLists').doc(id).get().then(doc => {
                             if(doc.exists){
@@ -438,9 +441,10 @@ module.exports = function () {
                     }
                 });
             },
-            onChange(id){
+            onChange(data){
                return new Promise(resolve => {
-                   if(id){
+                   const {id} = data;
+                   if(id !== undefined){
                        resolve(db.collection("conversationLists").where('id', '==', id))
                    }else {
                        resolve({
@@ -454,7 +458,7 @@ module.exports = function () {
             },
             doc(id){
                 return new Promise(resolve => {
-                    if(id){
+                    if(id !== undefined){
                         resolve(db.collection('conversationLists').doc(id))
                     }else {
                         resolve({
@@ -529,8 +533,9 @@ module.exports = function () {
                     }
                 });
             },
-            get: (id) => {
+            get: (data) => {
                 return new Promise(resolve => {
+                    const {id} = data;
                     if(id !== undefined && typeof id === 'string'){
                         db.collection('messageLists').doc(id).get().then(function (doc) {
                             if (doc.exists) {
@@ -543,7 +548,7 @@ module.exports = function () {
                                         msgs.push(entities.Message.get(result.messages[n]).then(msg => msg));
                                     }
                                 }else {
-                                    msgs = result.messages.map(mId=>entities.Message.get(mId).then(msg => msg))
+                                    msgs = result.messages.map(mId=>entities.Message.get({id: mId}).then(msg => msg))
                                 }
 
                                 Promise.all(msgs).then(msgsResult => {
@@ -728,8 +733,10 @@ module.exports = function () {
                     isRequired: 'true'
                 }
             },
-            get: (id) => {
+            get: (data) => {
                 return new Promise((resolve, reject) => {
+                    const {id} = data;
+
                     if (id !== undefined && typeof id === 'string') {
                         db.collection('messages').doc(id).get().then(function (doc) {
                             if (doc.exists) {
@@ -745,6 +752,22 @@ module.exports = function () {
                         }).catch(function (error) {
                             console.log("Error getting document:", error);
                         });
+                    } else {
+                        resolve({
+                            error: {
+                                text: 'Missing required prop',
+                                required: true
+                            }
+                        });
+                    }
+                });
+            },
+            getRef: (data) => {
+                return new Promise((resolve, reject) => {
+                    const {id} = data;
+                    if (id !== undefined) {
+                        const ref = db.collection('messages').doc(id);
+                        resolve(ref);
                     } else {
                         resolve({
                             error: {
@@ -871,13 +894,14 @@ module.exports = function () {
                     isRequired: 'true'
                 }
             },
-            add: (props) => {
+            add: (data) => {
                 return new Promise((resolve, reject) => {
                     const requiredProps = [];
                     const _schema = entities.Event.Schema;
-                    const _props = props ? props : {};
+                    const _props = data ? data : {};
 
                     _props.id = `${Date.now()}_${getId('events')}`;
+                    _props.date = _props.date ? _props.date : Date.now();
 
                     Object.keys(_schema).map(key => {
                         if (_schema[key].isRequired)
@@ -885,7 +909,7 @@ module.exports = function () {
                     });
 
                     if (requiredProps.every(key => _props[key])) {
-                        db.collection('messages').doc(_props.id).get().then(function (doc) {
+                        db.collection('events').doc(_props.id).get().then(function (doc) {
                             if (doc.exists) {
                                 resolve({
                                     error: {
@@ -915,9 +939,10 @@ module.exports = function () {
                     }
                 });
             },
-            delete: (id) => {
+            delete: (data) => {
                 return new Promise((resolve, reject) => {
-                    if (id) {
+                    const {id} = data;
+                    if (id !== undefined) {
                         db.collection("cities").doc(id).delete().then(function() {
                             resolve();
                         }).catch(function(error) {
@@ -957,9 +982,9 @@ module.exports = function () {
                     isRequired: 'true'
                 },
             },
-            get: (props) => {
+            get: (data) => {
                 return new Promise((resolve, reject) => {
-                    const {conversationId, userId, id} = props;
+                    const {conversationId, userId, id} = data;
                     if(id){
                         db.collection('eventLists').doc(id).get().then((doc) => {
                             if (doc.exists) {
@@ -1002,14 +1027,56 @@ module.exports = function () {
                     }
                 });
             },
-            getEventArray: (props) => {
+            addEvent: (data) => {
                 return new Promise((resolve, reject) => {
-                    const {eventId, eventListId, conversationId, userId} = props;
+                    const {id, event} = data;
+                    const eventListRef = db.collection('eventLists').doc(id);
+                    if(id !== undefined){
+                        eventListRef.get().then((doc) => {
+                            if (doc.exists) {
+                                const eId = (()=>{let buf = event.id.split('_')[0]; return buf.slice(0, buf.length-3)})();
+                                eventListRef.collection('events').doc(eId).get().then(e => {
+                                    if(e.exists){
+                                        const events = e.data().data;
+                                        events.push(event.id);
+                                        eventListRef.collection('events').doc(eId).update({data:events}).then(res=>{
+                                            resolve(event);
+                                        })
+                                    }else {
+                                        eventListRef.collection('events').doc(eId).set({data:[event.id], date: eId*1}).then(res=>{
+                                            resolve(event);
+                                        })
+                                    }
+                                });
+                            } else {
+                                resolve({
+                                    error: {
+                                        text: 'Event List is not exist',
+                                        exist: false
+                                    }
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.log("Error getting document:", error);
+                        });
+                    } else {
+                        resolve({
+                            error: {
+                                text: 'Missing required prop',
+                                required: true
+                            }
+                        });
+                    }
+                });
+            },
+            getEventArray: (data) => {
+                return new Promise((resolve, reject) => {
+                    const {eventId, eventListId, conversationId, userId} = data;
                     entities.EventList.get({id: eventListId, conversationId, userId}).then(eventList => {
                         if (eventList.error) {
                             resolve(eventList);
                         }else {
-                            const date = eventId.slice('_')[0];
+                            const date = eventId.split('_')[0];
                             eventList.events.get(date).then(doc => {
                                 if(doc.exists){
                                     const data = doc.data().data;

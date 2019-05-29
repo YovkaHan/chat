@@ -8,5 +8,8 @@
     "inspect": "yarn --cwd ./back inspect",
     "dev": "yarn --cwd ./front dev",
     "build": "yarn --cwd ./front build"
+  },
+  "dependencies": {
+    "firebase-admin": "^8.0.0"
   }
 }
