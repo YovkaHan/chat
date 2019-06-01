@@ -246,6 +246,13 @@ const createSocketChannel = (socket, authToken, id) => eventChannel((emit) => {
         });
     }
 
+    function eventManagerArraysHandler(data, authToken) {
+        const aesKey = _store.get(authToken, ['aesKey'])[0];
+        aesWrapper.decryptMessage(aesKey, data.msg).then(decryptedData => {
+            emit({req: 'event.manager.arrays', data: JSON.parse(decryptedData)});
+        });
+    }
+
     socket.on('chat.connection.success', chatConnectionHandlerSuccess);
     socket.on('chat.connect.firstHandshake.success', channelFirstHandShakeHandlerSuccess);
     socket.on('chat.connect.firstHandshake.error', channelFirstHandShakeHandlerError);
@@ -258,6 +265,7 @@ const createSocketChannel = (socket, authToken, id) => eventChannel((emit) => {
     socket.on('message.outgoing', handler);
     socket.on('message.sent', handler);
     socket.on('event', (data)=>eventHandler(data, authToken));
+    socket.on('event.manager.arrays', (data)=>eventManagerArraysHandler(data, authToken));
     socket.on('chat.disconnect.success', chatDisconnectHandlerSuccess);
     // socket.on('message.seen', handler);
     return () => {
@@ -274,6 +282,7 @@ const createSocketChannel = (socket, authToken, id) => eventChannel((emit) => {
         socket.removeListener('message.sending', handler);
         socket.removeListener('message.sent', handler);
         socket.removeListener('event', eventHandler);
+        socket.removeListener('event.manager.arrays', eventManagerArraysHandler);
         socket.removeListener('chat.disconnect.success', chatDisconnectHandlerSuccess);
         // socket.off('message.seen', handler);
     };
@@ -639,6 +648,12 @@ const listenServerSaga = function* (id) {
                     console.error(payload.data.error);
                 } else {
                     yield put({type: TYPES.APP_CONVERSATION_GET_COMPLETE, payload: payload.data, id});
+                }
+            } else if (payload.req === 'event.manager.arrays') {
+                if (payload.data.error) {
+                    console.error(payload.data.error);
+                } else {
+                    console.log(payload.data);
                 }
             }
         }

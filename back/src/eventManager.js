@@ -1,5 +1,7 @@
 const Firebase = require('./firebase');
+const aesWrapper = require('./aes-wrapper');
 const {Event, EventList, ConversationList, Participant, Conversation, Message} = Firebase();
+const R = require('rambda');
 
 const dataFromEvent = {
     'message.new': {
@@ -34,11 +36,12 @@ const OuterEvent = (data) => {
 
 class LocalEventManager {
     constructor(props) {
-        const {socket, userId, lastEvents} = props;
+        const {socket, userId, lastEvents, tokenObject} = props;
 
         this.socket = socket;
         this.userId = userId;
-        this.lastEvents = lastEvents;
+        this.lastEvents = R.clone(lastEvents);
+        this.tokenObject = tokenObject;
         this.conversationListner = undefined;
         this.conversationListners = {};
 
@@ -51,20 +54,41 @@ class LocalEventManager {
             this.conversationListner();
         }
 
-        const user = await Participant.getUnsafe({id: this.userId});
-        if (user.hasOwnProperty('conversations')) {
-            const ref = await ConversationList.doc(user.conversations);
-            ref.onSnapshot(docSnapshot => {
+        const conversations = await Participant.safeGet({id: this.userId, get: 'conversations'});
 
-            });
+        if (conversations) {
+            /**Pass last events*/
+            const EventArrays = {};
+            await Promise.all(Object.keys(this.lastEvents).map(async key => {
+                const event = this.lastEvents[key];
+
+                EventArrays[key] = await EventList.getEventArray({eventId: event, conversationId: key, userId: this.userId});
+
+                EventArrays[key] = await Promise.all(EventArrays[key].map(async item => await Event.get({id: item})));
+            }));
+
+
+
+            const aesKey = Buffer.from(this.tokenObject.aesKey, 'base64');
+
+            this.socket.emit('event.manager.arrays', {
+                msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(EventArrays))
+            })
+
+            // await Promise.all(Object.keys(conversations).map(async c=>{
+            //     const _c = conversations[c];
+            //     const ref = await EventList.eventsRef({userId: this.userId, conversationId: _c.id});
+            //
+            //     ref.onSnapshot(docSnapshot => {
+            //
+            //     });
+            // }));
         }
     }
 
     async setListeners() {
-        const user = await Participant.getUnsafe({id: this.userId});
-        if (user.hasOwnProperty(conversations)) {
-            const cL = await ConversationList.get(user.conversations);
-
+        const conversations = await Participant.safeGet({id: this.userId, get: 'conversations'});
+        if (conversations.length) {
             user.conversations.map(cId => {
 
             })
@@ -158,7 +182,7 @@ function GlobalEventManager(){
             const result = {};
 
             Object.keys(resObj).map(key=>{
-                result[key] = JSON.parse(JSON.stringify(_event.data[key]));
+                result[key] = R.clone(_event.data[key]);
             });
 
             return result;

@@ -18,6 +18,8 @@ module.exports = function ({server, Tokens}) {
 
         socket.on('disconnect', function () {
 
+            delete LocalEventManagers[socket.id];
+
             console.log('user disconnected !!!!');
         });
 
@@ -211,7 +213,7 @@ module.exports = function ({server, Tokens}) {
                     const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
                     const {lastEvents} = _data;
 
-                    LocalEventManagers[userId] = new LocalEventManager({socket, userId, lastEvents});
+                    LocalEventManagers[socket.id] = new LocalEventManager({socket, userId, lastEvents, tokenObject});
                 }
             });
         });
