@@ -1,4 +1,17 @@
-import {take, call, put, select, fork, race, cancelled, takeEvery, delay, all, actionChannel, cancel} from 'redux-saga/effects';
+import {
+    take,
+    call,
+    put,
+    select,
+    fork,
+    race,
+    cancelled,
+    takeEvery,
+    delay,
+    all,
+    actionChannel,
+    cancel
+} from 'redux-saga/effects';
 import * as R from "ramda";
 import axios from 'axios';
 import moment from 'moment';
@@ -9,12 +22,90 @@ import {componentName} from '../';
 import rsaWrapper from '../../../../common/rsa-wrapper';
 import aesWrapper from '../../../../common/aes-wrapper';
 import converterWrapper from '../../../../common/converter-wrapper';
+import DB from '../../../../common/db';
 import io from 'socket.io-client';
 import {eventChannel} from 'redux-saga';
 
 const _store = Store();
 const time = () => moment().unix() * 1000;
 const idMake = (index) => name + index;
+const _DB = DB();
+_DB.start();
+
+_DB.db().then(async entities => {
+    const test = {
+        User: true,
+        Conversation: true,
+        MessageList: true,
+        MessageArray: true,
+        Message: true,
+    };
+    if(test.User && entities.User) {
+        const user = await entities.User.create({id: 'test', conversations: ['c1', 'c2']});
+        console.log('User create ', user);
+
+        const readUser = await entities.User.read({id: 'test'});
+        console.log('User read ', readUser);
+
+        const updatedUser = await entities.User.update({id: 'test', test: ['c1', 'c2'], conversations: ['c3']});
+        console.log('User update ', updatedUser);
+
+        const deletionResult = await entities.User.delete({id: 'test'});
+        console.log('User delete ', deletionResult);
+    }
+    if(test.Conversation && entities.Conversation) {
+        const conversation = await entities.Conversation.create({id: 'test', set: 'multi'});
+        console.log('Conversation create ', conversation);
+
+        const readConversation = await entities.Conversation.read({id: 'test'});
+        console.log('Conversation read ', readConversation);
+
+        const updatedConversation = await entities.Conversation.update({id: 'test', test: ['c1', 'c2']});
+        console.log('Conversation update ', updatedConversation);
+
+        const deletionResult = await entities.Conversation.delete({id: 'test'});
+        console.log('Conversation delete ', deletionResult);
+    }
+    if(test.MessageList && entities.MessageList) {
+        const msgL = await entities.MessageList.create();
+        console.log('MessageList create ', msgL);
+
+        const readMsgL = await entities.MessageList.read(msgL);
+        console.log('MessageList read ', readMsgL);
+
+        const updatedMessageList = await entities.MessageList.addMessage({id: msgL.id, messageId: 'msgID'});
+        console.log('MessageList addMessage ', updatedMessageList);
+
+        const deletionResult = await entities.MessageList.delete(msgL);
+        console.log('MessageList delete ', deletionResult);
+    }
+    if(test.MessageArray && entities.MessageArray) {
+        const msgA = await entities.MessageArray.create({id: 'test_arr_0', messages: ['testMsg']});
+        console.log('MessageArray create ', msgA);
+
+        const readMsgA = await entities.MessageArray.read(msgA);
+        console.log('MessageArray read ', readMsgA);
+
+        const updatedMessageArray = await entities.MessageArray.update({id: 'test_arr_0', messages: ['testMsg1']});
+        console.log('MessageArray update ', updatedMessageArray);
+
+        const deletionResult = await entities.MessageArray.delete({id: 'test_arr_0'});
+        console.log('MessageArray delete ', deletionResult);
+    }
+    if(test.Message && entities.Message) {
+        const message = await entities.Message.create({id: 'testMsg', data: 'testMsg', date: 100000, from: 'rerer', status: 'sent'});
+        console.log('Message create ', message);
+
+        const readMessage = await entities.Message.read({id: 'testMsg'});
+        console.log('Message read ', readMessage);
+
+        const updatedMessage = await entities.Message.update({id: 'testMsg', status: 'seen'});
+        console.log('Message update ', updatedMessage);
+
+        const deletionResult = await entities.Message.delete({id: 'testMsg'});
+        console.log('Message delete ', deletionResult);
+    }
+});
 
 function* createItemHandle({type, id, coreId, payload}) {
     yield put({type: TYPES.LENGTH_PLUS, payload: 1});
@@ -25,7 +116,7 @@ function* createItemHandle({type, id, coreId, payload}) {
     const _id = id ? id : idMake(index);
 
     if (coreId !== undefined)
-        yield put({type: CTYPES.CREATE, payload:_id, id: coreId});
+        yield put({type: CTYPES.CREATE, payload: _id, id: coreId});
 
     yield put({type: TYPES.ITEM_CREATE_COMPLETE, payload: R.clone(INIT_STATE_ITEM), id: _id});
     callback();
@@ -52,7 +143,7 @@ function* flagHandleComplete({type, payload, id}) {
 
 function Store() {
     const map = JSON.parse(localStorage.getItem('map'));
-    if(!map){
+    if (!map) {
         localStorage.setItem('map', JSON.stringify({}));
     }
 
@@ -74,7 +165,7 @@ function Store() {
             });
             localStorage.setItem(authToken, JSON.stringify(obj));
             return obj;
-        } else if(componentId){
+        } else if (componentId) {
             localStorage.setItem(authToken, JSON.stringify(props));
             const map = JSON.parse(localStorage.getItem('map'));
             map[componentId] = authToken;
@@ -121,12 +212,7 @@ function Store() {
         return map[componentId];
     };
 
-    return {
-        set,
-        get,
-        del,
-        getTokenById
-    }
+    return {set, get, del, getTokenById}
 }
 
 function ResponseFormat(data) {
@@ -257,15 +343,15 @@ const createSocketChannel = (socket, authToken, id) => eventChannel((emit) => {
     socket.on('chat.connect.firstHandshake.success', channelFirstHandShakeHandlerSuccess);
     socket.on('chat.connect.firstHandshake.error', channelFirstHandShakeHandlerError);
     socket.on('chat.connect.secondHandshake.success', channelSecondHandshakeHandlerSuccess);
-    socket.on('chat.user.info', (data)=>userInfoHandler(data, authToken));
-    socket.on('chat.user.contacts', (data)=>userContactsHandler(data, authToken));
-    socket.on('chat.user.conversations', (data)=>userConversationsHandler(data, authToken));
-    socket.on('chat.conversation.get', (data)=>conversationGetHandler(data, authToken));
+    socket.on('chat.user.info', (data) => userInfoHandler(data, authToken));
+    socket.on('chat.user.contacts', (data) => userContactsHandler(data, authToken));
+    socket.on('chat.user.conversations', (data) => userConversationsHandler(data, authToken));
+    socket.on('chat.conversation.get', (data) => conversationGetHandler(data, authToken));
     socket.on('message.incoming', handler);
     socket.on('message.outgoing', handler);
     socket.on('message.sent', handler);
-    socket.on('event', (data)=>eventHandler(data, authToken));
-    socket.on('event.manager.arrays', (data)=>eventManagerArraysHandler(data, authToken));
+    socket.on('event', (data) => eventHandler(data, authToken));
+    socket.on('event.manager.arrays', (data) => eventManagerArraysHandler(data, authToken));
     socket.on('chat.disconnect.success', chatDisconnectHandlerSuccess);
     // socket.on('message.seen', handler);
     return () => {
@@ -471,7 +557,7 @@ const onConversationSaga = function* (socket, authToken, _id) {
 };
 
 /**EVENT MANAGER*/
-const eventManager = function* (action){
+const eventManager = function* (action) {
     console.log('EVENT MANAGER');
     const {id, payload} = action;
     const {pcb} = payload;
@@ -481,16 +567,16 @@ const eventManager = function* (action){
     while (true) {
         const MSG_MAKING_COMPLETE = yield take(ConversationTypes.MSG_MAKING_COMPLETE);
         const conversationId = MSG_MAKING_COMPLETE.id;
-        if(Conversation.id === conversationId){
+        if (Conversation.id === conversationId) {
             const state = yield select();
             const {date, data} = MSG_MAKING_COMPLETE.payload;
             const participants = state.Components[componentName][id].conversation.data.participants;
-            let from =  state.Components[componentName][id].user.login;
+            let from = state.Components[componentName][id].user.login;
             let to = undefined;
-            if(state.Components[componentName][id].conversation.data.set !== 'multi'){
-                if(participants[0] === state.Components[componentName][id].user.login){
+            if (state.Components[componentName][id].conversation.data.set !== 'multi') {
+                if (participants[0] === state.Components[componentName][id].user.login) {
                     to = participants[1];
-                }else {
+                } else {
                     to = participants[0];
                 }
             }
@@ -825,9 +911,13 @@ const userAuthorizationProcess = function* (action) {
         }
     } else {
         const localAuthToken = _store.getTokenById(action.id);
-        if(localAuthToken){
+        if (localAuthToken) {
             const localUserId = _store.get(localAuthToken, ['userId'])[0];
-            yield put({type: TYPES.APP_AUTHORIZATION_BEGIN, id: action.id, payload: {authToken:localAuthToken, userId: localUserId}});
+            yield put({
+                type: TYPES.APP_AUTHORIZATION_BEGIN,
+                id: action.id,
+                payload: {authToken: localAuthToken, userId: localUserId}
+            });
         } else {
             yield put({type: TYPES.APP_LOGIN_BEGIN, id: action.id, payload: {userId}});
         }

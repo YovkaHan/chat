@@ -378,10 +378,14 @@ module.exports = function () {
                             if (doc.exists) {
                                 const conv = doc.data();
 
-                                entities.MessageList.get({id: conv.messageListId}).then(mL => {
-                                    conv.messageList = mL;
-                                    resolve(conv);
-                                });
+                                delete conv.messageListId;
+
+                                resolve(conv);
+
+                                // entities.MessageList.get({id: conv.messageListId}).then(mL => {
+                                //     conv.messageList = mL;
+                                //     resolve(conv);
+                                // });
 
                             } else {
                                 resolve({

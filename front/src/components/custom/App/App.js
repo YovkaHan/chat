@@ -22,10 +22,10 @@ export default class App extends React.Component {
                         {/*from={'C'}*/}
                         {/*to={'D'}*/}
                     {/*/>*/}
-                    <ConversationApp.Component
-                        className={`clientA`}
-                        core={{pcb: this.pcb, id: 'convApp1', component: 'ConversationApp'}}
-                    />
+                    {/*<ConversationApp.Component*/}
+                        {/*className={`clientA`}*/}
+                        {/*core={{pcb: this.pcb, id: 'convApp1', component: 'ConversationApp'}}*/}
+                    {/*/>*/}
                     <ConversationApp.Component
                         className={`clientB`}
                         core={{pcb: this.pcb, id: 'convApp0', component: 'ConversationApp'}}
