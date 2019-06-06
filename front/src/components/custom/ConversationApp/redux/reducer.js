@@ -42,7 +42,8 @@ export const INIT_STATE_ITEM = {
     },
     conversation: {
         chosen: false,
-        data: {}
+        data: {},
+        messages: []
     },
     participantId: undefined
 };
@@ -179,6 +180,11 @@ const cases = (type) => {
         case TYPES.APP_USER_CONVERSATIONS_COMPLETE: {
             return (draft, payload, id) => {
                 draft[id].conversations = {...draft[id].conversations, data: payload};
+            };
+        }
+        case TYPES.APP_CONVERSATION_MESSAGES_SET: {
+            return (draft, payload, id) => {
+                draft[id].conversation.messages = payload;
             };
         }
         case TYPES.APP_CONVERSATION_GET_COMPLETE: {

@@ -68,10 +68,10 @@ export const pcbTemplate = {
             component: 'MessageList',
             relations: {
                 List: {
-                    id: 'conversationV0',
-                    component: 'ConversationView',
+                    id: 'convApp0',
+                    component: 'ConversationApp',
                     props: {
-                        list: ['data', 'messageList']
+                        list: ['conversation', 'messages']
                     }
                 },
             },
@@ -80,10 +80,10 @@ export const pcbTemplate = {
             component: 'MessageList',
             relations: {
                 List: {
-                    id: 'conversationV1',
-                    component: 'ConversationView',
+                    id: 'convApp1',
+                    component: 'ConversationApp',
                     props: {
-                        list: ['data', 'messageList']
+                        list: ['conversation', 'messages']
                     }
                 },
             },
@@ -110,7 +110,7 @@ export const pcbTemplate = {
             relations: {
                 Parent: {
                     id: 'conversationV1',
-                    component: 'ConversationApp',
+                    component: 'ConversationView',
                 }
             }
         },

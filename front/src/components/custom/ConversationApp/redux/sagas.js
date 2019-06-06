@@ -41,7 +41,7 @@ _DB.db().then(async entities => {
         MessageArray: false,
         Message: false,
     };
-    if(test.User && entities.User) {
+    if (test.User && entities.User) {
         const user = await entities.User.create({id: 'test', conversations: ['c1', 'c2']});
         console.log('User create ', user);
 
@@ -54,7 +54,7 @@ _DB.db().then(async entities => {
         const deletionResult = await entities.User.delete({id: 'test'});
         console.log('User delete ', deletionResult);
     }
-    if(test.Conversation && entities.Conversation) {
+    if (test.Conversation && entities.Conversation) {
         const conversation = await entities.Conversation.create({id: 'test', set: 'multi'});
         console.log('Conversation create ', conversation);
 
@@ -67,7 +67,7 @@ _DB.db().then(async entities => {
         const deletionResult = await entities.Conversation.delete({id: 'test'});
         console.log('Conversation delete ', deletionResult);
     }
-    if(test.MessageList && entities.MessageList) {
+    if (test.MessageList && entities.MessageList) {
         const msgL = await entities.MessageList.create();
         console.log('MessageList create ', msgL);
 
@@ -80,7 +80,7 @@ _DB.db().then(async entities => {
         const deletionResult = await entities.MessageList.delete(msgL);
         console.log('MessageList delete ', deletionResult);
     }
-    if(test.MessageArray && entities.MessageArray) {
+    if (test.MessageArray && entities.MessageArray) {
         const msgA = await entities.MessageArray.create({id: 'test_arr_0', messages: ['testMsg']});
         console.log('MessageArray create ', msgA);
 
@@ -93,8 +93,14 @@ _DB.db().then(async entities => {
         const deletionResult = await entities.MessageArray.delete({id: 'test_arr_0'});
         console.log('MessageArray delete ', deletionResult);
     }
-    if(test.Message && entities.Message) {
-        const message = await entities.Message.create({id: 'testMsg', data: 'testMsg', date: 100000, from: 'rerer', status: 'sent'});
+    if (test.Message && entities.Message) {
+        const message = await entities.Message.create({
+            id: 'testMsg',
+            data: 'testMsg',
+            date: 100000,
+            from: 'rerer',
+            status: 'sent'
+        });
         console.log('Message create ', message);
 
         const readMessage = await entities.Message.read({id: 'testMsg'});
@@ -121,14 +127,28 @@ _DB.db().then(async entities => {
                         name: 'First Conversation',
                         set: 'multi',
                         participants: ['Jordan3D', 'S@eshok'],
-                        lastEvent: '1559146929299_aend6EjMdD24hW0IemGp'
+                        lastEvent: '1559146929299_aend6EjMdD24hW0IemGp',
+                        messages: [{
+                            data: 'Hi',
+                            date: 1559146927,
+                            from: '1556984823_a8wjv9okahh',
+                            id: 'AL6NPLK0vLiWszF5ttaS',
+                            type: 'sent'
+                        }]
                     },
                     'conv1557912754_3vojvp112qi': {
                         id: 'conv1557912754_3vojvp112qi',
                         name: 'Second Conversation',
                         set: 'duo',
                         participants: ['Jordan3D', 'S@eshok'],
-                        lastEvent: '1559147013785_D7l2NucnGt6bu7hlPbPf'
+                        lastEvent: '1559147013785_D7l2NucnGt6bu7hlPbPf',
+                        messages: [{
+                            data: 'Hello',
+                            date: 1559147012,
+                            from: '1555156736_8hcjufg64ce',
+                            id: 'ImDnXh85Z6kwO0ItAdPg',
+                            to: '1556984823_a8wjv9okahh'
+                        }]
                     }
                 }
             },
@@ -139,27 +159,34 @@ _DB.db().then(async entities => {
                         name: 'First Conversation',
                         set: 'multi',
                         participants: ['Jordan3D', 'S@eshok'],
-                        lastEvent: '1559146929781_juxUQKw0RsJ7asiBViTB'
+                        lastEvent: '1559146929781_juxUQKw0RsJ7asiBViTB',
+                        messages: []
                     },
                     'conv1557912754_3vojvp112qi': {
                         id: 'conv1557912754_3vojvp112qi',
                         name: 'Second Conversation',
                         set: 'duo',
                         participants: ['Jordan3D', 'S@eshok'],
-                        lastEvent: '1559147013367_gDqZu4ZHaTlCBEJaAtMr'
+                        lastEvent: '1559147013367_gDqZu4ZHaTlCBEJaAtMr',
+                        messages: []
                     }
                 }
             }
         }
     };
-    const {User, Conversation} = entities;
+    const {User, Conversation, MessageList, Message} = entities;
 
     await Promise.all(Object.keys(data.user).map(async key => {
         const _u = data.user[key];
-        const conversationList = await Promise.all(Object.keys(_u.conversations).map(async c=>{
+        const conversationList = await Promise.all(Object.keys(_u.conversations).map(async c => {
             const conv = _u.conversations[c];
             conv.id += key;
-            await Conversation.create(conv);
+            const conversation = await Conversation.create(conv);
+            await Promise.all(Object.keys(conv.messages).map(async m => {
+                const message = conv.messages[m];
+                await Message.create(message);
+                await MessageList.addMessage({id: conversation.messageList, messageId: message.id})
+            }));
             return conv.id;
         }));
         return await User.create({id: key, conversations: conversationList});
@@ -665,6 +692,7 @@ const onEventManagerSaga = function* (socket, authToken, _id) {
 
     yield fork(eventSend);
     yield fork(eventManagerSync);
+    yield fork(eventArraysInterpreter);
 
     function* eventManagerSync() {
         while (true) {
@@ -708,6 +736,45 @@ const onEventManagerSaga = function* (socket, authToken, _id) {
             }
         }
     }
+
+    function* eventArraysInterpreter() {
+        while (true) {
+            const {id, payload} = yield take(TYPES.APP_EVENT_ARRAYS);
+
+            if (id === _id) {
+                const userId = _store.get(authToken, ['userId'])[0];
+
+                console.log(payload);
+
+                yield call(addMessagesToConversation, payload, userId);
+            }
+        }
+
+        function addMessagesToConversation(conversations, userId) {
+            return _DB.db().then(async entities => {
+                const {Message, Conversation} = entities;
+
+                await Promise.all(Object.keys(conversations).map(async id => {
+                    const events = conversations[id];
+
+                    const messages = await Promise.all(Object.keys(events).map(async i => {
+                        const message = events[i].data.message;
+
+                        const m = await Message.create(message);
+                        if (!m.hasOwnProperty('error')) {
+                            return m;
+                        }
+                    }));
+
+                    await messages.filter(m=>m).reduce((accumulatorPromise, nextM) => {
+                        return accumulatorPromise.then(() => Conversation.addMessage({id: id + userId, messageId: nextM.id}))
+                    }, Promise.resolve());
+
+                    /** await Conversation.addMessage({id: id + userId, messageId: message.id});*/
+                }));
+            });
+        }
+    };
 };
 
 // Saga to switch on channel.
@@ -783,13 +850,13 @@ const listenServerSaga = function* (id) {
                 if (payload.data.error) {
                     console.error(payload.data.error);
                 } else {
-                    yield put({type: TYPES.APP_CONVERSATION_GET_COMPLETE, payload: payload.data, id});
+                    yield put({type: TYPES.APP_CONVERSATION_GET_COMPLETE, payload: payload.data, id, authToken});
                 }
             } else if (payload.req === 'event.manager.arrays') {
                 if (payload.data.error) {
                     console.error(payload.data.error);
                 } else {
-                    console.log(payload.data);
+                    yield put({type: TYPES.APP_EVENT_ARRAYS, payload: payload.data, id});
                 }
             }
         }
@@ -887,7 +954,7 @@ const lastEvents = (userId) => {
         const user = await User.read({id: userId});
         const result = {};
 
-        await Promise.all(user.conversations.map(async cId=>{
+        await Promise.all(user.conversations.map(async cId => {
             const conversation = await Conversation.read({id: cId});
             const trueConversationId = cId.slice(0, cId.indexOf(userId));
 
@@ -1063,6 +1130,22 @@ const afterStageReady = function* (action) {
     yield put({type: TYPES.APP_USER_INFO, id: action.id, payload})
 };
 
+const conversationFormation = function* (action) {
+    const {authToken, payload} = action;
+    const userId = _store.get(authToken, ['userId'])[0];
+
+    const conversation = yield call(getMessagesByConversationId, payload.id, userId);
+
+    yield put({type: TYPES.APP_CONVERSATION_MESSAGES_SET, id: action.id, payload: conversation});
+};
+
+const getMessagesByConversationId = (cId, userId) => {
+    return _DB.db().then(async entities => {
+        const {Conversation} = entities;
+        return await Conversation.getMessages({id: cId + userId});
+    });
+};
+
 export default [
     takeEvery(TYPES.FLAGS, flagHandleComplete),
     takeEvery(TYPES.ITEM_CREATE, createItemHandle),
@@ -1075,7 +1158,8 @@ export default [
     takeEvery(TYPES.APP_AUTHORIZATION_END, userAuthorizationNext),
     takeEvery(TYPES.APP_STAGE_READY, afterStageReady),
     takeEvery(TYPES.APP_LOGOUT_END, afterLogout),
-    takeEvery(TYPES.APP_EVENT_MANAGER, eventManager)
+    takeEvery(TYPES.APP_EVENT_MANAGER, eventManager),
+    takeEvery(TYPES.APP_CONVERSATION_GET_COMPLETE, conversationFormation)
 ];
 
 /**

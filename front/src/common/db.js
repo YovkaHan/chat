@@ -477,13 +477,15 @@ export default function DB() {
 
                             resolve(resultOfAdding);
                         } else {
-                            await entities.MessageArray.add({id: `${id}_arr_${messageArrays.length}`});
+                            await entities.MessageArray.create({id: `${id}_arr_${messageArrays.length}`});
+                            await entities.MessageArray.update({id: `${id}_arr_${messageArrays.length}`, messages:[messageId]});
 
                             messageArrays.push(`${id}_arr_${messageArrays.length}`);
                             put(resolve, {id, messageArrays});
                         }
                     } else {
                         await entities.MessageArray.create({id: `${id}_arr_0`});
+                        await entities.MessageArray.update({id: `${id}_arr_0`, messages:[messageId]});
 
                         messageArrays.push(`${id}_arr_${messageArrays.length}`);
                         put(resolve, {id, messageArrays});
@@ -498,6 +500,56 @@ export default function DB() {
                         text: 'Missing required props',
                         store: 'MessageList',
                         method: 'addMessage',
+                        required: true
+                    }
+                })
+            }
+        });
+
+        function put(resolve, data) {
+            let request = db.transaction(["MessageLists"], "readwrite")
+                .objectStore("MessageLists")
+                .put(data);
+            request.onsuccess = function(event) {
+                resolve(data)
+            };
+            request.onerror = function(event) {
+                resolve({
+                    error: {
+                        text: 'Updating messageList error :' + event.target.error
+                    }
+                })
+            };
+        }
+    };
+    entities.MessageList.getMessages = function (data) {
+        const {id} = data;
+        return new Promise(async resolve => {
+            if(id !== undefined){
+
+                let readRes = await entities.MessageList.read({id});
+
+                if(!readRes.hasOwnProperty('error')){
+                    const {messageArrays} = readRes;
+
+                    if(messageArrays.length > 0){
+                        const lastArrayId = messageArrays[messageArrays.length - 1];
+                        const lastArray = await entities.MessageArray.read({id: lastArrayId});
+
+                        resolve(lastArray.messages);
+                    } else {
+                        resolve([]);
+                    }
+
+                } else {
+                    resolve(readRes);
+                }
+            } else {
+                resolve({
+                    error: {
+                        text: 'Missing required props',
+                        store: 'MessageList',
+                        method: 'getMessages',
                         required: true
                     }
                 })
@@ -602,10 +654,11 @@ export default function DB() {
                     };
 
                     let objectStore = transaction.objectStore("Conversations");
-                    let request = objectStore.add({...data, messageList: mL.id});
+                    const dataToAdd = Object.assign({},data,{messageList: mL.id});
+                    let request = objectStore.add(dataToAdd);
 
                     request.onsuccess = function (event) {
-                        resolve(event.target.result === id ? R.clone(data) : event.target.result);
+                        resolve(event.target.result === id ? R.clone(dataToAdd) : event.target.result);
                     };
                 }else {
                     resolve({
@@ -726,6 +779,50 @@ export default function DB() {
                         text: 'Missing required props',
                         store: 'Conversation',
                         method: 'delete',
+                        required: true
+                    }
+                })
+            }
+        });
+    };
+    entities.Conversation.getMessages = function (data) {
+        const {id} = data;
+        return new Promise(async resolve => {
+            if(id !== undefined){
+                const conversation = await entities.Conversation.read(data);
+                const messagesIds = await entities.MessageList.getMessages({id: conversation.messageList});
+
+                const messageList = await Promise.all(messagesIds.map(async messageId => {
+                    return await entities.Message.read({id: messageId});
+                }));
+
+                resolve(messageList);
+            } else {
+                resolve({
+                    error: {
+                        text: 'Missing required props',
+                        store: 'Conversation',
+                        method: 'getMessages',
+                        required: true
+                    }
+                })
+            }
+        });
+    };
+    entities.Conversation.addMessage = function (data) {
+        const {id, messageId} = data;
+        return new Promise(async resolve => {
+            if(id !== undefined && messageId !== undefined){
+                const conversation = await entities.Conversation.read(data);
+                const addResult = await entities.MessageList.addMessage({id: conversation.messageList, messageId});
+
+                resolve(addResult);
+            } else {
+                resolve({
+                    error: {
+                        text: 'Missing required props',
+                        store: 'Conversation',
+                        method: 'addMessages',
                         required: true
                     }
                 })

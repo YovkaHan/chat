@@ -129,7 +129,6 @@ const mapStateToProps = (state, props) => {
             parentExist: true,
             _data: {
                 _conId: parentObject.conversation.data ? parentObject.conversation.data.id : undefined,
-                _messageList: parentObject.conversation.data ? parentObject.conversation.data.messageList : [],
                 _conParticipants: parentObject.conversation.data ? parentObject.conversation.data.participants : [],
                 _conName: parentObject.conversation.data ? parentObject.conversation.data.name : undefined,
                 _conSet: parentObject.conversation.data ? parentObject.conversation.data.set : undefined,
