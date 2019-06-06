@@ -60,7 +60,7 @@ export default function DB() {
                     };
 
                     transaction.onerror = function (event) {
-                        console.error("Transaction error: " + event.target.errorCode);
+                        console.error("Transaction error: " + event.target.error);
                     };
 
                     let objectStore = transaction.objectStore("Messages");
@@ -110,7 +110,7 @@ export default function DB() {
                         });
                 };
                 getResult.onerror = function (event) {
-                    const text = "Message error: " + event.target.errorCode;
+                    const text = "Message error: " + event.target.error;
                     resolve({
                         error: {
                             text: text
@@ -147,7 +147,7 @@ export default function DB() {
                 request.onerror = function(event) {
                     resolve({
                         error: {
-                            text: 'Updating message error :' + event.target.errorCode
+                            text: 'Updating message error :' + event.target.error
                         }
                     })
                 };
@@ -174,7 +174,7 @@ export default function DB() {
                 request.onerror = function(event) {
                     resolve({
                         error: {
-                            text: 'Deleting message error :' + event.target.errorCode
+                            text: 'Deleting message error :' + event.target.error
                         }
                     })
                 };
@@ -215,7 +215,7 @@ export default function DB() {
                     };
 
                     transaction.onerror = function (event) {
-                        console.error("Transaction error: " + event.target.errorCode);
+                        console.error("Transaction error: " + event.target.error);
                     };
 
                     let objectStore = transaction.objectStore("MessageArrays");
@@ -266,7 +266,7 @@ export default function DB() {
                         });
                 };
                 getResult.onerror = function (event) {
-                    const text = "MessageArray error: " + event.target.errorCode;
+                    const text = "MessageArray error: " + event.target.error;
                     resolve({
                         error: {
                             text: text
@@ -303,7 +303,7 @@ export default function DB() {
                 request.onerror = function(event) {
                     resolve({
                         error: {
-                            text: 'Updating messageArray error :' + event.target.errorCode
+                            text: 'Updating messageArray error :' + event.target.error
                         }
                     })
                 };
@@ -332,7 +332,7 @@ export default function DB() {
                 request.onerror = function(event) {
                     resolve({
                         error: {
-                            text: 'Deleting messageArray error :' + event.target.errorCode
+                            text: 'Deleting messageArray error :' + event.target.error
                         }
                     })
                 };
@@ -375,7 +375,7 @@ export default function DB() {
                     };
 
                     transaction.onerror = function (event) {
-                        console.error("Transaction error: " + event.target.errorCode);
+                        console.error("Transaction error: " + event.target.error);
                     };
 
                     let objectStore = transaction.objectStore("MessageLists");
@@ -438,7 +438,7 @@ export default function DB() {
                         });
                 };
                 getResult.onerror = function (event) {
-                    const text = "MessageList error: " + event.target.errorCode;
+                    const text = "MessageList error: " + event.target.error;
                     resolve({
                         error: {
                             text: text
@@ -514,7 +514,7 @@ export default function DB() {
             request.onerror = function(event) {
                 resolve({
                     error: {
-                        text: 'Updating messageList error :' + event.target.errorCode
+                        text: 'Updating messageList error :' + event.target.error
                     }
                 })
             };
@@ -536,7 +536,7 @@ export default function DB() {
                 request.onerror = function(event) {
                     resolve({
                         error: {
-                            text: 'Deleting messageList error :' + event.target.errorCode
+                            text: 'Deleting messageList error :' + event.target.error
                         }
                     })
                 };
@@ -568,6 +568,9 @@ export default function DB() {
             unique: false,
             indexed: true
         },
+        name: {
+            type: 'string',
+        },
         participants: {
             type: 'array',
             unique: false,
@@ -595,7 +598,7 @@ export default function DB() {
                     };
 
                     transaction.onerror = function (event) {
-                        console.error("Transaction error: " + event.target.errorCode);
+                        console.error("Transaction error: " + event.target.error);
                     };
 
                     let objectStore = transaction.objectStore("Conversations");
@@ -645,7 +648,7 @@ export default function DB() {
                         });
                 };
                 getResult.onerror = function (event) {
-                    const text = "Conversation error: " + event.target.errorCode;
+                    const text = "Conversation error: " + event.target.error;
                     resolve({
                         error: {
                             text: text
@@ -681,7 +684,7 @@ export default function DB() {
                 request.onerror = function(event) {
                     resolve({
                         error: {
-                            text: 'Updating conversation error :' + event.target.errorCode
+                            text: 'Updating conversation error :' + event.target.error
                         }
                     })
                 };
@@ -713,7 +716,7 @@ export default function DB() {
                 request.onerror = function(event) {
                     resolve({
                         error: {
-                            text: 'Deleting conversation error :' + event.target.errorCode
+                            text: 'Deleting conversation error :' + event.target.error
                         }
                     })
                 };
@@ -758,7 +761,7 @@ export default function DB() {
                     };
 
                     transaction.onerror = function (event) {
-                        console.error("Transaction error: " + event.target.errorCode);
+                        console.error("Transaction error: " + event.target.error);
                     };
 
                     let objectStore = transaction.objectStore("Users");
@@ -808,7 +811,7 @@ export default function DB() {
                         });
                 };
                 getResult.onerror = function (event) {
-                    const text = "User error: " + event.target.errorCode;
+                    const text = "User error: " + event.target.error;
                     resolve({
                         error: {
                             text: text
@@ -844,7 +847,7 @@ export default function DB() {
                 request.onerror = function(event) {
                     resolve({
                         error: {
-                            text: 'Updating user error :' + event.target.errorCode
+                            text: 'Updating user error :' + event.target.error
                         }
                     })
                 };
@@ -873,7 +876,7 @@ export default function DB() {
                 request.onerror = function(event) {
                     resolve({
                         error: {
-                            text: 'Deleting user error :' + event.target.errorCode
+                            text: 'Deleting user error :' + event.target.error
                         }
                     })
                 };
@@ -927,7 +930,7 @@ export default function DB() {
 
                     db.onerror = function (event) {
                         // все ошибки выводим в alert
-                        const text = "Database error: " + event.target.errorCode;
+                        const text = "Database error: " + event.target.error;
                         console.error(text);
                         resolve({
                             error: {

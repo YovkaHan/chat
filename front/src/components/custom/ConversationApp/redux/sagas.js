@@ -32,13 +32,14 @@ const idMake = (index) => name + index;
 const _DB = DB();
 _DB.start();
 
+/**Tests*/
 _DB.db().then(async entities => {
     const test = {
-        User: true,
-        Conversation: true,
-        MessageList: true,
-        MessageArray: true,
-        Message: true,
+        User: false,
+        Conversation: false,
+        MessageList: false,
+        MessageArray: false,
+        Message: false,
     };
     if(test.User && entities.User) {
         const user = await entities.User.create({id: 'test', conversations: ['c1', 'c2']});
@@ -105,6 +106,64 @@ _DB.db().then(async entities => {
         const deletionResult = await entities.Message.delete({id: 'testMsg'});
         console.log('Message delete ', deletionResult);
     }
+});
+
+/**
+
+ * */
+_DB.db().then(async entities => {
+    const data = {
+        user: {
+            '1556984823_a8wjv9okahh': {
+                conversations: {
+                    'conv1557873362_4f8jvodkrkh': {
+                        id: 'conv1557873362_4f8jvodkrkh',
+                        name: 'First Conversation',
+                        set: 'multi',
+                        participants: ['Jordan3D', 'S@eshok'],
+                        lastEvent: '1559146929299_aend6EjMdD24hW0IemGp'
+                    },
+                    'conv1557912754_3vojvp112qi': {
+                        id: 'conv1557912754_3vojvp112qi',
+                        name: 'Second Conversation',
+                        set: 'duo',
+                        participants: ['Jordan3D', 'S@eshok'],
+                        lastEvent: '1559147013785_D7l2NucnGt6bu7hlPbPf'
+                    }
+                }
+            },
+            '1555156736_8hcjufg64ce': {
+                conversations: {
+                    'conv1557873362_4f8jvodkrkh': {
+                        id: 'conv1557873362_4f8jvodkrkh',
+                        name: 'First Conversation',
+                        set: 'multi',
+                        participants: ['Jordan3D', 'S@eshok'],
+                        lastEvent: '1559146929781_juxUQKw0RsJ7asiBViTB'
+                    },
+                    'conv1557912754_3vojvp112qi': {
+                        id: 'conv1557912754_3vojvp112qi',
+                        name: 'Second Conversation',
+                        set: 'duo',
+                        participants: ['Jordan3D', 'S@eshok'],
+                        lastEvent: '1559147013367_gDqZu4ZHaTlCBEJaAtMr'
+                    }
+                }
+            }
+        }
+    };
+    const {User, Conversation} = entities;
+
+    await Promise.all(Object.keys(data.user).map(async key => {
+        const _u = data.user[key];
+        const conversationList = await Promise.all(Object.keys(_u.conversations).map(async c=>{
+            const conv = _u.conversations[c];
+            conv.id += key;
+            await Conversation.create(conv);
+            return conv.id;
+        }));
+        return await User.create({id: key, conversations: conversationList});
+    }));
 });
 
 function* createItemHandle({type, id, coreId, payload}) {
@@ -615,18 +674,9 @@ const onEventManagerSaga = function* (socket, authToken, _id) {
                 const aesKey = _store.get(authToken, ['aesKey'])[0];
                 const userId = _store.get(authToken, ['userId'])[0];
 
-                const mocks = {
-                    '1556984823_a8wjv9okahh': {
-                        'conv1557912754_3vojvp112qi': '1559147013785_D7l2NucnGt6bu7hlPbPf',
-                        'conv1557873362_4f8jvodkrkh': '1559146929299_aend6EjMdD24hW0IemGp'
-                    },
-                    '1555156736_8hcjufg64ce': {
-                        'conv1557912754_3vojvp112qi': '1559147013367_gDqZu4ZHaTlCBEJaAtMr',
-                        'conv1557873362_4f8jvodkrkh': '1559146929781_juxUQKw0RsJ7asiBViTB'
-                    }
-                };
+                const lastEventsList = yield call(lastEvents, userId);
 
-                aesWrapper.encryptMessage(aesKey, JSON.stringify({lastEvents: mocks[userId]})).then(msg => {
+                aesWrapper.encryptMessage(aesKey, JSON.stringify({lastEvents: lastEventsList})).then(msg => {
                     socket.emit(
                         'event.manager.last',
                         {
@@ -830,6 +880,22 @@ const userLogout = (authToken) => {
         console.error(error);
         return error;
     })
+};
+const lastEvents = (userId) => {
+    return _DB.db().then(async entities => {
+        const {User, Conversation} = entities;
+        const user = await User.read({id: userId});
+        const result = {};
+
+        await Promise.all(user.conversations.map(async cId=>{
+            const conversation = await Conversation.read({id: cId});
+            const trueConversationId = cId.slice(0, cId.indexOf(userId));
+
+            result[trueConversationId] = conversation.lastEvent
+        }));
+
+        return result;
+    });
 };
 
 /**LOGIN*/
