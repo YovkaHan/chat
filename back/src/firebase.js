@@ -14,6 +14,7 @@ const db = firebase.firestore();
 
 module.exports = function () {
     const entities = {
+        db,
         Participant: {
             Schema: {
                 id: {
@@ -381,12 +382,6 @@ module.exports = function () {
                                 delete conv.messageListId;
 
                                 resolve(conv);
-
-                                // entities.MessageList.get({id: conv.messageListId}).then(mL => {
-                                //     conv.messageList = mL;
-                                //     resolve(conv);
-                                // });
-
                             } else {
                                 resolve({
                                     error: {
@@ -408,6 +403,34 @@ module.exports = function () {
                     }
                 });
             },
+            getUnsafe: (data) => {
+                return new Promise((resolve, reject) => {
+                    const {id} = data;
+                    if (id !== undefined) {
+                        db.collection('conversations').doc(id).get().then((doc) => {
+                            if (doc.exists) {
+                                resolve(doc.data());
+                            } else {
+                                resolve({
+                                    error: {
+                                        text: 'Conversation not exist',
+                                        exist: false
+                                    }
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.log("Error getting document:", error);
+                        });
+                    } else {
+                        resolve({
+                            error: {
+                                text: 'Missing required prop',
+                                required: true
+                            }
+                        });
+                    }
+                });
+            }
         },
         ConversationList: {
             Schema: {
@@ -474,7 +497,23 @@ module.exports = function () {
                         });
                     }
                 })
-            }
+            },
+            conversationsRef: (data, foo) => {
+                return new Promise((resolve, reject) => {
+                    const {id} = data;
+                    if (id) {
+                        const ref = db.collection('conversationLists').doc(id).onSnapshot(foo);
+                        resolve(ref);
+                    } else {
+                        resolve({
+                            error: {
+                                text: 'Missing required prop',
+                                required: true
+                            }
+                        });
+                    }
+                });
+            },
         },
         MessageList: {
             Schema: {
@@ -628,16 +667,15 @@ module.exports = function () {
                 return new Promise(resolve => {
                     const {id, msgId} = data;
 
-                    if ((id !== undefined && typeof id === 'string') && (msgId !== undefined && typeof msgId === 'string')) {
+                    if (id !== undefined && msgId !== undefined) {
                         db.collection('messages').doc(msgId).get().then(doc => {
                             if (doc.exists) {
-                                db.collection('messageLists').doc(id).get().then(mLDoc => {
+                                db.collection('messageLists').doc(id).get().then(async mLDoc => {
                                     if (mLDoc.exists) {
-                                        const mLData = mLDoc.data();
-                                        mLData.messages.push(msgId);
-                                        db.collection('messageLists').doc(id).set(mLData).then((result) => {
-                                            resolve(result);
-                                        })
+                                        await db.collection('messageLists').doc(id).update({
+                                            messages: firebase.firestore.FieldValue.arrayUnion(msgId)
+                                        });
+                                        resolve(msgId);
                                     } else {
                                         resolve({
                                             error: {
@@ -1049,6 +1087,9 @@ module.exports = function () {
                     type: 'string',
                     isRequired: 'true'
                 },
+                lastAdded: {
+                    type: 'array',
+                }
             },
             get: (data) => {
                 return new Promise((resolve, reject) => {
@@ -1106,20 +1147,24 @@ module.exports = function () {
                                     let buf = event.id.split('_')[0];
                                     return buf.slice(0, buf.length - 3)
                                 })();
-                                eventListRef.collection('events').doc(eId).get().then(e => {
+                                eventListRef.collection('events').doc(eId).get().then(async e => {
                                     if (e.exists) {
-                                        const events = e.data().data;
-                                        events.push(event.id);
-                                        eventListRef.collection('events').doc(eId).update({data: events}).then(res => {
-                                            resolve(event);
-                                        })
+                                        await eventListRef.collection('events').doc(eId).update({
+                                            data: firebase.firestore.FieldValue.arrayUnion(event.id)
+                                        });
+                                        await eventListRef.update({
+                                            lastAdded: firebase.firestore.FieldValue.arrayUnion(event.id)
+                                        });
+                                        resolve(event);
                                     } else {
-                                        eventListRef.collection('events').doc(eId).set({
+                                        await eventListRef.collection('events').doc(eId).set({
                                             data: [event.id],
                                             date: eId * 1
-                                        }).then(res => {
-                                            resolve(event);
-                                        })
+                                        });
+                                        await eventListRef.update({
+                                            lastAdded: firebase.firestore.FieldValue.arrayUnion(event.id)
+                                        });
+                                        resolve(event);
                                     }
                                 });
                             } else {
@@ -1143,11 +1188,12 @@ module.exports = function () {
                     }
                 });
             },
-            eventsRef: (data) => {
+            eventsRef: (data, foo) => {
                 return new Promise((resolve, reject) => {
                     const {conversationId, userId, id} = data;
                     if (id) {
-                        resolve(db.collection('eventLists').doc(id).collection('events'));
+                        const ref = db.collection('eventLists').doc(id).onSnapshot(foo);
+                        resolve(ref);
                     } else if (conversationId !== undefined && userId !== undefined) {
                         db.collection('eventLists').where('conversationId', '==', conversationId).where('userId', '==', userId).get().then(snapshot => {
                             if (snapshot.empty) {

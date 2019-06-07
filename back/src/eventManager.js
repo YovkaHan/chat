@@ -1,6 +1,6 @@
 const Firebase = require('./firebase');
 const aesWrapper = require('./aes-wrapper');
-const {Event, EventList, ConversationList, Participant, Conversation, Message} = Firebase();
+const {Event, EventList, ConversationList, Participant, Conversation, Message, db} = Firebase();
 const R = require('rambda');
 
 const dataFromEvent = {
@@ -35,7 +35,7 @@ const OuterEvent = (data) => {
 };
 
 class LocalEventManager {
-    constructor(props) {
+     constructor(props) {
         const {socket, userId, lastEvents, tokenObject} = props;
 
         this.socket = socket;
@@ -45,15 +45,11 @@ class LocalEventManager {
         this.conversationListner = undefined;
         this.conversationListners = {};
 
-        this.setConversationListener();
-        //this.setListeners();
+        this.passLastEvents();
+        this.setListeners();
     }
 
-    async setConversationListener() {
-        if (this.conversationListner) {
-            this.conversationListner();
-        }
-
+    async passLastEvents() {
         const conversations = await Participant.safeGet({id: this.userId, get: 'conversations'});
 
         if (conversations) {
@@ -66,8 +62,6 @@ class LocalEventManager {
 
                 EventArrays[key] = await Promise.all(EventArrays[key].map(async item => await Event.get({id: item})));
             }));
-
-
 
             const aesKey = Buffer.from(this.tokenObject.aesKey, 'base64');
 
@@ -87,14 +81,40 @@ class LocalEventManager {
     }
 
     async setListeners() {
-        const conversations = await Participant.safeGet({id: this.userId, get: 'conversations'});
-        if (conversations.length) {
-            user.conversations.map(cId => {
+        const user = await Participant.getUnsafe({id: this.userId});
+        // if (conversations.length) {
+        //     user.conversations.map(cId => {
+        //
+        //     })
+        // } else {
+        //     return undefined;
+        // }
 
-            })
-        } else {
-            return undefined;
-        }
+        // db.collection('conversationLists').doc(user.conversations).onSnapshot((doc)=>{
+        //     console.log("Current data: ", doc.data());
+        // });
+        ConversationList.conversationsRef({id: user.conversations}, (doc)=>{
+            const data =  doc.data();
+
+            data.conversations.map(async c => {
+                if(!this.conversationListners.hasOwnProperty(c)){
+
+                    db.collection('eventLists').doc(c).collection('events').onSnapshot((snapshot) => {
+                        snapshot.docChanges().forEach(function(change) {
+                            if (change.type === "added") {
+                                console.log("New : ", change.doc.data());
+                            }
+                            if (change.type === "modified") {
+                                console.log("Modified : ", change.doc.data());
+                            }
+                            if (change.type === "removed") {
+                                console.log("Removed : ", change.doc.data());
+                            }
+                        });
+                    });
+                }
+            });
+        });
     }
 
     destroy() {

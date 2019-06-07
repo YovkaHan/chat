@@ -114,9 +114,6 @@ _DB.db().then(async entities => {
     }
 });
 
-/**
-
- * */
 _DB.db().then(async entities => {
     const data = {
         user: {
@@ -675,9 +672,7 @@ const eventManager = function* (action) {
                         date
                     },
                     conversation: {
-                        id: state.Components[componentName][id].conversation.data.id,
-                        set: state.Components[componentName][id].conversation.data.set,
-                        messageListId: state.Components[componentName][id].conversation.data.messageListId
+                        id: state.Components[componentName][id].conversation.data.id
                     },
                 },
                 name: 'message.new'

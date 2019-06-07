@@ -163,7 +163,7 @@ module.exports = function ({server, Tokens}) {
             /**encryptedMsg === {login || id}*/
             const {token, msg} = data;
 
-            Tokens.getObject(token).then(tokenObject => {
+            Tokens.getObject(token).then(async tokenObject => {
                 if(tokenObject !== undefined){
                     const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
 
@@ -172,36 +172,39 @@ module.exports = function ({server, Tokens}) {
                     const eventData = _GlobalEventManager.eventToData(_data);
                     const {message, conversation} = eventData;
 
-                    let promises = conversation.set === 'multi' ? ['from'] : ['from', 'to'];
+                    const _conversation = await Conversation.getUnsafe(conversation);
 
-                    promises = promises.map(p => {
-                       return Participant.get({login: message[p]}).then(result => {
-                           return message[p] = result.id;
-                       });
+                    let promises = _conversation.set === 'multi' ? ['from'] : ['from', 'to'];
+
+                    promises = promises.map(async p => {
+                       const pRes = await Participant.get({login: message[p]});
+                       if(!pRes.hasOwnProperty('error')){
+                           message[p] = pRes.id;
+                       }
                     });
 
-                    Promise.all(promises).then(data=> {
-                        message.from = data[0];
-                        message.to = data[1]
-                    }).then(()=>{
+                    const msgId = await Promise.all(promises).then(()=>{
                         /**Create/Add Message*/
-                        return Message.add(message).then(msgResult=>{
-
-                            if(conversation.hasOwnProperty('id')){
-                                /**Add message to Message List*/
-                                MessageList.addMessage({id: conversation.messageListId, msgId: msgResult.id})
+                        return Message.add(message).then(async msgResult=>{
+                            if(!msgResult.hasOwnProperty('error')){
+                                if(conversation.hasOwnProperty('id')){
+                                    /**Add message to Message List*/
+                                    const result = await MessageList.addMessage({id: _conversation.messageListId, msgId: msgResult.id});
+                                }else {
+                                    console.error('No conversation ID in Event Data')
+                                }
+                                return msgResult.id;
                             }else {
-                                console.error('No conversation ID in Event Data')
+                                console.error(msgResult.error.text)
                             }
-                            return msgResult.id;
                         });
-                    }).then((msgId)=>{
-                        _GlobalEventManager.eventProcess(_data, {msgId});
                     });
+                    _GlobalEventManager.eventProcess(_data, {msgId});
                 }
             });
         });
 
+        /**Точка отсчета для LocalEventManager а*/
         socket.on('event.manager.last', function (data) {
             const {token, msg} = data;
 
