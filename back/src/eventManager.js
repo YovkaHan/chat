@@ -96,22 +96,34 @@ class LocalEventManager {
         ConversationList.conversationsRef({id: user.conversations}, (doc)=>{
             const data =  doc.data();
 
-            data.conversations.map(async c => {
+            this.conversationListners = data.conversations.map(async c => {
                 if(!this.conversationListners.hasOwnProperty(c)){
 
-                    db.collection('eventLists').doc(c).collection('events').onSnapshot((snapshot) => {
-                        snapshot.docChanges().forEach(function(change) {
-                            if (change.type === "added") {
-                                console.log("New : ", change.doc.data());
-                            }
-                            if (change.type === "modified") {
-                                console.log("Modified : ", change.doc.data());
-                            }
-                            if (change.type === "removed") {
-                                console.log("Removed : ", change.doc.data());
-                            }
-                        });
+                    const eL = await EventList.get({conversationId: c, userId: this.userId});
+
+                    return db.collection('eventLists').doc(eL.id).onSnapshot(async (doc)=>{
+                        const data = doc.data();
+
+                        if(data.lastAdded.length){
+                            const lastEventId = data.lastAdded[data.lastAdded.length-1];
+                            this.lastEvents[c] = lastEventId;
+                            const EventArrays = {
+                                [c]: [lastEventId]
+                            };
+
+                            EventArrays[c] = await Promise.all(EventArrays[c].map(async item => await Event.get({id: item})));
+
+                            const aesKey = Buffer.from(this.tokenObject.aesKey, 'base64');
+
+                            this.socket.emit('event.manager.arrays', {
+                                msg: aesWrapper.createAesMessage(aesKey, JSON.stringify(EventArrays))
+                            });
+                            await EventList.removeLastAdded({id: eL.id});
+                        }
+                        // console.log(`${data.id} lastAdded: ${data.lastAdded}`);
                     });
+                }else {
+                    return this.conversationListners[c];
                 }
             });
         });

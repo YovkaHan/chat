@@ -1188,6 +1188,41 @@ module.exports = function () {
                     }
                 });
             },
+            removeLastAdded: (data) => {
+                return new Promise((resolve, reject) => {
+                    const {id} = data;
+                    const eventListRef = db.collection('eventLists').doc(id);
+                    if (id !== undefined) {
+                        eventListRef.get().then(async(doc) => {
+                            if (doc.exists) {
+                                const data = doc.data();
+                                const {lastAdded} = data;
+                                const lastAddedEvent = lastAdded.pop();
+                                await eventListRef.update({
+                                    lastAdded: lastAdded
+                                });
+                                resolve(lastAddedEvent);
+                            } else {
+                                resolve({
+                                    error: {
+                                        text: 'Event List is not exist',
+                                        exist: false
+                                    }
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.log("Error getting document:", error);
+                        });
+                    } else {
+                        resolve({
+                            error: {
+                                text: 'Missing required prop',
+                                required: true
+                            }
+                        });
+                    }
+                });
+            },
             eventsRef: (data, foo) => {
                 return new Promise((resolve, reject) => {
                     const {conversationId, userId, id} = data;

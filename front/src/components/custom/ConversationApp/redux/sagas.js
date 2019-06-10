@@ -14,7 +14,6 @@ import {
 } from 'redux-saga/effects';
 import * as R from "ramda";
 import axios from 'axios';
-import moment from 'moment';
 import {TYPES, name} from "./types";
 import {TYPES as CTYPES} from '../../../../common/core';
 import {INIT_STATE_ITEM} from './reducer';
@@ -23,14 +22,30 @@ import rsaWrapper from '../../../../common/rsa-wrapper';
 import aesWrapper from '../../../../common/aes-wrapper';
 import converterWrapper from '../../../../common/converter-wrapper';
 import DB from '../../../../common/db';
+import Store from '../../../../common/store';
 import io from 'socket.io-client';
 import {eventChannel} from 'redux-saga';
 
 const _store = Store();
-const time = () => moment().unix() * 1000;
 const idMake = (index) => name + index;
 const _DB = DB();
 _DB.start();
+
+function ResponseFormat(data) {
+    const result = {};
+    Object.keys(data).map(key => {
+        if (key === 'id')
+            result.userId = data[key];
+        if (key === 'user')
+            result.user = data[key];
+        if (key === 'token')
+            result.authToken = data[key];
+        else {
+            result[key] = data[key]
+        }
+    });
+    return result;
+}
 
 /**Tests*/
 _DB.db().then(async entities => {
@@ -190,6 +205,7 @@ _DB.db().then(async entities => {
     }));
 });
 
+/**Default Sagas*/
 function* createItemHandle({type, id, coreId, payload}) {
     yield put({type: TYPES.LENGTH_PLUS, payload: 1});
 
@@ -224,98 +240,7 @@ function* flagHandleComplete({type, payload, id}) {
     yield put({type: TYPES.FLAGS_COMPLETE, payload: _object.flags, id});
 }
 
-function Store() {
-    const map = JSON.parse(localStorage.getItem('map'));
-    if (!map) {
-        localStorage.setItem('map', JSON.stringify({}));
-    }
-
-    /**(string, object)*/
-    const set = (authToken, props, componentId) => {
-        if (authToken === undefined) {
-            console.error('1й Аргумент должен быть строкой');
-            return {};
-        }
-        if (typeof props !== 'object') {
-            console.error('2й Аргумент должен быть объектом');
-            return {};
-        }
-        let obj = localStorage.getItem(authToken);
-        if (obj) {
-            obj = JSON.parse(obj);
-            Object.keys(props).map(k => {
-                obj[k] = props[k];
-            });
-            localStorage.setItem(authToken, JSON.stringify(obj));
-            return obj;
-        } else if (componentId) {
-            localStorage.setItem(authToken, JSON.stringify(props));
-            const map = JSON.parse(localStorage.getItem('map'));
-            map[componentId] = authToken;
-            localStorage.setItem('map', JSON.stringify(map));
-            return R.clone(props);
-        }
-    };
-
-    /**(string, array)*/
-    const get = (authToken, props) => {
-        if (authToken === undefined) {
-            console.error('1й Аргумент должен быть строкой');
-            return [];
-        }
-        let obj = localStorage.getItem(authToken);
-        if (obj) {
-            if (Array.isArray(props)) {
-                obj = JSON.parse(obj);
-                return props.map(p => obj[p]).filter(p => p)
-            } else {
-                console.error('2й Аргумент должен быть массивом');
-                return [];
-            }
-        }
-        return [];
-    };
-
-    /**(string)*/
-    const del = (authToken) => {
-        if (authToken === undefined) {
-            console.error('1й Аргумент должен быть строкой');
-            return false;
-        }
-        localStorage.removeItem(authToken);
-        const map = JSON.parse(localStorage.getItem('map'));
-        const propName = Object.keys(map).find(k => map[k] === authToken);
-        delete map[propName];
-        localStorage.setItem('map', JSON.stringify(map));
-        return true;
-    };
-
-    const getTokenById = (componentId) => {
-        const map = JSON.parse(localStorage.getItem('map'));
-        return map[componentId];
-    };
-
-    return {set, get, del, getTokenById}
-}
-
-function ResponseFormat(data) {
-    const result = {};
-    Object.keys(data).map(key => {
-        if (key === 'id')
-            result.userId = data[key];
-        if (key === 'user')
-            result.user = data[key];
-        if (key === 'token')
-            result.authToken = data[key];
-        else {
-            result[key] = data[key]
-        }
-    });
-    return result;
-}
-
 /**CHANNEL*/
-
 // wrapping functions for socket events (connect, disconnect, reconnect)
 const socketObject = () => {
     let socket = io(SERVER);
@@ -493,7 +418,7 @@ const onConnectToChatFinalSaga = function* (socket, authToken, _id) {
 
                 _store.set(authToken, {aesKey}, id);
 
-                aesWrapper.encryptMessage(aesKey, authToken).then(msg => {
+                aesWrapper.encryptMessage(aesKey, authToken, `chat.connect.secondHandshake`).then(msg => {
                     socket.emit(
                         `chat.connect.secondHandshake`,
                         {
@@ -526,6 +451,7 @@ const onConnectToChatSaga = function* (socket, authToken, _id) {
         }
     }
 };
+
 const tryDisconnectSaga = function* (socket, authToken, _id) {
     while (true) {
         const {id} = yield take(TYPES.APP_DISCONNECT_TRY);
@@ -548,7 +474,7 @@ const onUserInfo = function* (socket, authToken, _id) {
         if (id === _id) {
             const aesKey = _store.get(authToken, ['aesKey'])[0];
 
-            aesWrapper.encryptMessage(aesKey, JSON.stringify(payload)).then(msg => {
+            aesWrapper.encryptMessage(aesKey, JSON.stringify(payload), `chat.user.info`).then(msg => {
                 socket.emit(
                     `chat.user.info`,
                     {
@@ -570,7 +496,7 @@ const onUserContacts = function* (socket, authToken, _id) {
             const userId = _store.get(authToken, ['userId'])[0];
             const aesKey = _store.get(authToken, ['aesKey'])[0];
 
-            aesWrapper.encryptMessage(aesKey, JSON.stringify({userId})).then(msg => {
+            aesWrapper.encryptMessage(aesKey, JSON.stringify({userId}), `chat.user.contacts`).then(msg => {
                 socket.emit(
                     `chat.user.contacts`,
                     {
@@ -591,7 +517,7 @@ const onUserConversations = function* (socket, authToken, _id) {
             const aesKey = _store.get(authToken, ['aesKey'])[0];
             const userId = _store.get(authToken, ['userId'])[0];
 
-            aesWrapper.encryptMessage(aesKey, JSON.stringify({userId})).then(msg => {
+            aesWrapper.encryptMessage(aesKey, JSON.stringify({userId}), `chat.user.conversations`).then(msg => {
                 socket.emit(
                     `chat.user.conversations`,
                     {
@@ -611,7 +537,7 @@ const onConversationGet = function* (socket, authToken, _id) {
         if (id === _id) {
             const aesKey = _store.get(authToken, ['aesKey'])[0];
 
-            aesWrapper.encryptMessage(aesKey, JSON.stringify({id: payload.conversationId})).then(msg => {
+            aesWrapper.encryptMessage(aesKey, JSON.stringify({id: payload.conversationId}), `chat.conversation.get`).then(msg => {
                 socket.emit(
                     `chat.conversation.get`,
                     {
@@ -699,7 +625,7 @@ const onEventManagerSaga = function* (socket, authToken, _id) {
 
                 const lastEventsList = yield call(lastEvents, userId);
 
-                aesWrapper.encryptMessage(aesKey, JSON.stringify({lastEvents: lastEventsList})).then(msg => {
+                aesWrapper.encryptMessage(aesKey, JSON.stringify({lastEvents: lastEventsList}), 'event.manager.last').then(msg => {
                     socket.emit(
                         'event.manager.last',
                         {
@@ -719,7 +645,7 @@ const onEventManagerSaga = function* (socket, authToken, _id) {
             if (id === _id) {
                 const aesKey = _store.get(authToken, ['aesKey'])[0];
 
-                aesWrapper.encryptMessage(aesKey, JSON.stringify(payload)).then(msg => {
+                aesWrapper.encryptMessage(aesKey, JSON.stringify(payload), 'event').then(msg => {
                     socket.emit(
                         'event',
                         {
@@ -739,9 +665,19 @@ const onEventManagerSaga = function* (socket, authToken, _id) {
             if (id === _id) {
                 const userId = _store.get(authToken, ['userId'])[0];
 
-                console.log(payload);
+                //console.log(payload);
 
-                yield call(addMessagesToConversation, payload, userId);
+                const conversations = yield call(addMessagesToConversation, payload, userId);
+
+                //console.log(conversations);
+
+                for(let i = 0; i < conversations.length; i++){
+                    const conversation = conversations[i];
+
+                    if(conversation){
+                        yield put({type: TYPES.APP_MESSAGES_NEW, id, payload: conversation});
+                    }
+                }
             }
         }
 
@@ -749,27 +685,53 @@ const onEventManagerSaga = function* (socket, authToken, _id) {
             return _DB.db().then(async entities => {
                 const {Message, Conversation} = entities;
 
-                await Promise.all(Object.keys(conversations).map(async id => {
-                    const events = conversations[id];
+                return await Promise.all(Object.keys(conversations).map(async id => {
+                    const eventList = conversations[id];
 
-                    const messages = await Promise.all(Object.keys(events).map(async i => {
-                        const message = events[i].data.message;
+                    const messagesMap = await Promise.all(Object.keys(eventList).map(async i => {
+                        const message = eventList[i].data.message;
+                        message.id = message.id + userId;
 
                         const m = await Message.create(message);
+
                         if (!m.hasOwnProperty('error')) {
-                            return m;
+                            return {
+                                message: m,
+                                eventId: eventList[i].id
+                            };
                         }
                     }));
 
-                    await messages.filter(m=>m).reduce((accumulatorPromise, nextM) => {
-                        return accumulatorPromise.then(() => Conversation.addMessage({id: id + userId, messageId: nextM.id}))
-                    }, Promise.resolve());
+                    const newMessagesMap = messagesMap.filter(m=>m);
 
-                    /** await Conversation.addMessage({id: id + userId, messageId: message.id});*/
+                    if(newMessagesMap.length){
+                        await (()=>{
+                            return new Promise(resolve => {
+                                newMessagesMap.reduce((accumulatorPromise, nextM, index) => {
+                                    if(newMessagesMap.length-1 !== index){
+                                        return accumulatorPromise.then(async () => {
+                                             await Conversation.addMessage({id: id + userId, messageId: nextM.message.id});
+                                             return await Conversation.update({id: id + userId, lastEvent: nextM.eventId});
+                                        })
+                                    } else {
+                                        return accumulatorPromise.then(async () => {
+                                            await Conversation.addMessage({id: id + userId, messageId: nextM.message.id});
+                                            return await Conversation.update({id: id + userId, lastEvent: nextM.eventId});
+                                        }).then(()=>resolve())
+                                    }
+                                }, Promise.resolve());
+                            })
+                        })();
+
+                        return {
+                            conversationId: id,
+                            newMessages: newMessagesMap.map(m=>m.message)
+                        };
+                    }
                 }));
             });
         }
-    };
+    }
 };
 
 // Saga to switch on channel.
@@ -812,6 +774,8 @@ const listenServerSaga = function* (id) {
         while (true) {
             const payload = yield take(socketChannel);
 
+            //console.log(`${payload.req} ${id}`);
+
             if (payload.req === 'chat.connection.success') {
                 yield put({type: TYPES.APP_SERVER_CONNECTION_ON, id});
             } else if (payload.req === 'chat.connect.firstHandshake.success') {
@@ -836,6 +800,7 @@ const listenServerSaga = function* (id) {
                     yield put({type: TYPES.APP_USER_CONTACTS_COMPLETE, payload: payload.data, id});
                 }
             } else if (payload.req === 'chat.user.conversations') {
+                //console.log(`chat.user.conversations ${id}`);
                 if (payload.data.error) {
                     console.error(payload.data.error);
                 } else {

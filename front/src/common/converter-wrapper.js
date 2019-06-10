@@ -32,7 +32,7 @@ function convertPemToBinary2(pem) {
 }
 
 function str2abUtf8(myString){
-    return new TextEncoder("utf-8").encode(myString);
+    return new TextEncoder().encode(myString);
 }
 
 function arrayBufferToBase64String(arrayBuffer) {

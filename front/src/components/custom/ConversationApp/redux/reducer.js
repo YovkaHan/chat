@@ -193,6 +193,13 @@ const cases = (type) => {
                 draft[id].conversation.data = R.clone(payload);
             };
         }
+        case TYPES.APP_MESSAGES_NEW: {
+            return (draft, payload, id) => {
+                if(draft[id].conversation.data && draft[id].conversation.data.id === payload.conversationId){
+                    draft[id].conversation.messages = draft[id].conversation.messages.concat(payload.newMessages);
+                }
+            };
+        }
         case TYPES.APP_CLEAR: {
             return (draft, payload, id) => {
                 draft[id].conversation = INIT_STATE_ITEM.conversation;

@@ -23,7 +23,7 @@ class ConversationApp extends React.Component {
 
         this.state = {
             visibleView: 'conversations',
-            userId: '1556984823_a8wjv9okahh'
+            userId: props.userId ? props.userId : '1556984823_a8wjv9okahh'
         };
 
         this.madeChildren = {

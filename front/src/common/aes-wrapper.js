@@ -1,4 +1,5 @@
 const crypto = window.crypto.subtle;
+import CryptoJS from 'crypto-js';
 import converterWrapper from './converter-wrapper';
 
 // wrapper for importing AES key for using with crypto library
@@ -6,7 +7,7 @@ function importPublicKey(key){
     return new Promise(function (resolve, rej) {
         crypto.importKey("raw", converterWrapper.base64StringToArrayBuffer(key),
             {
-                name: "AES-CBC"
+                name: "AES-CTR"
             },
             false, //whether the key is extractable (i.e. can be used in exportKey)
             ["encrypt", "decrypt"] //can be "encrypt", "decrypt", "wrapKey", or "unwrapKey"
@@ -32,29 +33,42 @@ function getMessageWithIv(message, iv) {
     return converterWrapper.arrayBufferToBase64String(message) + converterWrapper.arrayBufferToBase64String(iv);
 }
 
+function encryptMessage(key, message, event) {
 
-function encryptMessage(key, message) {
+    let counter = window.crypto.getRandomValues(new Uint8Array(16));
 
-    let iv = window.crypto.getRandomValues(new Uint8Array(16));
+    return (async () => {
+        const m = converterWrapper.str2abUtf8(message);
+        const _key = await importPublicKey(key);
 
-    return new Promise(function (resolve, rej) {
-        importPublicKey(key).then(function (key) {
-            crypto.encrypt(
-                {
-                    name: "AES-CBC",
-                    //Don't re-use initialization vectors!
-                    //Always generate a new iv every time your encrypt!
-                    iv: iv
-                },
-                key, //from generateKey or importKey above
-                converterWrapper.str2abUtf8(message) //ArrayBuffer of data you want to encrypt
-            )
-                .then(function (encrypted) {
-                    encrypted = getMessageWithIv(encrypted, iv);
-                    resolve(encrypted);
-                });
-        });
-    });
+        let encrypted = await crypto.encrypt(
+            {
+                name: "AES-CTR",
+                counter: counter,
+                length: 64
+            },
+            _key, //from generateKey or importKey above
+            m //ArrayBuffer of data you want to encrypt
+        );
+
+        encrypted = getMessageWithIv(encrypted, counter);
+        console.log(separateVectorFromData(encrypted));
+        console.log('EVENT: ', event);
+        console.log('Encrypted ', encrypted);
+
+        return encrypted;
+    })();
+}
+
+function wordToByteArray(wordArray) {
+    var byteArray = [], word, i, j;
+    for (i = 0; i < wordArray.length; ++i) {
+        word = wordArray[i];
+        for (j = 3; j >= 0; --j) {
+            byteArray.push((word >> 8 * j) & 0xFF);
+        }
+    }
+    return byteArray;
 }
 
 function decryptMessage(key, message) {
@@ -64,8 +78,9 @@ function decryptMessage(key, message) {
         importPublicKey(key).then(function (key) {
             crypto.decrypt(
                 {
-                    name: "AES-CBC",
-                    iv: converterWrapper.base64StringToArrayBuffer(data['iv']),
+                    name: "AES-CTR",
+                    counter: converterWrapper.base64StringToArrayBuffer(data['iv']),
+                    length: 64
                 },
                 key, //from generateKey or importKey above
                 converterWrapper.base64StringToArrayBuffer(data['message']) //ArrayBuffer of data you want to encrypt
@@ -78,8 +93,8 @@ function decryptMessage(key, message) {
 }
 
 export default {
-    encryptMessage: encryptMessage,
-    decryptMessage: decryptMessage,
-    importPublicKey: importPublicKey,
-    separateVectorFromData: separateVectorFromData,
+    encryptMessage,
+    decryptMessage,
+    importPublicKey,
+    separateVectorFromData,
 }

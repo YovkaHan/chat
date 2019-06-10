@@ -51,11 +51,13 @@ module.exports = function ({server, Tokens}) {
         socket.on('chat.connect.secondHandshake', function (data) {
             const {token, msg} = data;
 
-            Tokens.getObject(token).then(tokenObject => {
+            Tokens.getObject(token).then( async tokenObject => {
                 if(tokenObject !== undefined){
                     const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
 
-                    if(tokenObject.authToken === aesWrapper.decrypt(aesKey, msg)){
+                    const decrypted = await aesWrapper.decrypt(aesKey, msg);
+
+                    if(tokenObject.authToken === decrypted){
                         // const EM = new GlobalEventManager({socket, userId: tokenObject.userId});
                         // EventManagers[tokenObject.userId] = EM;
                         socket.emit('chat.connect.secondHandshake.success');
@@ -83,11 +85,12 @@ module.exports = function ({server, Tokens}) {
             /**encryptedMsg === {login || id}*/
             const {token, msg} = data;
 
-            Tokens.getObject(token).then(tokenObject => {
+            Tokens.getObject(token).then(async tokenObject => {
                 if(tokenObject !== undefined){
                     const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
 
-                    const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+                    const decryptedData = await aesWrapper.decrypt(aesKey, msg);
+                    const _data = JSON.parse(decryptedData);
 
                     Participant.get(_data).then(user => {
 
@@ -103,11 +106,12 @@ module.exports = function ({server, Tokens}) {
             /**encryptedMsg === {login || id}*/
             const {token, msg} = data;
 
-            Tokens.getObject(token).then(tokenObject => {
+            Tokens.getObject(token).then(async tokenObject => {
                 if(tokenObject !== undefined){
                     const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
 
-                    const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+                    const decryptedData = await aesWrapper.decrypt(aesKey, msg);
+                    const _data = JSON.parse(decryptedData);
 
                     Participant.safeGet({id: _data.userId, get: 'contacts'}).then(contacts => {
 
@@ -123,11 +127,12 @@ module.exports = function ({server, Tokens}) {
             /**encryptedMsg === {login || id}*/
             const {token, msg} = data;
 
-            Tokens.getObject(token).then(tokenObject => {
+            Tokens.getObject(token).then(async tokenObject => {
                 if(tokenObject !== undefined){
                     const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
 
-                    const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+                    const decryptedData = await aesWrapper.decrypt(aesKey, msg);
+                    const _data = JSON.parse(decryptedData);
 
                     Participant.safeGet({id: _data.userId, get: 'conversations'}).then(conversations => {
 
@@ -143,11 +148,12 @@ module.exports = function ({server, Tokens}) {
             /**encryptedMsg === {login || id}*/
             const {token, msg} = data;
 
-            Tokens.getObject(token).then(tokenObject => {
+            Tokens.getObject(token).then(async tokenObject => {
                 if(tokenObject !== undefined){
                     const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
 
-                    const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+                    const decryptedData = await aesWrapper.decrypt(aesKey, msg);
+                    const _data = JSON.parse(decryptedData);
 
                     Conversation.get({id: _data.id}).then(conversation => {
 
@@ -167,7 +173,8 @@ module.exports = function ({server, Tokens}) {
                 if(tokenObject !== undefined){
                     const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
 
-                    const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+                    const decryptedData = await aesWrapper.decrypt(aesKey, msg);
+                    const _data = JSON.parse(decryptedData);
 
                     const eventData = _GlobalEventManager.eventToData(_data);
                     const {message, conversation} = eventData;
@@ -208,12 +215,14 @@ module.exports = function ({server, Tokens}) {
         socket.on('event.manager.last', function (data) {
             const {token, msg} = data;
 
-            Tokens.getObject(token).then(tokenObject => {
+            Tokens.getObject(token).then(async tokenObject => {
                 if(tokenObject !== undefined){
                     const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
                     const {userId} = tokenObject;
 
-                    const _data = JSON.parse(aesWrapper.decrypt(aesKey, msg));
+                    const decryptedData = await aesWrapper.decrypt(aesKey, msg);
+                    const _data = JSON.parse(decryptedData);
+
                     const {lastEvents} = _data;
 
                     LocalEventManagers[socket.id] = new LocalEventManager({socket, userId, lastEvents, tokenObject});
