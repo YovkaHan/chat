@@ -3,16 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="f36fa4ef-5048-49ec-acff-b0083d3d980d" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/back/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/back/server.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/src/aes-wrapper.js" beforeDir="false" afterPath="$PROJECT_DIR$/back/src/aes-wrapper.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/src/sockets.js" beforeDir="false" afterPath="$PROJECT_DIR$/back/src/sockets.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/src/tokens.js" beforeDir="false" afterPath="$PROJECT_DIR$/back/src/tokens.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/back/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/back/yarn.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front/src/common/aes-wrapper.js" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/common/aes-wrapper.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front/src/components/custom/App/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/custom/App/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.scss" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/sagas.js" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/sagas.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/back/cd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/front/src/components/custom/ContactList/ContactList.scss" beforeDir="false" afterPath="$PROJECT_DIR$/front/src/components/custom/ContactList/ContactList.scss" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -26,23 +18,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="App.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/front/src/components/custom/App/App.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="18" column="43" selection-start-line="18" selection-start-column="43" selection-end-line="18" selection-end-column="43" />
-              <folding>
-                <element signature="e#0#26#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="ConversationApp.scss" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.scss">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="581">
-              <caret line="64" column="35" selection-start-line="64" selection-start-column="35" selection-end-line="64" selection-end-column="35" />
+            <state relative-caret-position="1054">
+              <caret line="62" column="14" lean-forward="true" selection-start-line="62" selection-start-column="14" selection-end-line="62" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -74,11 +54,29 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="aes-wrapper.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ConversationList.scss" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationList/ConversationList.scss">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="187">
+              <caret line="11" selection-start-line="11" selection-end-line="16" selection-end-column="5" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="aes-wrapper.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/back/src/aes-wrapper.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
+            <state relative-caret-position="-283">
               <caret line="79" column="13" lean-forward="true" selection-start-line="79" selection-start-column="13" selection-end-line="79" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ContactList.scss" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/front/src/components/custom/ContactList/ContactList.scss">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="187">
+              <caret line="11" column="5" selection-start-line="11" selection-start-column="5" selection-end-line="11" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -92,32 +90,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ConversationApp.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="614">
-              <caret line="169" column="1" selection-start-line="169" selection-start-column="1" selection-end-line="169" selection-end-column="33" />
-              <folding>
-                <element signature="e#0#26#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="sagas.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/redux/sagas.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="63">
               <caret line="412" column="71" lean-forward="true" selection-start-line="412" selection-start-column="71" selection-end-line="412" selection-end-column="71" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="style.scss" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/front/src/components/custom/App/style.scss">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="714">
-              <caret line="42" selection-start-line="42" selection-end-line="42" />
             </state>
           </provider>
         </entry>
@@ -182,7 +159,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/front/src/components/custom/ClientInfo/ClientInfo.js" />
         <option value="$PROJECT_DIR$/front/src/components/custom/MessageInput/redux/types.js" />
         <option value="$PROJECT_DIR$/front/src/components/custom/MessageInput/redux/reducer.js" />
         <option value="$PROJECT_DIR$/front/src/components/custom/MessageInput/redux/actions.js" />
@@ -233,6 +209,7 @@
         <option value="$PROJECT_DIR$/back/server.js" />
         <option value="$PROJECT_DIR$/back/src/sockets.js" />
         <option value="$PROJECT_DIR$/back/src/aes-wrapper.js" />
+        <option value="$PROJECT_DIR$/front/src/components/custom/ContactList/ContactList.scss" />
       </list>
     </option>
   </component>
@@ -254,7 +231,7 @@
       <path value="$PROJECT_DIR$/package.json" />
     </packageJsonPaths>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-8" />
     <option name="width" value="1936" />
     <option name="height" value="1056" />
@@ -280,13 +257,55 @@
             <path>
               <item name="chat" type="b2602c69:ProjectViewProjectNode" />
               <item name="chat" type="462c0819:PsiDirectoryNode" />
-              <item name="back" type="462c0819:PsiDirectoryNode" />
+              <item name="front" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chat" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chat" type="462c0819:PsiDirectoryNode" />
+              <item name="front" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="chat" type="b2602c69:ProjectViewProjectNode" />
               <item name="chat" type="462c0819:PsiDirectoryNode" />
               <item name="front" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chat" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chat" type="462c0819:PsiDirectoryNode" />
+              <item name="front" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="custom" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chat" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chat" type="462c0819:PsiDirectoryNode" />
+              <item name="front" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="custom" type="462c0819:PsiDirectoryNode" />
+              <item name="ContactList" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chat" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chat" type="462c0819:PsiDirectoryNode" />
+              <item name="front" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="custom" type="462c0819:PsiDirectoryNode" />
+              <item name="ConversationApp" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chat" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chat" type="462c0819:PsiDirectoryNode" />
+              <item name="front" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="custom" type="462c0819:PsiDirectoryNode" />
+              <item name="ConversationList" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -413,12 +432,12 @@
       <workItem from="1560232546325" duration="9972000" />
       <workItem from="1560287186035" duration="200000" />
       <workItem from="1560382676260" duration="2492000" />
-      <workItem from="1560415390331" duration="16036000" />
+      <workItem from="1560415390331" duration="16419000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="700977000" />
+    <option name="totallyTimeSpent" value="701360000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -433,14 +452,14 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4962853" visible="true" weight="0.14857745" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4962853" visible="true" weight="0.14857745" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49947312" weight="0.32897604" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.48208642" side_tool="true" weight="0.26688454" />
       <window_info anchor="bottom" id="Version Control" order="10" sideWeight="0.49578503" weight="0.32897604" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info id="Structure" order="1" sideWeight="0.5037147" side_tool="true" weight="0.14857745" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="9" sideWeight="0.5179136" visible="true" weight="0.4117647" />
+      <window_info anchor="bottom" id="Terminal" order="9" sideWeight="0.5179136" visible="true" weight="0.4117647" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="TypeScript" order="8" />
@@ -466,16 +485,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/front/src/common/store.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="62" lean-forward="true" selection-start-line="15" selection-start-column="62" selection-end-line="15" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/components/custom/Profile/index.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/front/src/components/custom/Profile/Profile.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-714">
@@ -646,13 +655,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationList/ConversationList.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="16" selection-start-line="4" selection-start-column="16" selection-end-line="4" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/front/src/components/custom/Chat/Chat.scss">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1717">
@@ -684,13 +686,6 @@
           <folding>
             <element signature="n#!!doc" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="581">
-          <caret line="64" column="35" selection-start-line="64" selection-start-column="35" selection-end-line="64" selection-end-column="35" />
         </state>
       </provider>
     </entry>
@@ -773,10 +768,38 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationApp/ConversationApp.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1054">
+          <caret line="62" column="14" lean-forward="true" selection-start-line="62" selection-start-column="14" selection-end-line="62" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ConversationList/ConversationList.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" selection-start-line="11" selection-end-line="16" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/front/src/components/custom/Contacts/Contacts.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="13" lean-forward="true" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/back/src/aes-wrapper.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
+        <state relative-caret-position="-283">
           <caret line="79" column="13" lean-forward="true" selection-start-line="79" selection-start-column="13" selection-end-line="79" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/front/src/components/custom/ContactList/ContactList.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="5" selection-start-line="11" selection-start-column="5" selection-end-line="11" selection-end-column="5" />
         </state>
       </provider>
     </entry>
