@@ -1,20 +1,35 @@
 .conversations {
+  height: calc(100% - 40px);
+
+  &__content {
+    height: 100%;
+  }
+
   &__item {
     border: 1px solid black;
-    margin: 2px;
+    margin: 8px;
+
+    &:first-child {
+      margin-top: 0;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
 
     cursor: pointer;
   }
   .conversation {
     &__content {
+      display: flex;
       align-items: center;
+      justify-content: center;
       height: 52px;
     }
     flex-grow: 1;
     width: auto;
   }
   .panel {
-    height: 40px;
+    height: 50px;
     background: transparent;
     display: flex;
     align-items: center;
@@ -71,5 +86,9 @@
         font-size: 20px;
       }
     }
+  }
+  .list {
+    overflow-y: auto;
+    height: calc(100% - 50px);
   }
 }

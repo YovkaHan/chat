@@ -14,19 +14,19 @@
       flex-direction: column;
 
       .top {
-        background: #236820;
+        background: #91bdff;
         max-height: 80px;
       }
       .down {
         height: calc(100% - 80px);
-        background: #a3d328;
+        background: #2536ad;
         display: flex;
         flex-direction: column;
       }
     }
     &.right {
       width: 65%;
-      background: beige;
+      background: #dcecff;
     }
   }
 }
@@ -56,7 +56,7 @@
 }
 
 .visible-view {
-  background: blue;
+  background: rgba(145, 189, 255, 0.7);
 }
 
 .contacts {
@@ -67,7 +67,7 @@
 .conversations {
   width: 100%;
   height: 100%;
-  background: #cb6156;
+  background: rgba(184, 189, 206, 0.51);
 }
 
 .login {
@@ -83,7 +83,7 @@
     display: flex;
     width: 100%;
     justify-content: center;
-    margin: 5px;
+    margin: 10px;
 
     label {
       display: flex;
@@ -97,9 +97,13 @@
       align-items: center;
       justify-content: flex-end;
       padding: 0 10px;
+      font-size: 18px;
+      font-family: 'Roboto', sans-serif;
     }
     &__value {
       width: 75%;
+      height: 32px;
+      font-size: 17px;
     }
   }
 
