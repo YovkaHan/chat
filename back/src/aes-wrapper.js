@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const cryptoAsync = require('@ronomon/crypto-async');
 const pkcs7 = require('pkcs7-padding');
 const btoa = require('btoa');
 const atob = require('atob');
@@ -43,32 +44,47 @@ aesWrapper.encrypt = (key, iv, text) => {
     return encrypted;
 };
 
-aesWrapper.decrypt = (key, text) => {
-    let decrypted = '';
+// aesWrapper.decrypt = (key, text) => {
+//     let decrypted = '';
+//
+//     return new Promise(resolve => {
+//         try {
+//             let data = aesWrapper.separateVectorFromData(text);
+//             let decipher = crypto.createDecipheriv('aes-256-ctr', key, Buffer.from(data.iv, 'base64'));
+//
+//             let chunk;
+//             decipher.on('readable', () => {
+//                 while (null !== (chunk = decipher.read())) {
+//                     decrypted += chunk.toString('utf8');
+//                     // console.log('DATA ', data);
+//                     // console.log(key.toString('base64'));
+//                     // console.log(chunk, chunk.toString('utf8'));
+//                 }
+//             });
+//             decipher.on('end', () => {
+//                 resolve(decrypted);
+//                 // Prints: some clear text data
+//             });
+//
+//             decipher.write(Buffer.from(data.message, 'base64'), 'base64');
+//             decipher.end();
+//
+//         } catch (e) {
+//             console.log(e);
+//         }
+//     });
+// };
 
+aesWrapper.decrypt = (key, text) => {
     return new Promise(resolve => {
         try {
             let data = aesWrapper.separateVectorFromData(text);
-            let decipher = crypto.createDecipheriv('aes-256-ctr', key, Buffer.from(data.iv, 'base64'));
-
-            let chunk;
-            decipher.on('readable', () => {
-                while (null !== (chunk = decipher.read())) {
-                    decrypted += chunk.toString('utf8');
-                    console.log(chunk, chunk.toString('utf8'));
-                }
-            });
-            decipher.on('end', () => {
+            const buff = Buffer.from(data.message, 'base64');
+            cryptoAsync.cipher('aes-256-ctr', 0, key, Buffer.from(data.iv, 'base64'), buff, function (error, plaintext) {
+                if (error) throw error;
+                const decrypted = plaintext.toString('utf8');
                 resolve(decrypted);
-                // Prints: some clear text data
             });
-
-            decipher.write(Buffer.from(data.message, 'base64').toString('hex'), 'hex');
-            decipher.end();
-
-
-            // dec += decipher.update(Buffer.from(data.message, 'base64'), 'base64', 'utf8');
-            // dec += decipher.final('utf8');
         } catch (e) {
             console.log(e);
         }

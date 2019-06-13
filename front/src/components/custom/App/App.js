@@ -14,26 +14,24 @@ export default class App extends React.Component {
     render() {
 
         return (
-            <React.Fragment>
-                <div className={`the-app`}>
-                    {/*<Chat.Component*/}
-                        {/*className={`clientA`}*/}
-                        {/*core={{pcb: this.pcb, id: 'chat0', component: 'Chat'}}*/}
-                        {/*from={'C'}*/}
-                        {/*to={'D'}*/}
-                    {/*/>*/}
-                    {/*<ConversationApp.Component*/}
-                        {/*className={`clientA`}*/}
-                        {/*core={{pcb: this.pcb, id: 'convApp1', component: 'ConversationApp'}}*/}
-                        {/*userId={'1555156736_8hcjufg64ce'}*/}
-                    {/*/>*/}
-                    <ConversationApp.Component
-                        className={`clientB`}
-                        core={{pcb: this.pcb, id: 'convApp0', component: 'ConversationApp'}}
-                        userId={'1556984823_a8wjv9okahh'}
-                    />
-                </div>
-            </React.Fragment>
+            <div className={`the-app`}>
+                {/*<Chat.Component*/}
+                {/*className={`clientA`}*/}
+                {/*core={{pc b: this.pcb, id: 'chat0', component: 'Chat'}}*/}
+                {/*from={'C'}*/}
+                {/*to={'D'}*/}
+                {/*/>*/}
+                <ConversationApp.Component
+                    className={`clientA`}
+                    core={{pcb: this.pcb, id: 'convApp1', component: 'ConversationApp'}}
+                    userId={'1555156736_8hcjufg64ce'}
+                />
+                <ConversationApp.Component
+                    className={`clientB`}
+                    core={{pcb: this.pcb, id: 'convApp0', component: 'ConversationApp'}}
+                    userId={'1556984823_a8wjv9okahh'}
+                />
+            </div>
         )
     }
 }

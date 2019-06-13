@@ -22,6 +22,7 @@
     "url-loader": "^1.1.1"
   },
   "dependencies": {
+    "@ronomon/crypto-async": "^5.0.1",
     "btoa": "^1.2.1",
     "circular-dependency-plugin": "^5.0.2",
     "cors": "^2.8.5",

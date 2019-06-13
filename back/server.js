@@ -59,14 +59,18 @@ ipc.of['tokens'].on('method.props.result', (dataObj) => {
         const foo = dataObj[key];
 
         Tokens[key] = function () {
-            const props = {};
+            /**Possible problems*/
+            const id = uniqid.process();
+            const props = {_id: id};
+            /***/
             foo.map((p, i) => props[p] = arguments[i] !== undefined ? arguments[i] : undefined);
 
             return new Promise(resolve => {
                 ipc.of['tokens'].emit(`${key}`, props);
 
-                ipc.of['tokens'].on(`${key}.result`, (data) => {
-                    resolve(JSON.parse(data))
+                ipc.of['tokens'].on(`${key}${id}.result`, (data) => {
+                    const dataParsed = JSON.parse(data);
+                    resolve(dataParsed)
                 });
 
                 ipc.of['tokens'].on(`${key}.error`, (data) => {

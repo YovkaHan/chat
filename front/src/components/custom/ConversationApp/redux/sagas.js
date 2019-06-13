@@ -419,6 +419,9 @@ const onConnectToChatFinalSaga = function* (socket, authToken, _id) {
                 _store.set(authToken, {aesKey}, id);
 
                 aesWrapper.encryptMessage(aesKey, authToken, `chat.connect.secondHandshake`).then(msg => {
+
+                    aesWrapper.decryptMessage(aesKey, msg).then(decrypted => console.log('Decrypted:', decrypted));
+
                     socket.emit(
                         `chat.connect.secondHandshake`,
                         {
@@ -475,6 +478,9 @@ const onUserInfo = function* (socket, authToken, _id) {
             const aesKey = _store.get(authToken, ['aesKey'])[0];
 
             aesWrapper.encryptMessage(aesKey, JSON.stringify(payload), `chat.user.info`).then(msg => {
+
+                aesWrapper.decryptMessage(aesKey, msg).then(decrypted => console.log('Decrypted:', decrypted));
+
                 socket.emit(
                     `chat.user.info`,
                     {
@@ -497,6 +503,9 @@ const onUserContacts = function* (socket, authToken, _id) {
             const aesKey = _store.get(authToken, ['aesKey'])[0];
 
             aesWrapper.encryptMessage(aesKey, JSON.stringify({userId}), `chat.user.contacts`).then(msg => {
+
+                aesWrapper.decryptMessage(aesKey, msg).then(decrypted => console.log('Decrypted:', decrypted));
+
                 socket.emit(
                     `chat.user.contacts`,
                     {
@@ -518,6 +527,9 @@ const onUserConversations = function* (socket, authToken, _id) {
             const userId = _store.get(authToken, ['userId'])[0];
 
             aesWrapper.encryptMessage(aesKey, JSON.stringify({userId}), `chat.user.conversations`).then(msg => {
+
+                aesWrapper.decryptMessage(aesKey, msg).then(decrypted => console.log('Decrypted:', decrypted));
+
                 socket.emit(
                     `chat.user.conversations`,
                     {
@@ -538,6 +550,9 @@ const onConversationGet = function* (socket, authToken, _id) {
             const aesKey = _store.get(authToken, ['aesKey'])[0];
 
             aesWrapper.encryptMessage(aesKey, JSON.stringify({id: payload.conversationId}), `chat.conversation.get`).then(msg => {
+
+                aesWrapper.decryptMessage(aesKey, msg).then(decrypted => console.log('Decrypted:', decrypted));
+
                 socket.emit(
                     `chat.conversation.get`,
                     {
@@ -626,6 +641,9 @@ const onEventManagerSaga = function* (socket, authToken, _id) {
                 const lastEventsList = yield call(lastEvents, userId);
 
                 aesWrapper.encryptMessage(aesKey, JSON.stringify({lastEvents: lastEventsList}), 'event.manager.last').then(msg => {
+
+                    aesWrapper.decryptMessage(aesKey, msg).then(decrypted => console.log('Decrypted:', decrypted));
+
                     socket.emit(
                         'event.manager.last',
                         {
@@ -646,6 +664,9 @@ const onEventManagerSaga = function* (socket, authToken, _id) {
                 const aesKey = _store.get(authToken, ['aesKey'])[0];
 
                 aesWrapper.encryptMessage(aesKey, JSON.stringify(payload), 'event').then(msg => {
+
+                    aesWrapper.decryptMessage(aesKey, msg).then(decrypted => console.log('Decrypted:', decrypted));
+
                     socket.emit(
                         'event',
                         {

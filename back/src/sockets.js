@@ -173,6 +173,7 @@ module.exports = function ({server, Tokens}) {
                 if(tokenObject !== undefined){
                     const aesKey = Buffer.from(tokenObject.aesKey, 'base64');
 
+
                     const decryptedData = await aesWrapper.decrypt(aesKey, msg);
                     const _data = JSON.parse(decryptedData);
 

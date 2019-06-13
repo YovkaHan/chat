@@ -33,9 +33,11 @@ function getMessageWithIv(message, iv) {
     return converterWrapper.arrayBufferToBase64String(message) + converterWrapper.arrayBufferToBase64String(iv);
 }
 
+let counter = window.crypto.getRandomValues(new Uint8Array(16));
+
 function encryptMessage(key, message, event) {
 
-    let counter = window.crypto.getRandomValues(new Uint8Array(16));
+    // let counter = window.crypto.getRandomValues(new Uint8Array(16));
 
     return (async () => {
         const m = converterWrapper.str2abUtf8(message);

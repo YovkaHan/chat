@@ -1,4 +1,5 @@
 const uniqid = require('uniqid');
+const R = require('rambda');
 const objectList = [];
 
 function addObject (num, userId) {
@@ -8,12 +9,12 @@ function addObject (num, userId) {
         objectList.push({
             authToken,
             userId,
-            expired: setTimeout(function () {
-                const fTokenIndex = objectList.findIndex(t => t.authToken === authToken);
-                if (fTokenIndex >= 0) {
-                    objectList.splice(fTokenIndex, 1);
-                }
-            }, 1000 * 60 * 60)
+            // expired: setTimeout(function () {
+            //     const fTokenIndex = objectList.findIndex(t => t.authToken === authToken);
+            //     if (fTokenIndex >= 0) {
+            //         objectList.splice(fTokenIndex, 1);
+            //     }
+            // }, 1000 * 60 * 60)
         });
         return authToken;
     } else if (num < 10) {
@@ -30,9 +31,9 @@ function findObjectIndex (authToken, userId) {
 }
 function getObject (authToken) {
     const index = findObjectIndex(authToken);
-    const object = Object.assign(objectList[index]);
+    const object = R.clone(objectList[index]);
 
-    delete object.expired;
+   // delete object.expired;
 
     return index === -1 ? undefined : object;
 }
@@ -40,7 +41,7 @@ function removeObject (authToken, userId) {
     const fTokenIndex = findObjectIndex(authToken, userId);
 
     if (fTokenIndex >= 0) {
-        clearTimeout(objectList[fTokenIndex].expired);
+        //clearTimeout(objectList[fTokenIndex].expired);
         objectList.splice(fTokenIndex, 1);
         return true;
     } else {
@@ -125,7 +126,7 @@ ipc.serve(() => {
 
                     ipc.server.emit(
                         socket,
-                        `${item}.result`,
+                        `${item}${data._id}.result`,
                         JSON.stringify(result)
                     );
                 }else {
