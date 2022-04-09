@@ -49,7 +49,7 @@
     "history": "^4.7.2",
     "immer": "^1.8.2",
     "keypair": "^1.0.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "prop-types": "^15.6.2",
     "ramda": "^0.26.1",
     "re-reselect": "^2.2.0",
