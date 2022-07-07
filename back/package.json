@@ -31,7 +31,7 @@
     "firebase": "^5.9.4",
     "firebase-admin": "^8.0.0",
     "hybrid-crypto-js": "^0.1.7",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "node-ipc": "^9.1.1",
     "pkcs7-padding": "^0.1.1",
     "rambda": "^2.10.2",
