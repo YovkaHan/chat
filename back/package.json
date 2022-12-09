@@ -27,7 +27,7 @@
     "circular-dependency-plugin": "^5.0.2",
     "cors": "^2.8.5",
     "crypto-js": "^3.1.9-1",
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "firebase": "^5.9.4",
     "firebase-admin": "^8.0.0",
     "hybrid-crypto-js": "^0.1.7",
